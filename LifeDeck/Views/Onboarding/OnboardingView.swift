@@ -57,16 +57,19 @@ struct OnboardingView: View {
                     
                     Spacer()
                     
-                    Button(currentStep == totalSteps - 1 ? "Start Your Journey" : "Continue") {
-                        if currentStep == totalSteps - 1 {
+                    if currentStep == totalSteps - 1 {
+                        Button("Start Your Journey") {
                             completeOnboarding()
-                        } else {
+                        }
+                        .buttonStyle(LifeDeckPremiumButtonStyle())
+                    } else {
+                        Button("Continue") {
                             withAnimation {
                                 currentStep += 1
                             }
                         }
+                        .buttonStyle(LifeDeckPrimaryButtonStyle())
                     }
-                    .buttonStyle(currentStep == totalSteps - 1 ? LifeDeckPremiumButtonStyle() : LifeDeckPrimaryButtonStyle())
                     .disabled(currentStep == 1 && selectedDomains.isEmpty)
                 }
                 .padding()
