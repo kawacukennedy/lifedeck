@@ -116,10 +116,10 @@ struct CoachingCardView: View {
                     dragOffset = value.translation
                     
                     // Rotation effect based on horizontal drag
-                    dragRotation = Double(value.translation.x / 20)
+                    dragRotation = Double(value.translation.width / 20)
                     
                     // Haptic feedback for different swipe directions
-                    if abs(value.translation.x) > 50 || abs(value.translation.y) > 50 {
+                    if abs(value.translation.width) > 50 || abs(value.translation.height) > 50 {
                         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                         impactFeedback.impactOccurred()
                     }
@@ -127,7 +127,7 @@ struct CoachingCardView: View {
                 .onEnded { value in
                     let swipeThreshold: CGFloat = 100
                     
-                    if value.translation.x > swipeThreshold {
+                    if value.translation.width > swipeThreshold {
                         // Swipe Right - Complete
                         withAnimation(.spring()) {
                             dragOffset = CGSize(width: 500, height: 0)
@@ -138,7 +138,7 @@ struct CoachingCardView: View {
                         let successFeedback = UINotificationFeedbackGenerator()
                         successFeedback.notificationOccurred(.success)
                         
-                    } else if value.translation.x < -swipeThreshold {
+                    } else if value.translation.width < -swipeThreshold {
                         // Swipe Left - Dismiss
                         withAnimation(.spring()) {
                             dragOffset = CGSize(width: -500, height: 0)
@@ -149,7 +149,7 @@ struct CoachingCardView: View {
                         let errorFeedback = UINotificationFeedbackGenerator()
                         errorFeedback.notificationOccurred(.error)
                         
-                    } else if value.translation.y > swipeThreshold {
+                    } else if value.translation.height > swipeThreshold {
                         // Swipe Down - Snooze
                         withAnimation(.spring()) {
                             dragOffset = CGSize(width: 0, height: 500)

@@ -66,7 +66,7 @@ struct OnboardingView: View {
                             }
                         }
                     }
-                    .buttonStyle(currentStep == totalSteps - 1 ? .lifeDeckPremium : .lifeDeckPrimary())
+                    .buttonStyle(currentStep == totalSteps - 1 ? LifeDeckPremiumButtonStyle() : LifeDeckPrimaryButtonStyle())
                     .disabled(currentStep == 1 && selectedDomains.isEmpty)
                 }
                 .padding()

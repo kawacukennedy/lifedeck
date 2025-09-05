@@ -123,7 +123,6 @@ struct PaywallView: View {
             .background(Color.lifeDeckBackground.ignoresSafeArea())
             .navigationTitle("Premium")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
