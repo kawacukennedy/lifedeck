@@ -26,6 +26,7 @@
 		A1001001001001001001006C /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001006D /* ButtonStyles.swift */; };
 		A1001001001001001001006E /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001006F /* ColorExtensions.swift */; };
 		A1001001001001001001007G /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007H /* DesignSystem.swift */; };
+		A1001001001001001001008G /* LifeDeckShowcaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001008H /* LifeDeckShowcaseView.swift */; };
 		A1001001001001001001007A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007B /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		A1001001001001001001006D /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		A1001001001001001001006F /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
 		A1001001001001001001007H /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		A1001001001001001001008H /* LifeDeckShowcaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeDeckShowcaseView.swift; sourceTree = "<group>"; };
 		A1001001001001001001007B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1001001001001001001007C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,6 +117,7 @@
 				A1001001001001001001009B /* Dashboard */,
 				A1001001001001001001009C /* Profile */,
 				A1001001001001001001009D /* Paywall */,
+				A1001001001001001001008H /* LifeDeckShowcaseView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				A1001001001001001001006C /* ButtonStyles.swift in Sources */,
 				A1001001001001001001006E /* ColorExtensions.swift in Sources */,
 				A1001001001001001001007G /* DesignSystem.swift in Sources */,
+				A1001001001001001001008G /* LifeDeckShowcaseView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

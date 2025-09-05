@@ -64,17 +64,29 @@ struct ContentView: View {
             }
             .tag(2)
             
-            // Profile Tab - User settings and subscription
+            // LifeDeck Showcase Tab - Design system demo
+            NavigationView {
+                LifeDeckShowcaseView()
+                    .background(Color.lifeDeckBackground.ignoresSafeArea())
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .tabItem {
+                Image(systemName: selectedTab == 3 ? "paintbrush.fill" : "paintbrush")
+                Text("Design")
+            }
+            .tag(3)
+            
+            // Profile Tab - User settings and subscription  
             NavigationView {
                 ProfileView()
                     .background(Color.lifeDeckBackground.ignoresSafeArea())
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
-                Image(systemName: selectedTab == 3 ? "person.circle.fill" : "person.circle")
+                Image(systemName: selectedTab == 4 ? "person.circle.fill" : "person.circle")
                 Text("Profile")
             }
-            .tag(3)
+            .tag(4)
         }
         .accentColor(.lifeDeckPrimary)
         .preferredColorScheme(.dark)
