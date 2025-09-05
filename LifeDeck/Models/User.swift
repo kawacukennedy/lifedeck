@@ -40,7 +40,7 @@ enum LifeDomain: String, CaseIterable, Identifiable {
 
 // MARK: - User Goals
 struct UserGoal: Codable, Identifiable {
-    let id = UUID()
+    let id: UUID
     let domain: LifeDomain
     let description: String
     let targetValue: Double?
@@ -48,6 +48,7 @@ struct UserGoal: Codable, Identifiable {
     let unit: String?
     
     init(domain: LifeDomain, description: String, targetValue: Double? = nil, currentValue: Double = 0, unit: String? = nil) {
+        self.id = UUID()
         self.domain = domain
         self.description = description
         self.targetValue = targetValue
@@ -111,7 +112,7 @@ struct UserSettings: Codable {
 
 // MARK: - Achievement
 struct Achievement: Codable, Identifiable {
-    let id = UUID()
+    let id: UUID
     let title: String
     let description: String
     let icon: String
@@ -121,6 +122,7 @@ struct Achievement: Codable, Identifiable {
     let category: LifeDomain?
     
     init(title: String, description: String, icon: String, pointsRequired: Int, category: LifeDomain? = nil) {
+        self.id = UUID()
         self.title = title
         self.description = description
         self.icon = icon

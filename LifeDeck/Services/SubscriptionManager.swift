@@ -67,6 +67,10 @@ class SubscriptionManager: NSObject, ObservableObject {
         isLoading = true
         lastError = nil
         
+        defer {
+            isLoading = false
+        }
+        
         do {
             let result = try await product.purchase()
             
@@ -100,14 +104,16 @@ class SubscriptionManager: NSObject, ObservableObject {
             print("Purchase failed: \(error)")
             return false
         }
-        
-        isLoading = false
     }
     
     /// Restore previous purchases
     func restorePurchases() async -> Bool {
         isLoading = true
         lastError = nil
+        
+        defer {
+            isLoading = false
+        }
         
         do {
             try await AppStore.sync()
@@ -118,8 +124,6 @@ class SubscriptionManager: NSObject, ObservableObject {
             print("Failed to restore purchases: \(error)")
             return false
         }
-        
-        isLoading = false
     }
     
     /// Refresh current subscription status
@@ -176,11 +180,6 @@ class SubscriptionManager: NSObject, ObservableObject {
         
         // Check if this is a premium subscription
         if SubscriptionProducts.productIds.contains(productId) {
-            let newSubscriptionInfo = SubscriptionInfo(
-                tier: .premium,
-                status: .active
-            )
-            
             // Update subscription info with transaction details
             subscriptionInfo = SubscriptionInfo(
                 tier: .premium,

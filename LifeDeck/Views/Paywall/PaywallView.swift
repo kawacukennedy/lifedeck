@@ -47,14 +47,19 @@ struct PaywallView: View {
                     // Premium Button
                     Button("Start Premium - \(selectedPeriod == .monthly ? "$7.99/month" : "$79.99/year")") {
                         Task {
+                            var purchaseSuccessful = false
                             if selectedPeriod == .monthly,
                                let product = subscriptionManager.monthlyPremiumProduct {
-                                await subscriptionManager.purchaseSubscription(product)
+                                purchaseSuccessful = await subscriptionManager.purchaseSubscription(product)
                             } else if selectedPeriod == .yearly,
                                       let product = subscriptionManager.yearlyPremiumProduct {
-                                await subscriptionManager.purchaseSubscription(product)
+                                purchaseSuccessful = await subscriptionManager.purchaseSubscription(product)
                             }
-                            dismiss()
+                            
+                            // Only dismiss if purchase was successful
+                            if purchaseSuccessful {
+                                dismiss()
+                            }
                         }
                     }
                     .buttonStyle(.lifeDeckPremium)

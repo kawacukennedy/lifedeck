@@ -121,7 +121,7 @@ struct CardPersonalization: Codable {
 
 // MARK: - Coaching Card Model
 struct CoachingCard: Identifiable, Codable, Equatable {
-    let id = UUID()
+    let id: UUID
     let title: String
     let description: String
     let actionText: String // The specific action to take
@@ -168,6 +168,7 @@ struct CoachingCard: Identifiable, Codable, Equatable {
         aiGenerated: Bool = false,
         templateId: String? = nil
     ) {
+        self.id = UUID()
         self.title = title
         self.description = description
         self.actionText = actionText
