@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct CoachingCardView: View {
     let card: CoachingCard
@@ -76,7 +77,7 @@ struct CoachingCardView: View {
             }
             .opacity(isDragging ? 0.8 : 0.4)
         }
-        .responsiveCardPadding()
+.padding(DesignSystem.Spacing.cardPadding)
         .frame(
             maxWidth: DesignSystem.Layout.cardWidth,
             maxHeight: DesignSystem.Layout.cardHeight
@@ -99,9 +100,9 @@ struct CoachingCardView: View {
                         )
                 )
         )
-        .iosNativeShadow(elevation: .high)
+.shadow(color: Color.black.opacity(0.16), radius: 16, x: 0, y: 4)
         .offset(dragOffset)
-        .rotationEffect(.degrees(dragRotation))
+.rotationEffect(Angle.degrees(dragRotation))
         .scaleEffect(isDragging ? 0.95 : 1.0)
         .animation(DesignSystem.Animation.springDefault, value: dragOffset)
         .animation(DesignSystem.Animation.springDefault, value: isDragging)

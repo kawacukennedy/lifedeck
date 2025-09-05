@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DashboardView: View {
     @EnvironmentObject var user: User
@@ -19,8 +20,8 @@ struct DashboardView: View {
                             .font(DesignSystem.Typography.largeTitle)
                             .foregroundColor(.lifeDeckTextPrimary)
                     }
-                    .responsiveHorizontalPadding()
-                    .conditionalTopSafeArea()
+.padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
+                    .padding(.top, DesignSystem.hasNotch ? 0 : DesignSystem.Spacing.sm)
                     
                     // Life Score Overview with circular progress
                     VStack(spacing: DesignSystem.Spacing.lg) {
@@ -89,8 +90,8 @@ struct DashboardView: View {
                                     .stroke(Color.lifeDeckCardBorder, lineWidth: 1)
                             )
                     )
-                    .iosNativeShadow(elevation: .medium)
-                    .responsiveHorizontalPadding()
+.shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 2)
+                    .padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel("Life Score: \(Int(user.progress.lifeScore)) out of 100. \(lifeScoreDescription)")
                     
@@ -99,7 +100,7 @@ struct DashboardView: View {
                         Text("Domain Breakdown")
                             .font(DesignSystem.Typography.title)
                             .foregroundColor(.lifeDeckTextPrimary)
-                            .responsiveHorizontalPadding()
+.padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                         
                         LazyVGrid(
                             columns: Array(repeating: GridItem(.flexible()), count: DesignSystem.Layout.gridColumns),
@@ -113,7 +114,7 @@ struct DashboardView: View {
                                 )
                             }
                         }
-                        .responsiveHorizontalPadding()
+.padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                     }
                     
                     // Quick Stats Row
@@ -121,7 +122,7 @@ struct DashboardView: View {
                         Text("Your Progress")
                             .font(DesignSystem.Typography.title)
                             .foregroundColor(.lifeDeckTextPrimary)
-                            .responsiveHorizontalPadding()
+.padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                         
                         HStack(spacing: DesignSystem.Spacing.sm) {
                             StatCard(
@@ -146,7 +147,7 @@ struct DashboardView: View {
                                 color: .lifeDeckPrimary
                             )
                         }
-                        .padding(.horizontal)
+.padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                     }
                     
                     // Premium Analytics Section
@@ -177,7 +178,7 @@ struct DashboardView: View {
                             Button("Upgrade to Premium") {
                                 // Show paywall
                             }
-                            .buttonStyle(.lifeDeckPremium)
+.buttonStyle(LifeDeckPremiumButtonStyle())
                         }
                         .padding(20)
                         .background(
@@ -198,7 +199,7 @@ struct DashboardView: View {
                                         )
                                 )
                         )
-                        .padding(.horizontal)
+                        .padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                     }
                     
                     Spacer(minLength: 100)
@@ -250,7 +251,7 @@ struct DomainProgressCard: View {
                     .trim(from: 0, to: CGFloat(score / 100))
                     .stroke(Color.forDomain(domain), style: StrokeStyle(lineWidth: 3, lineCap: .round))
                     .frame(width: 60, height: 60)
-                    .rotationEffect(.degrees(-90))
+.rotationEffect(Angle.degrees(-90))
                     .animation(.easeInOut(duration: 0.8), value: score)
                 
                 Image(systemName: domain.icon)

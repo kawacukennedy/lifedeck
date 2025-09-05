@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @EnvironmentObject var user: User
@@ -140,7 +141,7 @@ struct PremiumFeaturesView: View {
                         .foregroundColor(.lifeDeckTextSecondary)
                         .multilineTextAlignment(.center)
                 }
-                .responsiveCardPadding()
+.padding(DesignSystem.Spacing.cardPadding)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color.lifeDeckCardBackground)
@@ -159,8 +160,8 @@ struct PremiumFeaturesView: View {
                                 )
                         )
                 )
-                .iosNativeShadow(elevation: .low)
-                .responsiveHorizontalPadding()
+.shadow(color: Color.black.opacity(0.08), radius: 2, x: 0, y: 1)
+.padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
                 
                 // Premium Features Grid
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: DesignSystem.Layout.gridColumns), spacing: DesignSystem.Spacing.md) {
@@ -227,12 +228,12 @@ struct PremiumFeatureCard: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .responsiveCardPadding()
+.padding(DesignSystem.Spacing.cardPadding)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.lifeDeckCardBackground)
         )
-        .iosNativeShadow(elevation: .low)
+.shadow(color: Color.black.opacity(0.08), radius: 2, x: 0, y: 1)
     }
 }
 
