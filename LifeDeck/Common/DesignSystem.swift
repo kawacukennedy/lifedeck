@@ -4,7 +4,7 @@ import UIKit
 // MARK: - iOS Design System
 
 /// Responsive design system optimized for all iOS devices
-struct DesignSystem {
+enum DesignSystem {
     
     // MARK: - Device Detection
     
@@ -33,7 +33,6 @@ struct DesignSystem {
             .first?.windows.first else { return false }
         return window.safeAreaInsets.top > 20
     }
-}
 
 enum DeviceType: CaseIterable {
     case compact    // iPhone SE, 8
@@ -47,7 +46,7 @@ enum DeviceType: CaseIterable {
 
 extension DesignSystem {
     
-    struct Spacing {
+    enum Spacing {
         static let xs: CGFloat = 4
         static let sm: CGFloat = 8
         static let md: CGFloat = 16
@@ -57,7 +56,7 @@ extension DesignSystem {
         
         // Device-responsive spacing
         static var cardPadding: CGFloat {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return md
             case .regular: return md
             case .large: return lg
@@ -67,11 +66,11 @@ extension DesignSystem {
         }
         
         static var screenHorizontal: CGFloat {
-            isIPad ? xl : cardPadding
+            DesignSystem.isIPad ? xl : cardPadding
         }
         
         static var betweenSections: CGFloat {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return lg
             case .regular: return lg
             case .large: return xl
@@ -86,10 +85,10 @@ extension DesignSystem {
 
 extension DesignSystem {
     
-    struct Typography {
+    enum Typography {
         // Responsive font sizes
         static var largeTitle: Font {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return .system(size: 28, weight: .bold, design: .rounded)
             case .regular: return .system(size: 32, weight: .bold, design: .rounded)
             case .large, .extraLarge: return .system(size: 34, weight: .bold, design: .rounded)
@@ -98,7 +97,7 @@ extension DesignSystem {
         }
         
         static var title: Font {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return .system(size: 22, weight: .bold, design: .rounded)
             case .regular: return .system(size: 24, weight: .bold, design: .rounded)
             case .large, .extraLarge: return .system(size: 26, weight: .bold, design: .rounded)
@@ -107,7 +106,7 @@ extension DesignSystem {
         }
         
         static var headline: Font {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return .system(size: 18, weight: .semibold, design: .rounded)
             case .regular: return .system(size: 20, weight: .semibold, design: .rounded)
             case .large, .extraLarge: return .system(size: 22, weight: .semibold, design: .rounded)
@@ -116,7 +115,7 @@ extension DesignSystem {
         }
         
         static var body: Font {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return .system(size: 16, weight: .regular, design: .default)
             case .regular: return .system(size: 17, weight: .regular, design: .default)
             default: return .system(size: 17, weight: .regular, design: .default)
@@ -128,7 +127,7 @@ extension DesignSystem {
         }
         
         static var caption: Font {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return .system(size: 11, weight: .medium, design: .default)
             default: return .system(size: 12, weight: .medium, design: .default)
             }
@@ -140,16 +139,16 @@ extension DesignSystem {
 
 extension DesignSystem {
     
-    struct Layout {
+    enum Layout {
         // Card dimensions
         static var cardWidth: CGFloat {
             let screenWidth = UIScreen.main.bounds.width
-            let horizontalPadding = Spacing.screenHorizontal * 2
+            let horizontalPadding = DesignSystem.Spacing.screenHorizontal * 2
             return min(screenWidth - horizontalPadding, 400)
         }
         
         static var cardHeight: CGFloat {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return 420
             case .regular: return 450
             case .large: return 480
@@ -160,21 +159,21 @@ extension DesignSystem {
         
         // Grid columns
         static var gridColumns: Int {
-            switch deviceType {
+            switch DesignSystem.deviceType {
             case .compact: return 1
             case .regular: return 2
-            default: return isIPad ? 3 : 2
+            default: return DesignSystem.isIPad ? 3 : 2
             }
         }
         
         // Tab bar height
         static var tabBarHeight: CGFloat {
-            hasNotch ? 83 : 49
+            DesignSystem.hasNotch ? 83 : 49
         }
         
         // Navigation bar height
         static var navigationBarHeight: CGFloat {
-            hasNotch ? 96 : 64
+            DesignSystem.hasNotch ? 96 : 64
         }
         
         // Safe area compensation
@@ -196,7 +195,7 @@ extension DesignSystem {
 
 extension DesignSystem {
     
-    struct Animation {
+    enum Animation {
         static let springDefault = SwiftUI.Animation.spring(response: 0.6, dampingFraction: 0.8)
         static let springBouncy = SwiftUI.Animation.spring(response: 0.5, dampingFraction: 0.7)
         static let springGentle = SwiftUI.Animation.spring(response: 0.8, dampingFraction: 0.9)
