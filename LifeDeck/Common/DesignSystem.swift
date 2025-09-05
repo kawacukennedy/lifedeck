@@ -33,13 +33,14 @@ enum DesignSystem {
             .first?.windows.first else { return false }
         return window.safeAreaInsets.top > 20
     }
-
-enum DeviceType: CaseIterable {
-    case compact    // iPhone SE, 8
-    case regular    // iPhone 8 Plus
-    case large      // iPhone 11, XR, 12 mini
-    case extraLarge // iPhone 12/13/14/15 Pro
-    case max        // iPhone Pro Max, Plus
+    
+    enum DeviceType: CaseIterable {
+        case compact    // iPhone SE, 8
+        case regular    // iPhone 8 Plus
+        case large      // iPhone 11, XR, 12 mini
+        case extraLarge // iPhone 12/13/14/15 Pro
+        case max        // iPhone Pro Max, Plus
+    }
 }
 
 // MARK: - Spacing System
