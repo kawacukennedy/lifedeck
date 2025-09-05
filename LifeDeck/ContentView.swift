@@ -258,19 +258,12 @@ extension ContentView {
 // MARK: - Preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
-            // Preview with completed onboarding
-            ContentView()
-                .environmentObject(sampleUser)
-                .environmentObject(SubscriptionManager())
-                .previewDisplayName("Main App")
-            
-            // Preview with onboarding
-            ContentView()
-                .environmentObject(newUser)
-                .environmentObject(SubscriptionManager())
-                .previewDisplayName("Onboarding")
-        }
+        // Simplified preview to prevent timeout
+        ContentView()
+            .environmentObject(sampleUser)
+            .environmentObject(SubscriptionManager())
+            .previewDevice("iPhone 15 Pro")
+            .previewDisplayName("Main App")
     }
     
     static var sampleUser: User {
