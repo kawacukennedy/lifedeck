@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 // MARK: - Life Domains
-enum LifeDomain: String, CaseIterable, Identifiable {
+enum LifeDomain: String, CaseIterable, Identifiable, Codable {
     case health = "health"
     case finance = "finance" 
     case productivity = "productivity"
@@ -21,19 +21,28 @@ enum LifeDomain: String, CaseIterable, Identifiable {
     
     var icon: String {
         switch self {
-        case .health: return "heart.fill"
-        case .finance: return "dollarsign.circle.fill"
-        case .productivity: return "brain.head.profile"
-        case .mindfulness: return "leaf.fill"
+        case .health: return "figure.run" // 🏃
+        case .finance: return "dollarsign.circle" // 💰
+        case .productivity: return "timer" // ⏳
+        case .mindfulness: return "leaf" // 🧘
+        }
+    }
+    
+    var emoji: String {
+        switch self {
+        case .health: return "🏃"
+        case .finance: return "💰"
+        case .productivity: return "⏳"
+        case .mindfulness: return "🧘"
         }
     }
     
     var color: Color {
         switch self {
-        case .health: return .red
-        case .finance: return .green
-        case .productivity: return .blue
-        case .mindfulness: return .purple
+        case .health: return .lifeDeckHealth
+        case .finance: return .lifeDeckFinance
+        case .productivity: return .lifeDeckProductivity
+        case .mindfulness: return .lifeDeckMindfulness
         }
     }
 }

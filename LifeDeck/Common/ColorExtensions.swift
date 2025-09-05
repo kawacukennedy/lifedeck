@@ -1,43 +1,6 @@
 import SwiftUI
 import UIKit
 
-// MARK: - Life Domain Enum
-enum LifeDomain: String, CaseIterable, Identifiable {
-    case health = "health"
-    case finance = "finance" 
-    case productivity = "productivity"
-    case mindfulness = "mindfulness"
-    
-    var id: String { rawValue }
-    
-    var displayName: String {
-        switch self {
-        case .health: return "Health"
-        case .finance: return "Finance"
-        case .productivity: return "Productivity"
-        case .mindfulness: return "Mindfulness"
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .health: return "figure.run" // 🏃
-        case .finance: return "dollarsign.circle" // 💰
-        case .productivity: return "timer" // ⏳
-        case .mindfulness: return "leaf" // 🧘
-        }
-    }
-    
-    var emoji: String {
-        switch self {
-        case .health: return "🏃"
-        case .finance: return "💰"
-        case .productivity: return "⏳"
-        case .mindfulness: return "🧘"
-        }
-    }
-}
-
 // MARK: - LifeDeck Color Palette
 extension Color {
     
