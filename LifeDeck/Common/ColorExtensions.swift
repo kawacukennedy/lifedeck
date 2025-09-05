@@ -1,6 +1,43 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Life Domain Enum
+enum LifeDomain: String, CaseIterable, Identifiable {
+    case health = "health"
+    case finance = "finance" 
+    case productivity = "productivity"
+    case mindfulness = "mindfulness"
+    
+    var id: String { rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .health: return "Health"
+        case .finance: return "Finance"
+        case .productivity: return "Productivity"
+        case .mindfulness: return "Mindfulness"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .health: return "figure.run" // 🏃
+        case .finance: return "dollarsign.circle" // 💰
+        case .productivity: return "timer" // ⏳
+        case .mindfulness: return "leaf" // 🧘
+        }
+    }
+    
+    var emoji: String {
+        switch self {
+        case .health: return "🏃"
+        case .finance: return "💰"
+        case .productivity: return "⏳"
+        case .mindfulness: return "🧘"
+        }
+    }
+}
+
 // MARK: - LifeDeck Color Palette
 extension Color {
     
@@ -19,11 +56,11 @@ extension Color {
     static let lifeDeckTextSecondary = Color.hex("9A9A9A") // Dimmed gray
     static let lifeDeckTextTertiary = Color.hex("6A6A6A") // Darker gray for subtle text
     
-    // MARK: - Domain Colors (Harmonized with new palette)
-    static let lifeDeckHealth = Color.hex("E57373") // Soft red
-    static let lifeDeckFinance = Color.hex("66BB6A") // Soft green
-    static let lifeDeckProductivity = Color.hex("64B5F6") // Soft blue
-    static let lifeDeckMindfulness = Color.hex("BA68C8") // Soft purple
+    // MARK: - Domain Colors (Following Design Spec)
+    static let lifeDeckHealth = Color.hex("4CAF50") // Health = 🏃 (muted green)
+    static let lifeDeckFinance = Color.hex("FFB84D") // Finance = 💰 (muted amber)
+    static let lifeDeckProductivity = Color.hex("5C9BD5") // Productivity = ⏳ (calming blue)
+    static let lifeDeckMindfulness = Color.hex("9C27B0") // Mindfulness = 🧘 (muted purple)
     
     // MARK: - Status Colors
     static let lifeDeckSuccess = Color.hex("4CAF50") // Soft green for streaks, goals

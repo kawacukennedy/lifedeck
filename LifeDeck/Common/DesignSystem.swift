@@ -197,6 +197,17 @@ extension DesignSystem {
 extension DesignSystem {
     
     enum Animation {
+        // Card animations
+        static let cardSwipe = SwiftUI.Animation.spring(response: 0.4, dampingFraction: 0.8)
+        static let cardShuffle = SwiftUI.Animation.spring(response: 0.6, dampingFraction: 0.7)
+        static let cardFlip = SwiftUI.Animation.easeInOut(duration: 0.4)
+        
+        // Premium effects
+        static let premiumGlow = SwiftUI.Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true)
+        static let premiumBounce = SwiftUI.Animation.spring(response: 0.3, dampingFraction: 0.6)
+        static let confettiCelebration = SwiftUI.Animation.spring(response: 0.8, dampingFraction: 0.5)
+        
+        // Standard animations
         static let springDefault = SwiftUI.Animation.spring(response: 0.6, dampingFraction: 0.8)
         static let springBouncy = SwiftUI.Animation.spring(response: 0.5, dampingFraction: 0.7)
         static let springGentle = SwiftUI.Animation.spring(response: 0.8, dampingFraction: 0.9)
@@ -208,6 +219,125 @@ extension DesignSystem {
         static let quickTap = SwiftUI.Animation.easeOut(duration: 0.15)
         static let standardTransition = SwiftUI.Animation.easeInOut(duration: 0.35)
         static let slowReveal = SwiftUI.Animation.easeOut(duration: 0.5)
+        
+        // Micro-interactions
+        static let hoverEffect = SwiftUI.Animation.easeInOut(duration: 0.2)
+        static let pulseEffect = SwiftUI.Animation.easeInOut(duration: 0.8).repeatForever(autoreverses: true)
+        static let streakProgress = SwiftUI.Animation.spring(response: 0.5, dampingFraction: 0.6)
+    }
+}
+
+// MARK: - Premium Effects System
+
+extension DesignSystem {
+    
+    enum PremiumEffects {
+        
+        /// Glow intensity for premium elements
+        static let glowRadius: CGFloat = 8
+        static let glowOpacity: Double = 0.6
+        
+        /// Premium button glow
+        static func premiumButtonGlow(_ isPressed: Bool = false) -> some View {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(LinearGradient.lifeDeckPrimary)
+                .blur(radius: glowRadius)
+                .opacity(isPressed ? glowOpacity * 0.5 : glowOpacity)
+                .scaleEffect(isPressed ? 0.95 : 1.0)
+        }
+        
+        /// Premium card border glow
+        static func premiumCardGlow() -> some View {
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(LinearGradient.lifeDeckPrimary, lineWidth: 2)
+                .blur(radius: 4)
+                .opacity(0.8)
+        }
+        
+        /// Streak progress glow effect
+        static func streakGlow(_ progress: Double) -> some View {
+            Circle()
+                .fill(Color.lifeDeckSuccess)
+                .blur(radius: 6)
+                .opacity(0.6)
+                .scaleEffect(CGSize(width: progress, height: progress))
+        }
+    }
+}
+
+// MARK: - Card Swipe Effects
+
+extension DesignSystem {
+    
+    enum CardEffects {
+        
+        /// Card swipe direction colors
+        static func swipeColor(for direction: SwipeDirection) -> Color {
+            switch direction {
+            case .right: return .lifeDeckSuccess // Completed
+            case .left: return .lifeDeckError // Dismissed  
+            case .down: return .lifeDeckWarning // Snoozed
+            case .up: return .lifeDeckInfo // Details
+            }
+        }
+        
+        /// Card border effect based on swipe
+        static func swipeBorder(for direction: SwipeDirection, intensity: CGFloat) -> some View {
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(swipeColor(for: direction), lineWidth: 3)
+                .opacity(intensity)
+                .blur(radius: intensity * 2)
+        }
+    }
+}
+
+enum SwipeDirection {
+    case left, right, up, down
+}
+
+// MARK: - Domain-Specific Effects
+
+extension DesignSystem {
+    
+    enum DomainEffects {
+        
+        /// Get domain-specific gradient
+        static func domainGradient(for domain: LifeDomain) -> LinearGradient {
+            switch domain {
+            case .health:
+                return LinearGradient(
+                    gradient: Gradient(colors: [.lifeDeckHealth, .lifeDeckHealth.opacity(0.7)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            case .finance:
+                return LinearGradient(
+                    gradient: Gradient(colors: [.lifeDeckFinance, .lifeDeckFinance.opacity(0.7)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            case .productivity:
+                return LinearGradient(
+                    gradient: Gradient(colors: [.lifeDeckProductivity, .lifeDeckProductivity.opacity(0.7)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            case .mindfulness:
+                return LinearGradient(
+                    gradient: Gradient(colors: [.lifeDeckMindfulness, .lifeDeckMindfulness.opacity(0.7)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+        }
+        
+        /// Domain-specific icon with glow
+        static func domainIcon(for domain: LifeDomain, size: CGFloat = 24) -> some View {
+            Image(systemName: domain.icon)
+                .font(.system(size: size, weight: .semibold, design: .rounded))
+                .foregroundColor(Color.forDomain(domain))
+                .shadow(color: Color.forDomain(domain).opacity(0.5), radius: 4, x: 0, y: 2)
+        }
     }
 }
 
@@ -248,6 +378,122 @@ extension View {
             radius: elevation.radius,
             x: elevation.x,
             y: elevation.y
+        )
+    }
+    
+    // MARK: - Premium/Free Tier Visual Distinctions
+    
+    /// Apply premium glow effect
+    func premiumGlow(_ isActive: Bool = true) -> some View {
+        self.background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(LinearGradient.lifeDeckPrimary)
+                .blur(radius: 8)
+                .opacity(isActive ? 0.3 : 0)
+                .animation(DesignSystem.Animation.premiumGlow, value: isActive)
+        )
+    }
+    
+    /// Apply locked/premium overlay
+    func premiumLocked(_ isLocked: Bool) -> some View {
+        self.overlay(
+            Group {
+                if isLocked {
+                    ZStack {
+                        // Blur overlay
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.lifeDeckCardBackground.opacity(0.8))
+                            .blur(radius: 2)
+                        
+                        // Lock icon with glow
+                        VStack(spacing: DesignSystem.Spacing.xs) {
+                            Image(systemName: "lock.fill")
+                                .font(DesignSystem.Typography.headline)
+                                .foregroundColor(.lifeDeckPremiumGold)
+                                .shadow(color: .lifeDeckPremiumGold.opacity(0.6), radius: 4)
+                            
+                            Text("Premium")
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(.lifeDeckTextSecondary)
+                        }
+                    }
+                    .animation(DesignSystem.Animation.slowReveal, value: isLocked)
+                }
+            }
+        )
+    }
+    
+    /// Apply free tier limitation styling
+    func freeTierLimited(_ isLimited: Bool) -> some View {
+        self.overlay(
+            Group {
+                if isLimited {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.lifeDeckWarning.opacity(0.5), lineWidth: 1)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.lifeDeckWarning.opacity(0.05))
+                        )
+                }
+            }
+        )
+        .saturation(isLimited ? 0.6 : 1.0)
+        .brightness(isLimited ? -0.1 : 0)
+    }
+    
+    /// Apply premium tier enhancement styling
+    func premiumEnhanced(_ isEnhanced: Bool) -> some View {
+        self
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(LinearGradient.lifeDeckPrimary.opacity(0.1))
+                    .opacity(isEnhanced ? 1 : 0)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(LinearGradient.lifeDeckPrimary, lineWidth: isEnhanced ? 1 : 0)
+                    .opacity(isEnhanced ? 0.8 : 0)
+            )
+            .scaleEffect(isEnhanced ? 1.02 : 1.0)
+            .animation(DesignSystem.Animation.premiumBounce, value: isEnhanced)
+    }
+    
+    /// Apply upgrade CTA bounce animation
+    func upgradeBounce(_ shouldBounce: Bool) -> some View {
+        self
+            .scaleEffect(shouldBounce ? 1.05 : 1.0)
+            .animation(
+                shouldBounce ? 
+                    DesignSystem.Animation.premiumBounce.repeatCount(3, autoreverses: true) :
+                    .none,
+                value: shouldBounce
+            )
+    }
+    
+    /// Apply card swipe visual feedback
+    func cardSwipeFeedback(direction: SwipeDirection?, intensity: CGFloat = 0) -> some View {
+        self.overlay(
+            Group {
+                if let direction = direction, intensity > 0 {
+                    DesignSystem.CardEffects.swipeBorder(for: direction, intensity: intensity)
+                }
+            }
+        )
+    }
+    
+    /// Apply celebration confetti effect
+    func confettiCelebration(_ isActive: Bool) -> some View {
+        self.background(
+            Group {
+                if isActive {
+                    // Simple celebration effect - can be enhanced with particles
+                    Circle()
+                        .fill(Color.lifeDeckSuccess.opacity(0.3))
+                        .scaleEffect(isActive ? 2.0 : 0.1)
+                        .opacity(isActive ? 0.0 : 1.0)
+                        .animation(DesignSystem.Animation.confettiCelebration, value: isActive)
+                }
+            }
         )
     }
 }
