@@ -26,9 +26,11 @@ struct ContentView: View {
             // Deck Tab - Main coaching cards interface
             NavigationView {
                 DeckView()
+                    .background(Color.lifeDeckBackground.ignoresSafeArea())
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
-                Image(systemName: "rectangle.stack.fill")
+                Image(systemName: selectedTab == 0 ? "rectangle.stack.fill" : "rectangle.stack")
                 Text("Deck")
             }
             .tag(0)
@@ -36,27 +38,201 @@ struct ContentView: View {
             // Dashboard Tab - Progress and analytics
             NavigationView {
                 DashboardView()
+                    .background(Color.lifeDeckBackground.ignoresSafeArea())
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
-                Image(systemName: "chart.xyaxis.line")
-                Text("Dashboard")
+                Image(systemName: selectedTab == 1 ? "chart.xyaxis.line" : "chart.line.uptrend.xyaxis")
+                Text("Progress")
             }
             .tag(1)
+            
+            // Premium Tab - Premium features or upgrade
+            NavigationView {
+                if subscriptionManager.isPremium {
+                    PremiumFeaturesView()
+                        .background(Color.lifeDeckBackground.ignoresSafeArea())
+                } else {
+                    PaywallView()
+                }
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .tabItem {
+                Image(systemName: subscriptionManager.isPremium ? "crown.fill" : "crown")
+                Text("Premium")
+            }
+            .tag(2)
             
             // Profile Tab - User settings and subscription
             NavigationView {
                 ProfileView()
+                    .background(Color.lifeDeckBackground.ignoresSafeArea())
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
-                Image(systemName: "person.circle.fill")
+                Image(systemName: selectedTab == 3 ? "person.circle.fill" : "person.circle")
                 Text("Profile")
             }
-            .tag(2)
+            .tag(3)
         }
         .accentColor(.lifeDeckPrimary)
+        .preferredColorScheme(.dark)
+        .onAppear {
+            setupTabBarAppearance()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .showPaywall)) { _ in
             showingPaywall = true
         }
+    }
+    
+    /// Setup native iOS tab bar appearance
+    private func setupTabBarAppearance() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        tabBarAppearance.backgroundColor = UIColor(Color.lifeDeckCardBackground)
+        tabBarAppearance.shadowColor = UIColor(Color.lifeDeckSeparator.opacity(0.3))
+        
+        // Normal state
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.lifeDeckTextSecondary)
+        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor(Color.lifeDeckTextSecondary),
+            .font: UIFont.systemFont(ofSize: DesignSystem.deviceType == .compact ? 10 : 11, weight: .medium)
+        ]
+        
+        // Selected state
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.lifeDeckPrimary)
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor(Color.lifeDeckPrimary),
+            .font: UIFont.systemFont(ofSize: DesignSystem.deviceType == .compact ? 10 : 11, weight: .semibold)
+        ]
+        
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        
+        // Set tint colors
+        UITabBar.appearance().tintColor = UIColor(Color.lifeDeckPrimary)
+        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.lifeDeckTextSecondary)
+    }
+}
+
+// MARK: - Premium Features View
+struct PremiumFeaturesView: View {
+    @EnvironmentObject var user: User
+    @EnvironmentObject var subscriptionManager: SubscriptionManager
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: DesignSystem.Spacing.betweenSections) {
+                // Premium Status Header
+                VStack(spacing: DesignSystem.Spacing.md) {
+                    HStack {
+                        Image(systemName: "crown.fill")
+                            .font(DesignSystem.Typography.title)
+                            .foregroundColor(.lifeDeckPremiumGold)
+                        
+                        Text("Premium Active")
+                            .font(DesignSystem.Typography.title)
+                            .foregroundColor(.lifeDeckTextPrimary)
+                    }
+                    
+                    Text("Enjoy unlimited access to all features")
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(.lifeDeckTextSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .responsiveCardPadding()
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.lifeDeckCardBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.lifeDeckPremiumGold.opacity(0.4),
+                                            Color.lifeDeckPrimary.opacity(0.4)
+                                        ]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                        )
+                )
+                .iosNativeShadow(elevation: .low)
+                .responsiveHorizontalPadding()
+                
+                // Premium Features Grid
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: DesignSystem.Layout.gridColumns), spacing: DesignSystem.Spacing.md) {
+                    PremiumFeatureCard(
+                        icon: "infinity",
+                        title: "Unlimited Cards",
+                        description: "Access to all coaching cards without daily limits",
+                        color: .lifeDeckSuccess
+                    )
+                    
+                    PremiumFeatureCard(
+                        icon: "brain.head.profile",
+                        title: "Advanced AI",
+                        description: "Contextual and adaptive AI coaching",
+                        color: .lifeDeckPrimary
+                    )
+                    
+                    PremiumFeatureCard(
+                        icon: "chart.line.uptrend.xyaxis",
+                        title: "Full Analytics",
+                        description: "Detailed insights and trend analysis",
+                        color: .lifeDeckSecondary
+                    )
+                    
+                    PremiumFeatureCard(
+                        icon: "link",
+                        title: "Integrations",
+                        description: "Connect with Health, Calendar, and Finance apps",
+                        color: .lifeDeckWarning
+                    )
+                }
+                .responsiveHorizontalPadding()
+                
+                Spacer(minLength: DesignSystem.Spacing.xxl)
+            }
+        }
+        .navigationTitle("Premium")
+        .navigationBarTitleDisplayMode(.large)
+    }
+}
+
+struct PremiumFeatureCard: View {
+    let icon: String
+    let title: String
+    let description: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: DesignSystem.Spacing.md) {
+            Image(systemName: icon)
+                .font(DesignSystem.Typography.title)
+                .foregroundColor(color)
+            
+            VStack(spacing: DesignSystem.Spacing.xs) {
+                Text(title)
+                    .font(DesignSystem.Typography.headline)
+                    .foregroundColor(.lifeDeckTextPrimary)
+                    .multilineTextAlignment(.center)
+                
+                Text(description)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(.lifeDeckTextSecondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .responsiveCardPadding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.lifeDeckCardBackground)
+        )
+        .iosNativeShadow(elevation: .low)
     }
 }
 

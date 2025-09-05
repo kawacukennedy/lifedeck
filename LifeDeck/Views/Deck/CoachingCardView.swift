@@ -20,14 +20,14 @@ struct CoachingCardView: View {
                         .font(.title3)
                     
                     Text(card.domain.displayName.uppercased())
-                        .font(.system(size: 12, weight: .bold))
+                        .font(DesignSystem.Typography.caption)
                         .foregroundColor(.lifeDeckTextSecondary)
                 }
                 
                 Spacer()
                 
                 Text(card.actionType.estimatedDuration)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(DesignSystem.Typography.caption)
                     .foregroundColor(.lifeDeckTextSecondary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -40,18 +40,18 @@ struct CoachingCardView: View {
             // Card content
             VStack(alignment: .leading, spacing: 16) {
                 Text(card.title)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(DesignSystem.Typography.title)
                     .foregroundColor(.lifeDeckTextPrimary)
                 
                 Text(card.description)
-                    .font(.body)
+                    .font(DesignSystem.Typography.body)
                     .foregroundColor(.lifeDeckTextSecondary)
-                    .lineLimit(3)
+                    .lineLimit(DesignSystem.deviceType == .compact ? 2 : 3)
                 
                 Text(card.actionText)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(DesignSystem.Typography.headline)
                     .foregroundColor(.lifeDeckPrimary)
-                    .padding(.top, 8)
+                    .padding(.top, DesignSystem.Spacing.sm)
             }
             
             Spacer()
@@ -76,13 +76,16 @@ struct CoachingCardView: View {
             }
             .opacity(isDragging ? 0.8 : 0.4)
         }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: 500)
+        .responsiveCardPadding()
+        .frame(
+            maxWidth: DesignSystem.Layout.cardWidth,
+            maxHeight: DesignSystem.Layout.cardHeight
+        )
         .background(
-            RoundedRectangle(cornerRadius: 24)
+            RoundedRectangle(cornerRadius: DesignSystem.deviceType == .compact ? 20 : 24)
                 .fill(Color.lifeDeckCardBackground)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 24)
+                    RoundedRectangle(cornerRadius: DesignSystem.deviceType == .compact ? 20 : 24)
                         .stroke(
                             LinearGradient(
                                 gradient: Gradient(colors: [
@@ -96,17 +99,12 @@ struct CoachingCardView: View {
                         )
                 )
         )
-        .shadow(
-            color: Color.black.opacity(0.1),
-            radius: 20,
-            x: 0,
-            y: 10
-        )
+        .iosNativeShadow(elevation: .high)
         .offset(dragOffset)
         .rotationEffect(.degrees(dragRotation))
         .scaleEffect(isDragging ? 0.95 : 1.0)
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: dragOffset)
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isDragging)
+        .animation(DesignSystem.Animation.springDefault, value: dragOffset)
+        .animation(DesignSystem.Animation.springDefault, value: isDragging)
         .gesture(
             DragGesture()
                 .updating($isDragging) { _, state, _ in

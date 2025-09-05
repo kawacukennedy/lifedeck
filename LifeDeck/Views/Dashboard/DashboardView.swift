@@ -8,26 +8,30 @@ struct DashboardView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.betweenSections) {
                     // Header with greeting
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
                         Text(greeting)
-                            .font(.system(size: 16, weight: .medium))
+                            .font(DesignSystem.Typography.callout)
                             .foregroundColor(.lifeDeckTextSecondary)
                         
                         Text(user.name.isEmpty ? "Your Progress" : "\(user.name)'s Progress")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .font(DesignSystem.Typography.largeTitle)
                             .foregroundColor(.lifeDeckTextPrimary)
                     }
-                    .padding(.horizontal)
+                    .responsiveHorizontalPadding()
+                    .conditionalTopSafeArea()
                     
                     // Life Score Overview with circular progress
-                    VStack(spacing: 20) {
+                    VStack(spacing: DesignSystem.Spacing.lg) {
                         ZStack {
                             // Background circle
                             Circle()
-                                .stroke(Color.lifeDeckCardBorder, lineWidth: 8)
-                                .frame(width: 180, height: 180)
+                                .stroke(Color.lifeDeckCardBorder, lineWidth: DesignSystem.deviceType == .compact ? 6 : 8)
+                                .frame(
+                                    width: DesignSystem.deviceType == .compact ? 140 : 180,
+                                    height: DesignSystem.deviceType == .compact ? 140 : 180
+                                )
                             
                             // Progress circle
                             Circle()
@@ -41,20 +45,29 @@ struct DashboardView: View {
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     ),
-                                    style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                                    style: StrokeStyle(lineWidth: DesignSystem.deviceType == .compact ? 6 : 8, lineCap: .round)
                                 )
-                                .frame(width: 180, height: 180)
+                                .frame(
+                                    width: DesignSystem.deviceType == .compact ? 140 : 180,
+                                    height: DesignSystem.deviceType == .compact ? 140 : 180
+                                )
                                 .rotationEffect(.degrees(-90))
                                 .animation(.easeInOut(duration: 1.0), value: user.progress.lifeScore)
                             
                             // Life Score text
-                            VStack(spacing: 4) {
+                            VStack(spacing: DesignSystem.Spacing.xs) {
                                 Text("\(Int(user.progress.lifeScore))")
-                                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                                    .font(
+                                        .system(
+                                            size: DesignSystem.deviceType == .compact ? 36 : 48,
+                                            weight: .bold,
+                                            design: .rounded
+                                        )
+                                    )
                                     .foregroundColor(.lifeDeckTextPrimary)
                                 
                                 Text("LIFE SCORE")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(DesignSystem.Typography.caption)
                                     .foregroundColor(.lifeDeckTextSecondary)
                                     .tracking(1.2)
                             }
@@ -66,26 +79,32 @@ struct DashboardView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 24)
+                    .fillWidth()
+                    .padding(.vertical, DesignSystem.Spacing.lg)
                     .background(
-                        RoundedRectangle(cornerRadius: 20)
+                        RoundedRectangle(cornerRadius: DesignSystem.deviceType == .compact ? 16 : 20)
                             .fill(Color.lifeDeckCardBackground)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 20)
+                                RoundedRectangle(cornerRadius: DesignSystem.deviceType == .compact ? 16 : 20)
                                     .stroke(Color.lifeDeckCardBorder, lineWidth: 1)
                             )
                     )
-                    .padding(.horizontal)
+                    .iosNativeShadow(elevation: .medium)
+                    .responsiveHorizontalPadding()
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Life Score: \(Int(user.progress.lifeScore)) out of 100. \(lifeScoreDescription)")
                     
                     // Domain Progress
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                         Text("Domain Breakdown")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(DesignSystem.Typography.title)
                             .foregroundColor(.lifeDeckTextPrimary)
-                            .padding(.horizontal)
+                            .responsiveHorizontalPadding()
                         
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.flexible()), count: DesignSystem.Layout.gridColumns),
+                            spacing: DesignSystem.Spacing.md
+                        ) {
                             ForEach(LifeDomain.allCases) { domain in
                                 DomainProgressCard(
                                     domain: domain,
@@ -94,17 +113,17 @@ struct DashboardView: View {
                                 )
                             }
                         }
-                        .padding(.horizontal)
+                        .responsiveHorizontalPadding()
                     }
                     
                     // Quick Stats Row
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                         Text("Your Progress")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(DesignSystem.Typography.title)
                             .foregroundColor(.lifeDeckTextPrimary)
-                            .padding(.horizontal)
+                            .responsiveHorizontalPadding()
                         
-                        HStack(spacing: 12) {
+                        HStack(spacing: DesignSystem.Spacing.sm) {
                             StatCard(
                                 icon: "flame.fill",
                                 title: "Current Streak",
