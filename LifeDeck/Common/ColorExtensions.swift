@@ -1,0 +1,274 @@
+import SwiftUI
+import UIKit
+
+// MARK: - LifeDeck Color Palette
+extension Color {
+    
+    // MARK: - Primary Colors
+    static let lifeDeckPrimary = Color.hex("4A90E2") // Primary Blue
+    static let lifeDeckSecondary = Color.hex("50E3C2") // Teal
+    static let lifeDeckAccent = Color.hex("7B68EE") // Medium Slate Blue
+    
+    // MARK: - Background Colors
+    static let lifeDeckBackground = Color.hex("F9FAFB") // Light Gray
+    static let lifeDeckCardBackground = Color.hex("FFFFFF") // White
+    static let lifeDeckSurfaceBackground = Color.hex("F5F7FA") // Light Surface
+    
+    // MARK: - Text Colors
+    static let lifeDeckTextPrimary = Color.hex("1C1C1E") // Dark
+    static let lifeDeckTextSecondary = Color.hex("6E6E73") // Medium Gray
+    static let lifeDeckTextTertiary = Color.hex("9B9B9B") // Light Gray
+    
+    // MARK: - Domain Colors
+    static let lifeDeckHealth = Color.hex("FF6B6B") // Coral Red
+    static let lifeDeckFinance = Color.hex("4ECDC4") // Turquoise
+    static let lifeDeckProductivity = Color.hex("45B7D1") // Sky Blue
+    static let lifeDeckMindfulness = Color.hex("96CEB4") // Sage Green
+    
+    // MARK: - Status Colors
+    static let lifeDeckSuccess = Color.hex("27AE60") // Green
+    static let lifeDeckWarning = Color.hex("F39C12") // Orange
+    static let lifeDeckError = Color.hex("E74C3C") // Red
+    static let lifeDeckInfo = Color.hex("3498DB") // Blue
+    
+    // MARK: - Gradient Colors
+    static let lifeDeckGradientStart = Color.hex("667eea") // Purple Blue
+    static let lifeDeckGradientEnd = Color.hex("764ba2") // Purple
+    
+    // MARK: - Premium Colors
+    static let lifeDeckPremiumGold = Color.hex("FFD700") // Gold
+    static let lifeDeckPremiumSilver = Color.hex("C0C0C0") // Silver
+    
+    // MARK: - Utility Methods
+    
+    /// Create color from hex string
+    static func hex(_ hex: String) -> Color {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (r, g, b) = ((int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (r, g, b) = (int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (r, g, b) = (255, 255, 255)
+        }
+        
+        return Color(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: 1
+        )
+    }
+    
+    /// Get domain color for a life domain
+    static func forDomain(_ domain: LifeDomain) -> Color {
+        switch domain {
+        case .health: return .lifeDeckHealth
+        case .finance: return .lifeDeckFinance
+        case .productivity: return .lifeDeckProductivity
+        case .mindfulness: return .lifeDeckMindfulness
+        }
+    }
+    
+    /// Create a lighter version of the color
+    func lighter(by percentage: CGFloat = 0.2) -> Color {
+        return self.opacity(1.0 - percentage)
+    }
+    
+    /// Create a darker version of the color
+    func darker(by percentage: CGFloat = 0.2) -> Color {
+        return Color(UIColor(self).darkened(by: percentage))
+    }
+}
+
+// MARK: - UIColor Extensions
+extension UIColor {
+    /// Create UIColor from hex string
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (r, g, b) = ((int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (r, g, b) = (int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (r, g, b) = (255, 255, 255)
+        }
+        
+        self.init(
+            red: CGFloat(r) / 255,
+            green: CGFloat(g) / 255,
+            blue: CGFloat(b) / 255,
+            alpha: 1
+        )
+    }
+    
+    /// Get hex string representation
+    var hexString: String {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        let rgb: Int = (Int)(r * 255) << 16 | (Int)(g * 255) << 8 | (Int)(b * 255) << 0
+        
+        return String(format: "#%06x", rgb)
+    }
+    
+    /// Create a darker version of the color
+    func darkened(by percentage: CGFloat = 0.2) -> UIColor {
+        var h: CGFloat = 0
+        var s: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        
+        if getHue(&h, saturation: &s, brightness: &b, alpha: &a) {
+            return UIColor(hue: h, saturation: s, brightness: max(b - percentage, 0), alpha: a)
+        }
+        return self
+    }
+    
+    /// Create a lighter version of the color
+    func lightened(by percentage: CGFloat = 0.2) -> UIColor {
+        var h: CGFloat = 0
+        var s: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        
+        if getHue(&h, saturation: &s, brightness: &b, alpha: &a) {
+            return UIColor(hue: h, saturation: s, brightness: min(b + percentage, 1), alpha: a)
+        }
+        return self
+    }
+}
+
+// MARK: - Gradient Helpers
+extension LinearGradient {
+    /// Primary brand gradient
+    static let lifeDeckPrimary = LinearGradient(
+        gradient: Gradient(colors: [Color.lifeDeckGradientStart, Color.lifeDeckGradientEnd]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Success gradient
+    static let success = LinearGradient(
+        gradient: Gradient(colors: [Color.lifeDeckSuccess, Color.lifeDeckSuccess.darker(by: 0.1)]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Health domain gradient
+    static let health = LinearGradient(
+        gradient: Gradient(colors: [Color.lifeDeckHealth, Color.lifeDeckHealth.darker(by: 0.1)]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Finance domain gradient
+    static let finance = LinearGradient(
+        gradient: Gradient(colors: [Color.lifeDeckFinance, Color.lifeDeckFinance.darker(by: 0.1)]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Productivity domain gradient
+    static let productivity = LinearGradient(
+        gradient: Gradient(colors: [Color.lifeDeckProductivity, Color.lifeDeckProductivity.darker(by: 0.1)]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Mindfulness domain gradient
+    static let mindfulness = LinearGradient(
+        gradient: Gradient(colors: [Color.lifeDeckMindfulness, Color.lifeDeckMindfulness.darker(by: 0.1)]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Create gradient for domain
+    static func forDomain(_ domain: LifeDomain) -> LinearGradient {
+        switch domain {
+        case .health: return .health
+        case .finance: return .finance
+        case .productivity: return .productivity
+        case .mindfulness: return .mindfulness
+        }
+    }
+}
+
+// MARK: - Shadow Styles
+extension View {
+    /// Apply LifeDeck card shadow
+    func lifeDeckCardShadow() -> some View {
+        self.shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 2)
+    }
+    
+    /// Apply LifeDeck subtle shadow
+    func lifeDeckSubtleShadow() -> some View {
+        self.shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
+    }
+    
+    /// Apply LifeDeck strong shadow
+    func lifeDeckStrongShadow() -> some View {
+        self.shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
+    }
+}
+
+// MARK: - Color Accessibility
+extension Color {
+    /// Check if color is light (for determining text color)
+    var isLight: Bool {
+        let uiColor = UIColor(self)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        
+        let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+        return luminance > 0.7
+    }
+    
+    /// Get contrasting text color
+    var contrastingTextColor: Color {
+        return isLight ? .lifeDeckTextPrimary : .white
+    }
+}
+
+// MARK: - Color Constants for Asset Catalog
+/*
+ Add these colors to your Assets.xcassets:
+ 
+ LifeDeckPrimary: #4A90E2
+ LifeDeckSecondary: #50E3C2
+ LifeDeckAccent: #7B68EE
+ LifeDeckBackground: #F9FAFB
+ LifeDeckCardBackground: #FFFFFF
+ LifeDeckSurfaceBackground: #F5F7FA
+ LifeDeckTextPrimary: #1C1C1E
+ LifeDeckTextSecondary: #6E6E73
+ LifeDeckTextTertiary: #9B9B9B
+ LifeDeckHealth: #FF6B6B
+ LifeDeckFinance: #4ECDC4
+ LifeDeckProductivity: #45B7D1
+ LifeDeckMindfulness: #96CEB4
+ LifeDeckSuccess: #27AE60
+ LifeDeckWarning: #F39C12
+ LifeDeckError: #E74C3C
+ LifeDeckInfo: #3498DB
+ LifeDeckGradientStart: #667eea
+ LifeDeckGradientEnd: #764ba2
+ LifeDeckPremiumGold: #FFD700
+ LifeDeckPremiumSilver: #C0C0C0
+ */

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>LifeDeck</string>
+	<key>CFBundleName</key>
+	<string>LifeDeck</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>AccentColor</string>
+		<key>UIImageName</key>
+		<string></string>
+	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>LifeDeck uses HealthKit data to provide personalized health coaching recommendations and track your wellness progress.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>LifeDeck can write health data to help track your progress towards wellness goals.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>LifeDeck accesses your calendar to provide context-aware coaching recommendations based on your schedule.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>LifeDeck uses your location to provide location-aware coaching tips and recommendations.</string>
+</dict>
+</plist>

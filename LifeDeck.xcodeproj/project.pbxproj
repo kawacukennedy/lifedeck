@@ -1,0 +1,483 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1001001001001001001001A /* LifeDeckApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001B /* LifeDeckApp.swift */; };
+		A1001001001001001001001C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001D /* ContentView.swift */; };
+		A1001001001001001001001E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001F /* User.swift */; };
+		A1001001001001001001002A /* CoachingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001002B /* CoachingCard.swift */; };
+		A1001001001001001001002C /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001002D /* Subscription.swift */; };
+		A1001001001001001001002E /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001002F /* OnboardingView.swift */; };
+		A1001001001001001001003A /* OnboardingSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001003B /* OnboardingSteps.swift */; };
+		A1001001001001001001003C /* DeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001003D /* DeckView.swift */; };
+		A1001001001001001001003E /* CoachingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001003F /* CoachingCardView.swift */; };
+		A1001001001001001001004A /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001004B /* DeckViewModel.swift */; };
+		A1001001001001001001004C /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001004D /* DashboardView.swift */; };
+		A1001001001001001001004E /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001004F /* DashboardViewModel.swift */; };
+		A1001001001001001001005A /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001005B /* ProfileView.swift */; };
+		A1001001001001001001005C /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001005D /* ProfileViewModel.swift */; };
+		A1001001001001001001005E /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001005F /* PaywallView.swift */; };
+		A1001001001001001001006A /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001006B /* SubscriptionManager.swift */; };
+		A1001001001001001001006C /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001006D /* ButtonStyles.swift */; };
+		A1001001001001001001006E /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001006F /* ColorExtensions.swift */; };
+		A1001001001001001001007A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007B /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A1001001001001001001000A /* LifeDeck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifeDeck.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1001001001001001001001B /* LifeDeckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeDeckApp.swift; sourceTree = "<group>"; };
+		A1001001001001001001001D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A1001001001001001001001F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A1001001001001001001002B /* CoachingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachingCard.swift; sourceTree = "<group>"; };
+		A1001001001001001001002D /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
+		A1001001001001001001002F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A1001001001001001001003B /* OnboardingSteps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSteps.swift; sourceTree = "<group>"; };
+		A1001001001001001001003D /* DeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckView.swift; sourceTree = "<group>"; };
+		A1001001001001001001003F /* CoachingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachingCardView.swift; sourceTree = "<group>"; };
+		A1001001001001001001004B /* DeckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckViewModel.swift; sourceTree = "<group>"; };
+		A1001001001001001001004D /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A1001001001001001001004F /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		A1001001001001001001005B /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		A1001001001001001001005D /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		A1001001001001001001005F /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		A1001001001001001001006B /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		A1001001001001001001006D /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
+		A1001001001001001001006F /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
+		A1001001001001001001007B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1001001001001001001007C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1001001001001001001000B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1001001001001001001000C /* LifeDeck */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001001B /* LifeDeckApp.swift */,
+				A1001001001001001001001D /* ContentView.swift */,
+				A1001001001001001001008A /* Models */,
+				A1001001001001001001008B /* Views */,
+				A1001001001001001001008C /* ViewModels */,
+				A1001001001001001001008D /* Services */,
+				A1001001001001001001008E /* Common */,
+				A1001001001001001001007B /* Assets.xcassets */,
+				A1001001001001001001007C /* Info.plist */,
+			);
+			path = LifeDeck;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001000D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001000A /* LifeDeck.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001000E /* LifeDeck */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001000C /* LifeDeck */,
+				A1001001001001001001000D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1001001001001001001008A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001001F /* User.swift */,
+				A1001001001001001001002B /* CoachingCard.swift */,
+				A1001001001001001001002D /* Subscription.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001008B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001008F /* Onboarding */,
+				A1001001001001001001009A /* Deck */,
+				A1001001001001001001009B /* Dashboard */,
+				A1001001001001001001009C /* Profile */,
+				A1001001001001001001009D /* Paywall */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001008C /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001004B /* DeckViewModel.swift */,
+				A1001001001001001001004F /* DashboardViewModel.swift */,
+				A1001001001001001001005D /* ProfileViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001008D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001006B /* SubscriptionManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001008E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001006D /* ButtonStyles.swift */,
+				A1001001001001001001006F /* ColorExtensions.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001008F /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001002F /* OnboardingView.swift */,
+				A1001001001001001001003B /* OnboardingSteps.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001009A /* Deck */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001003D /* DeckView.swift */,
+				A1001001001001001001003F /* CoachingCardView.swift */,
+			);
+			path = Deck;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001009B /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001004D /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001009C /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001005B /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		A1001001001001001001009D /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				A1001001001001001001005F /* PaywallView.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1001001001001001001000F /* LifeDeck */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1001001001001001001009E /* Build configuration list for PBXNativeTarget "LifeDeck" */;
+			buildPhases = (
+				A1001001001001001001009F /* Sources */,
+				A1001001001001001001000B /* Frameworks */,
+				A100100100100100100100AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LifeDeck;
+			productName = LifeDeck;
+			productReference = A1001001001001001001000A /* LifeDeck.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A100100100100100100100AB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A1001001001001001001000F = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A100100100100100100100AC /* Build configuration list for PBXProject "LifeDeck" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1001001001001001001000E /* LifeDeck */;
+			productRefGroup = A1001001001001001001000D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1001001001001001001000F /* LifeDeck */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A100100100100100100100AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1001001001001001001007A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1001001001001001001009F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1001001001001001001001A /* LifeDeckApp.swift in Sources */,
+				A1001001001001001001001C /* ContentView.swift in Sources */,
+				A1001001001001001001001E /* User.swift in Sources */,
+				A1001001001001001001002A /* CoachingCard.swift in Sources */,
+				A1001001001001001001002C /* Subscription.swift in Sources */,
+				A1001001001001001001002E /* OnboardingView.swift in Sources */,
+				A1001001001001001001003A /* OnboardingSteps.swift in Sources */,
+				A1001001001001001001003C /* DeckView.swift in Sources */,
+				A1001001001001001001003E /* CoachingCardView.swift in Sources */,
+				A1001001001001001001004A /* DeckViewModel.swift in Sources */,
+				A1001001001001001001004C /* DashboardView.swift in Sources */,
+				A1001001001001001001004E /* DashboardViewModel.swift in Sources */,
+				A1001001001001001001005A /* ProfileView.swift in Sources */,
+				A1001001001001001001005C /* ProfileViewModel.swift in Sources */,
+				A1001001001001001001005E /* PaywallView.swift in Sources */,
+				A1001001001001001001006A /* SubscriptionManager.swift in Sources */,
+				A1001001001001001001006C /* ButtonStyles.swift in Sources */,
+				A1001001001001001001006E /* ColorExtensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A100100100100100100100AD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A100100100100100100100AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJCENABLE_NS_ASSERTIONS = NO;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A100100100100100100100AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LifeDeck/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lifedeck.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A100100100100100100100BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LifeDeck/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lifedeck.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1001001001001001001009E /* Build configuration list for PBXNativeTarget "LifeDeck" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A100100100100100100100AF /* Debug */,
+				A100100100100100100100BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A100100100100100100100AC /* Build configuration list for PBXProject "LifeDeck" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A100100100100100100100AD /* Debug */,
+				A100100100100100100100AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A100100100100100100100AB /* Project object */;
+}
