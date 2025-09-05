@@ -100,32 +100,40 @@ struct LifeDeckPremiumButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 17, weight: .bold, design: .rounded))
-            .foregroundColor(.white)
-            .frame(minWidth: 200, minHeight: 50)
+            .foregroundColor(.lifeDeckTextPrimary)
+            .frame(minWidth: 200, minHeight: 56)
             .background(
-                RoundedRectangle(cornerRadius: 25)
+                RoundedRectangle(cornerRadius: 16)
                     .fill(
                         LinearGradient(
-                            gradient: Gradient(colors: [Color.lifeDeckPremiumGold, Color.orange]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            gradient: Gradient(colors: [
+                                Color.lifeDeckPremiumGradientStart,
+                                Color.lifeDeckPremiumGradientEnd
+                            ]),
+                            startPoint: .leading,
+                            endPoint: .trailing
                         )
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 25)
-                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.lifeDeckTextPrimary.opacity(0.2), lineWidth: 1)
                     )
             )
             .overlay(
-                // Glow effect
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color.lifeDeckPremiumGold.opacity(isGlowing ? 0.6 : 0.2), lineWidth: 3)
-                    .blur(radius: isGlowing ? 6 : 2)
-                    .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isGlowing)
+                // Outer glow effect
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.lifeDeckPrimary.opacity(isGlowing ? 0.8 : 0.4), lineWidth: 2)
+                    .blur(radius: isGlowing ? 8 : 4)
+                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: isGlowing)
             )
-            .lifeDeckStrongShadow()
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .shadow(
+                color: Color.lifeDeckPrimary.opacity(0.3),
+                radius: isGlowing ? 12 : 6,
+                x: 0,
+                y: 0
+            )
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
             .onAppear {
                 isGlowing = true
             }

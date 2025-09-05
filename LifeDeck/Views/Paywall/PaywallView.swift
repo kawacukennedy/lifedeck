@@ -8,114 +8,184 @@ struct PaywallView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 16) {
+                VStack(spacing: 32) {
+                    // Header with gradient background
+                    VStack(spacing: 20) {
                         Image(systemName: "crown.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.lifeDeckPremiumGold)
+                            .font(.system(size: 80))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.lifeDeckPremiumGold,
+                                        Color.lifeDeckPremiumGradientEnd
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                         
-                        Text("Unlock Premium")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
-                        Text("Get unlimited access to all premium features")
-                            .font(.body)
-                            .foregroundColor(.secondary)
+                        Text("Unlock Your Full Potential")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundColor(.lifeDeckTextPrimary)
                             .multilineTextAlignment(.center)
+                        
+                        Text("with LifeDeck Premium")
+                            .font(.system(size: 20, weight: .medium, design: .rounded))
+                            .foregroundColor(.lifeDeckSecondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Text("Get unlimited coaching, advanced insights, and full integrations")
+                            .font(.body)
+                            .foregroundColor(.lifeDeckTextSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
                     }
-                    .padding()
+                    .padding(.vertical, 20)
                     
-                    // Feature Comparison
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Premium Features")
-                            .font(.headline)
+                    // Comparison Table
+                    VStack(spacing: 16) {
+                        Text("Free vs Premium")
+                            .font(.system(size: 22, weight: .bold, design: .rounded))
+                            .foregroundColor(.lifeDeckTextPrimary)
                             .padding(.horizontal)
                         
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 1), spacing: 12) {
-                            ForEach(SubscriptionComparison.premiumOnlyFeatures, id: \.name) { feature in
-                                FeatureRow(
-                                    icon: feature.icon,
-                                    title: feature.name,
-                                    description: feature.description
-                                )
-                            }
+                        // Comparison rows
+                        VStack(spacing: 8) {
+                            ComparisonRow(
+                                feature: "Daily coaching cards",
+                                freeValue: "5 cards/day",
+                                premiumValue: "Unlimited cards"
+                            )
+                            ComparisonRow(
+                                feature: "Dashboard analytics",
+                                freeValue: "Basic charts",
+                                premiumValue: "Advanced insights + trends"
+                            )
+                            ComparisonRow(
+                                feature: "AI personalization",
+                                freeValue: "Basic",
+                                premiumValue: "Advanced + contextual"
+                            )
+                            ComparisonRow(
+                                feature: "Health/Finance sync",
+                                freeValue: "❌",
+                                premiumValue: "✅ Full integrations"
+                            )
+                            ComparisonRow(
+                                feature: "Custom rituals",
+                                freeValue: "❌",
+                                premiumValue: "✅ Personalized routines"
+                            )
+                            ComparisonRow(
+                                feature: "Premium badges",
+                                freeValue: "❌",
+                                premiumValue: "✅ Exclusive rewards"
+                            )
+                            ComparisonRow(
+                                feature: "Priority support",
+                                freeValue: "❌",
+                                premiumValue: "✅ 24/7 support"
+                            )
                         }
                         .padding(.horizontal)
                     }
                     
-                    // Premium Button
-                    Button("Start Premium - \(selectedPeriod == .monthly ? "$7.99/month" : "$79.99/year")") {
-                        Task {
-                            var purchaseSuccessful = false
-                            if selectedPeriod == .monthly,
-                               let product = subscriptionManager.monthlyPremiumProduct {
-                                purchaseSuccessful = await subscriptionManager.purchaseSubscription(product)
-                            } else if selectedPeriod == .yearly,
-                                      let product = subscriptionManager.yearlyPremiumProduct {
-                                purchaseSuccessful = await subscriptionManager.purchaseSubscription(product)
-                            }
-                            
-                            // Only dismiss if purchase was successful
-                            if purchaseSuccessful {
-                                dismiss()
+                    // Premium CTA with glow
+                    VStack(spacing: 16) {
+                        Button("Upgrade to Premium") {
+                            Task {
+                                var purchaseSuccessful = false
+                                if selectedPeriod == .monthly,
+                                   let product = subscriptionManager.monthlyPremiumProduct {
+                                    purchaseSuccessful = await subscriptionManager.purchaseSubscription(product)
+                                } else if selectedPeriod == .yearly,
+                                          let product = subscriptionManager.yearlyPremiumProduct {
+                                    purchaseSuccessful = await subscriptionManager.purchaseSubscription(product)
+                                }
+                                
+                                // Only dismiss if purchase was successful
+                                if purchaseSuccessful {
+                                    dismiss()
+                                }
                             }
                         }
+                        .buttonStyle(.lifeDeckPremium)
+                        .padding(.horizontal)
+                        
+                        // Pricing info
+                        Text("$7.99/month • Cancel anytime via Apple ID • No ads")
+                            .font(.caption)
+                            .foregroundColor(.lifeDeckTextSecondary)
+                            .multilineTextAlignment(.center)
                     }
-                    .buttonStyle(.lifeDeckPremium)
-                    .padding()
-                    
-                    // Terms
-                    Text("Secure payment via Apple ID • Cancel anytime")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.bottom)
                 }
             }
             .background(Color.lifeDeckBackground.ignoresSafeArea())
             .navigationTitle("Premium")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         dismiss()
                     }
+                    .foregroundColor(.lifeDeckTextPrimary)
                 }
             }
         }
     }
 }
 
-struct FeatureRow: View {
-    let icon: String
-    let title: String
-    let description: String
+struct ComparisonRow: View {
+    let feature: String
+    let freeValue: String
+    let premiumValue: String
     
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            Image(systemName: icon)
-                .foregroundColor(.lifeDeckPrimary)
-                .font(.title2)
-                .frame(width: 32, height: 32)
+        HStack(spacing: 16) {
+            // Feature name
+            Text(feature)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.lifeDeckTextPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.body)
-                    .fontWeight(.medium)
-                    .foregroundColor(.lifeDeckTextPrimary)
+            // Free tier
+            VStack(alignment: .center) {
+                Text("Free")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.lifeDeckTextTertiary)
+                    .textCase(.uppercase)
                 
-                Text(description)
-                    .font(.caption)
+                Text(freeValue)
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.lifeDeckTextSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
             }
+            .frame(width: 80)
             
-            Spacer()
+            // Premium tier
+            VStack(alignment: .center) {
+                Text("Premium")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.lifeDeckSecondary)
+                    .textCase(.uppercase)
+                
+                Text(premiumValue)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.lifeDeckTextPrimary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(width: 120)
         }
-        .padding()
-        .background(Color.lifeDeckCardBackground)
-        .cornerRadius(12)
-        .lifeDeckSubtleShadow()
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.lifeDeckCardBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.lifeDeckCardBorder, lineWidth: 1)
+                )
+        )
     }
 }

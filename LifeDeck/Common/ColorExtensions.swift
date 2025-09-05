@@ -4,40 +4,45 @@ import UIKit
 // MARK: - LifeDeck Color Palette
 extension Color {
     
-    // MARK: - Primary Colors
-    static let lifeDeckPrimary = Color.hex("4A90E2") // Primary Blue
-    static let lifeDeckSecondary = Color.hex("50E3C2") // Teal
-    static let lifeDeckAccent = Color.hex("7B68EE") // Medium Slate Blue
+    // MARK: - Primary Colors (Dim, Calming Palette)
+    static let lifeDeckPrimary = Color.hex("3B6BA5") // Primary Blue - trust and clarity
+    static let lifeDeckSecondary = Color.hex("3AA79D") // Secondary Teal - balance and vitality
+    static let lifeDeckAccent = Color.hex("4CAF50") // Success/Highlights - soft green
     
-    // MARK: - Background Colors
-    static let lifeDeckBackground = Color.hex("F9FAFB") // Light Gray
-    static let lifeDeckCardBackground = Color.hex("FFFFFF") // White
-    static let lifeDeckSurfaceBackground = Color.hex("F5F7FA") // Light Surface
+    // MARK: - Background Colors (Dark Mode First)
+    static let lifeDeckBackground = Color.hex("1E1E1E") // Dim near-black background
+    static let lifeDeckCardBackground = Color.hex("2A2A2A") // Slightly lighter for contrast
+    static let lifeDeckSurfaceBackground = Color.hex("2A2A2A") // Same as card for consistency
     
     // MARK: - Text Colors
-    static let lifeDeckTextPrimary = Color.hex("1C1C1E") // Dark
-    static let lifeDeckTextSecondary = Color.hex("6E6E73") // Medium Gray
-    static let lifeDeckTextTertiary = Color.hex("9B9B9B") // Light Gray
+    static let lifeDeckTextPrimary = Color.hex("F2F2F2") // Off-white, not harsh
+    static let lifeDeckTextSecondary = Color.hex("9A9A9A") // Dimmed gray
+    static let lifeDeckTextTertiary = Color.hex("6A6A6A") // Darker gray for subtle text
     
-    // MARK: - Domain Colors
-    static let lifeDeckHealth = Color.hex("FF6B6B") // Coral Red
-    static let lifeDeckFinance = Color.hex("4ECDC4") // Turquoise
-    static let lifeDeckProductivity = Color.hex("45B7D1") // Sky Blue
-    static let lifeDeckMindfulness = Color.hex("96CEB4") // Sage Green
+    // MARK: - Domain Colors (Harmonized with new palette)
+    static let lifeDeckHealth = Color.hex("E57373") // Soft red
+    static let lifeDeckFinance = Color.hex("66BB6A") // Soft green
+    static let lifeDeckProductivity = Color.hex("64B5F6") // Soft blue
+    static let lifeDeckMindfulness = Color.hex("BA68C8") // Soft purple
     
     // MARK: - Status Colors
-    static let lifeDeckSuccess = Color.hex("27AE60") // Green
-    static let lifeDeckWarning = Color.hex("F39C12") // Orange
-    static let lifeDeckError = Color.hex("E74C3C") // Red
-    static let lifeDeckInfo = Color.hex("3498DB") // Blue
+    static let lifeDeckSuccess = Color.hex("4CAF50") // Soft green for streaks, goals
+    static let lifeDeckWarning = Color.hex("FFB84D") // Muted amber for alerts, nudges
+    static let lifeDeckError = Color.hex("F44336") // Subtle red for errors
+    static let lifeDeckInfo = Color.hex("64B5F6") // Soft info blue
     
-    // MARK: - Gradient Colors
-    static let lifeDeckGradientStart = Color.hex("667eea") // Purple Blue
-    static let lifeDeckGradientEnd = Color.hex("764ba2") // Purple
+    // MARK: - Gradient Colors (Premium CTA)
+    static let lifeDeckGradientStart = Color.hex("3B6BA5") // Primary Blue
+    static let lifeDeckGradientEnd = Color.hex("3AA79D") // Secondary Teal
     
     // MARK: - Premium Colors
-    static let lifeDeckPremiumGold = Color.hex("FFD700") // Gold
-    static let lifeDeckPremiumSilver = Color.hex("C0C0C0") // Silver
+    static let lifeDeckPremiumGold = Color.hex("FFD700") // Premium gold accent
+    static let lifeDeckPremiumGradientStart = Color.hex("3B6BA5") // Primary Blue for gradients
+    static let lifeDeckPremiumGradientEnd = Color.hex("3AA79D") // Secondary Teal for gradients
+    
+    // MARK: - Interactive Elements
+    static let lifeDeckCardBorder = Color.hex("3A3A3A") // Subtle border color
+    static let lifeDeckSeparator = Color.hex("333333") // Divider lines
     
     // MARK: - Utility Methods
     
