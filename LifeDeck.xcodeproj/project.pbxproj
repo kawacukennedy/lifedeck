@@ -28,6 +28,7 @@
 		A1001001001001001001007G /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007H /* DesignSystem.swift */; };
 		A1001001001001001001008G /* LifeDeckShowcaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001008H /* LifeDeckShowcaseView.swift */; };
 		A1001001001001001001009G /* QuickTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001009H /* QuickTestView.swift */; };
+		A100100100100100100100AG /* PreviewTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100AH /* PreviewTestView.swift */; };
 		A1001001001001001001007A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007B /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +55,7 @@
 		A1001001001001001001007H /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		A1001001001001001001008H /* LifeDeckShowcaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeDeckShowcaseView.swift; sourceTree = "<group>"; };
 		A1001001001001001001009H /* QuickTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickTestView.swift; sourceTree = "<group>"; };
+		A100100100100100100100AH /* PreviewTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewTestView.swift; sourceTree = "<group>"; };
 		A1001001001001001001007B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1001001001001001001007C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -121,6 +123,7 @@
 				A1001001001001001001009D /* Paywall */,
 				A1001001001001001001008H /* LifeDeckShowcaseView.swift */,
 				A1001001001001001001009H /* QuickTestView.swift */,
+				A100100100100100100100AH /* PreviewTestView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				A1001001001001001001007G /* DesignSystem.swift in Sources */,
 				A1001001001001001001008G /* LifeDeckShowcaseView.swift in Sources */,
 				A1001001001001001001009G /* QuickTestView.swift in Sources */,
+				A100100100100100100100AG /* PreviewTestView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

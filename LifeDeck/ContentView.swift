@@ -267,33 +267,9 @@ extension ContentView {
     }
 }
 
-// MARK: - Preview
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        // Lightweight preview to prevent timeout
-        NavigationView {
-            VStack(spacing: 20) {
-                Text("🃏 LifeDeck")
-                    .font(DesignSystem.Typography.largeTitle)
-                    .foregroundColor(.lifeDeckTextPrimary)
-                
-                Text("AI-Powered Micro-Coach")
-                    .font(DesignSystem.Typography.headline)
-                    .foregroundColor(.lifeDeckTextSecondary)
-                
-                Text("Preview Loading...")
-                    .font(DesignSystem.Typography.body)
-                    .foregroundColor(.lifeDeckTextTertiary)
-            }
-            .fillWidth()
-            .responsiveCardPadding()
-            .background(Color.lifeDeckBackground.ignoresSafeArea())
-            .navigationTitle("LifeDeck")
-        }
-        .previewDevice("iPhone 15 Pro")
-        .previewDisplayName("LifeDeck Preview")
-        .preferredColorScheme(.dark)
-    }
+// MARK: - Preview Disabled
+// ContentView preview disabled to prevent app launch timeout
+// Use QuickTestView.swift for design system testing instead
     
     static var sampleUser: User {
         let user = User()
