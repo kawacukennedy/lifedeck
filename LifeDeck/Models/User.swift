@@ -254,5 +254,3 @@ class User: ObservableObject, Codable {
     }
 }
 
-// MARK: - Extensions
-extension LifeDomain: Codable {}
