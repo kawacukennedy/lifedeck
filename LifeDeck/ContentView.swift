@@ -270,35 +270,6 @@ extension ContentView {
 // MARK: - Preview Disabled
 // ContentView preview disabled to prevent app launch timeout
 // Use QuickTestView.swift for design system testing instead
-    
-    static var sampleUser: User {
-        let user = User()
-        user.hasCompletedOnboarding = true
-        user.name = "Alex Johnson"
-        user.email = "alex@example.com"
-        user.goals = [
-            UserGoal(domain: .health, description: "Walk 10,000 steps daily", targetValue: 10000, currentValue: 7500, unit: "steps"),
-            UserGoal(domain: .finance, description: "Save $500 monthly", targetValue: 500, currentValue: 250, unit: "dollars"),
-            UserGoal(domain: .productivity, description: "Complete 3 tasks daily", targetValue: 3, currentValue: 2, unit: "tasks"),
-            UserGoal(domain: .mindfulness, description: "Meditate 10 minutes daily", targetValue: 10, currentValue: 8, unit: "minutes")
-        ]
-        user.progress.healthScore = 75
-        user.progress.financeScore = 50
-        user.progress.productivityScore = 67
-        user.progress.mindfulnessScore = 80
-        user.progress.updateLifeScore()
-        user.progress.currentStreak = 5
-        user.progress.lifePoints = 450
-        user.progress.totalCardsCompleted = 45
-        return user
-    }
-    
-    static var newUser: User {
-        let user = User()
-        user.hasCompletedOnboarding = false
-        return user
-    }
-}
 
 // MARK: - App-wide Helpers
 extension ContentView {
@@ -333,40 +304,3 @@ extension ContentView {
     }
 }
 
-// MARK: - App Lifecycle Handling
-extension ContentView {
-    /// Handle app becoming active
-    private func handleAppBecameActive() {
-        // Refresh subscription status
-        Task {
-            await subscriptionManager.refreshSubscriptionStatus()
-        }
-        
-        // Check for expired snoozed cards
-        // This would typically be handled by a view model
-        
-        // Update streak if needed
-        updateDailyStreak()
-    }
-    
-    /// Update daily streak based on last active date
-    private func updateDailyStreak() {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        
-        guard let lastActiveDate = user.progress.lastActiveDate else {
-            // First time opening the app
-            return
-        }
-        
-        let lastActive = calendar.startOfDay(for: lastActiveDate)
-        let daysBetween = calendar.dateComponents([.day], from: lastActive, to: today).day ?? 0
-        
-        if daysBetween > 1 {
-            // Streak broken - reset to 0
-            user.progress.currentStreak = 0
-        }
-        // If daysBetween == 1, streak continues
-        // If daysBetween == 0, same day
-    }
-}
