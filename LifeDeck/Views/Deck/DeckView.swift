@@ -5,26 +5,87 @@ struct DeckView: View {
     @StateObject private var viewModel = DeckViewModel()
     
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Daily Coaching Cards")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
+        ScrollView {
+            VStack(spacing: DesignSystem.Spacing.betweenSections) {
                 
-                Text("Coming Soon: Swipeable coaching cards")
-                    .foregroundColor(.secondary)
-                    .padding()
-                
-                Button("Complete Sample Card") {
-                    user.completeCard()
+                // Header
+                VStack(spacing: DesignSystem.Spacing.md) {
+                    Text("🃏 Daily Coaching Cards")
+                        .font(DesignSystem.Typography.largeTitle)
+                        .foregroundColor(.lifeDeckTextPrimary)
+                    
+                    Text("Swipeable micro-coaching to transform your life")
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(.lifeDeckTextSecondary)
+                        .multilineTextAlignment(.center)
                 }
-                .buttonStyle(.lifeDeckPrimary())
-                .padding()
+                .responsiveCardPadding()
                 
-                Spacer()
+                // Sample Card
+                VStack(spacing: DesignSystem.Spacing.md) {
+                    Text("🏃 Take a 5-Minute Walk")
+                        .font(DesignSystem.Typography.title)
+                        .foregroundColor(.lifeDeckTextPrimary)
+                    
+                    Text("Step outside and take a quick walk to boost your energy and clear your mind.")
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(.lifeDeckTextSecondary)
+                        .multilineTextAlignment(.center)
+                    
+                    HStack(spacing: DesignSystem.Spacing.md) {
+                        Button("Skip") {
+                            // Handle skip
+                        }
+                        .buttonStyle(.iosSecondary)
+                        
+                        Button("Complete") {
+                            user.completeCard()
+                        }
+                        .buttonStyle(.iosPrimary)
+                    }
+                }
+                .responsiveCardPadding()
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(Color.lifeDeckCardBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24)
+                                .stroke(Color.lifeDeckHealth.opacity(0.3), lineWidth: 1)
+                        )
+                )
+                .iosNativeShadow()
+                
+                // Stats
+                HStack {
+                    statCard("Streak", "\(user.progress.currentStreak)", .lifeDeckSuccess)
+                    statCard("Points", "\(user.progress.lifePoints)", .lifeDeckWarning)
+                    statCard("Cards", "\(user.progress.totalCardsCompleted)", .lifeDeckPrimary)
+                }
+                
+                Spacer(minLength: DesignSystem.Spacing.xxl)
             }
-            .background(Color.lifeDeckBackground.ignoresSafeArea())
+            .responsiveHorizontalPadding()
         }
+        .background(Color.lifeDeckBackground.ignoresSafeArea())
+        .navigationTitle("Deck")
+        .navigationBarTitleDisplayMode(.large)
+    }
+    
+    private func statCard(_ title: String, _ value: String, _ color: Color) -> some View {
+        VStack(spacing: DesignSystem.Spacing.xs) {
+            Text(value)
+                .font(DesignSystem.Typography.title)
+                .foregroundColor(color)
+            
+            Text(title)
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(.lifeDeckTextSecondary)
+        }
+        .fillWidth()
+        .responsiveCardPadding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.lifeDeckCardBackground)
+        )
     }
 }

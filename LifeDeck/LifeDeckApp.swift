@@ -22,6 +22,10 @@ struct LifeDeckApp: App {
                     Task {
                         await subscriptionManager.initialize()
                     }
+                    // Setup debug data for testing
+                    #if DEBUG
+                    setupDebugData()
+                    #endif
                 }
                 .onChange(of: user.hasCompletedOnboarding) { _ in
                     // Save user data when onboarding status changes
@@ -116,23 +120,29 @@ extension LifeDeckApp {
 #if DEBUG
 extension LifeDeckApp {
     private func setupDebugData() {
-        // Only for debug builds - populate with sample data
-        if user.goals.isEmpty && !user.hasCompletedOnboarding {
+        // Debug: Skip onboarding and show main app content
+        user.hasCompletedOnboarding = true
+        user.name = "Alex Johnson"
+        user.email = "alex@lifedeck.app"
+        
+        // Populate with sample data for testing
+        if user.goals.isEmpty {
             user.goals = [
                 UserGoal(domain: .health, description: "Walk 10,000 steps daily", targetValue: 10000, currentValue: 6500, unit: "steps"),
                 UserGoal(domain: .finance, description: "Save $500 monthly", targetValue: 500, currentValue: 150, unit: "dollars"),
                 UserGoal(domain: .productivity, description: "Complete 3 important tasks daily", targetValue: 3, currentValue: 1, unit: "tasks"),
                 UserGoal(domain: .mindfulness, description: "Meditate 10 minutes daily", targetValue: 10, currentValue: 5, unit: "minutes")
             ]
-            
-            user.progress.healthScore = 65
-            user.progress.financeScore = 30
-            user.progress.productivityScore = 45
-            user.progress.mindfulnessScore = 50
-            user.progress.updateLifeScore()
-            user.progress.currentStreak = 3
-            user.progress.lifePoints = 180
         }
+            
+        user.progress.healthScore = 65
+        user.progress.financeScore = 30
+        user.progress.productivityScore = 45
+        user.progress.mindfulnessScore = 50
+        user.progress.updateLifeScore()
+        user.progress.currentStreak = 3
+        user.progress.lifePoints = 180
+        user.progress.totalCardsCompleted = 15
     }
 }
 #endif
