@@ -5,87 +5,65 @@ struct DeckView: View {
     @StateObject private var viewModel = DeckViewModel()
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: DesignSystem.Spacing.betweenSections) {
-                
-                // Header
-                VStack(spacing: DesignSystem.Spacing.md) {
-                    Text("🃏 Daily Coaching Cards")
-                        .font(DesignSystem.Typography.largeTitle)
-                        .foregroundColor(.lifeDeckTextPrimary)
-                    
-                    Text("Swipeable micro-coaching to transform your life")
-                        .font(DesignSystem.Typography.body)
-                        .foregroundColor(.lifeDeckTextSecondary)
-                        .multilineTextAlignment(.center)
-                }
-                .responsiveCardPadding()
-                
-                // Sample Card
-                VStack(spacing: DesignSystem.Spacing.md) {
-                    Text("🏃 Take a 5-Minute Walk")
-                        .font(DesignSystem.Typography.title)
-                        .foregroundColor(.lifeDeckTextPrimary)
-                    
-                    Text("Step outside and take a quick walk to boost your energy and clear your mind.")
-                        .font(DesignSystem.Typography.body)
-                        .foregroundColor(.lifeDeckTextSecondary)
-                        .multilineTextAlignment(.center)
-                    
-                    HStack(spacing: DesignSystem.Spacing.md) {
-                        Button("Skip") {
-                            // Handle skip
-                        }
-                        .buttonStyle(.iosSecondary)
-                        
-                        Button("Complete") {
-                            user.completeCard()
-                        }
-                        .buttonStyle(.iosPrimary)
-                    }
-                }
-                .responsiveCardPadding()
-                .background(
-                    RoundedRectangle(cornerRadius: 24)
-                        .fill(Color.lifeDeckCardBackground)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 24)
-                                .stroke(Color.lifeDeckHealth.opacity(0.3), lineWidth: 1)
-                        )
-                )
-                .iosNativeShadow()
-                
-                // Stats
-                HStack {
-                    statCard("Streak", "\(user.progress.currentStreak)", .lifeDeckSuccess)
-                    statCard("Points", "\(user.progress.lifePoints)", .lifeDeckWarning)
-                    statCard("Cards", "\(user.progress.totalCardsCompleted)", .lifeDeckPrimary)
-                }
-                
-                Spacer(minLength: DesignSystem.Spacing.xxl)
+        VStack(spacing: 20) {
+            Text("🃏 LifeDeck")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+            
+            Text("AI-Powered Micro-Coach")
+                .font(.title2)
+                .foregroundColor(.gray)
+            
+            Text("Your daily coaching cards await!")
+                .font(.body)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .padding()
+            
+            Button("Complete Sample Card") {
+                user.completeCard()
             }
-            .responsiveHorizontalPadding()
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            
+            HStack {
+                VStack {
+                    Text("\(user.progress.currentStreak)")
+                        .font(.title)
+                        .foregroundColor(.green)
+                    Text("Streak")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                
+                VStack {
+                    Text("\(user.progress.lifePoints)")
+                        .font(.title)
+                        .foregroundColor(.orange)
+                    Text("Points")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                
+                VStack {
+                    Text("\(user.progress.totalCardsCompleted)")
+                        .font(.title)
+                        .foregroundColor(.blue)
+                    Text("Cards")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+            }
+            
+            Spacer()
         }
-        .background(Color.lifeDeckBackground.ignoresSafeArea())
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black.ignoresSafeArea())
         .navigationTitle("Deck")
         .navigationBarTitleDisplayMode(.large)
-    }
-    
-    private func statCard(_ title: String, _ value: String, _ color: Color) -> some View {
-        VStack(spacing: DesignSystem.Spacing.xs) {
-            Text(value)
-                .font(DesignSystem.Typography.title)
-                .foregroundColor(color)
-            
-            Text(title)
-                .font(DesignSystem.Typography.caption)
-                .foregroundColor(.lifeDeckTextSecondary)
-        }
-        .fillWidth()
-        .responsiveCardPadding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.lifeDeckCardBackground)
-        )
     }
 }

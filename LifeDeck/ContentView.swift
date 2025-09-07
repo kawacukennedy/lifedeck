@@ -8,18 +8,11 @@ struct ContentView: View {
     @State private var showingPaywall = false
     
     var body: some View {
-        Group {
-            if !user.hasCompletedOnboarding {
-                // Show onboarding if not completed
-                OnboardingView()
-            } else {
-                // Main app interface
-                mainAppView
+        // Always show main app content for now
+        mainAppView
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
             }
-        }
-        .sheet(isPresented: $showingPaywall) {
-            PaywallView()
-        }
     }
     
     private var mainAppView: some View {
