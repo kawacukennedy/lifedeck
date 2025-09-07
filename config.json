@@ -1,0 +1,39 @@
+{
+  "project_requirements": {
+    "tech_stack": {
+      "runtime": "Node.js",
+      "ai_service": "OpenAI API for personalized messaging",
+      "email_service": "SendGrid API for sending emails",
+      "environment_variables": [
+        "OPENAI_API_KEY",
+        "SENDGRID_API_KEY",
+        "CAL_LINK"
+      ],
+      "features": [
+        "Insert Cal.com booking link dynamically in each email",
+        "Log sent emails into CSV or Google Sheet for tracking",
+        "Schedule automatic follow-ups for non-responders after 5 days",
+        "Automated CRON job to send 10 new emails every day at 10am",
+        "Error handling with retries and console logs for transparency"
+      ],
+      "design": {
+        "email_style": "Dim, professional aesthetic",
+        "color_palette": ["#0A2540", "#005F73", "#94A3B8"]
+      },
+      "deployment": {
+        "platforms": ["Vercel", "Railway", "Render"],
+        "instructions": "Include README with setup steps: install dependencies, configure .env, load CSV, deploy"
+      }
+    }
+  },
+  "code_structure": {
+    "functions": [
+      "loadProspects() - Load prospects from CSV",
+      "generateMessage(prospect) - Create personalized message with OpenAI",
+      "sendEmail(to, subject, body) - Send email with SendGrid",
+      "logActivity(prospect, status) - Save log to CSV/Google Sheet",
+      "scheduleFollowUps() - Handle 5-day follow-up emails",
+      "dailyJob() - Send 10 new emails at 10am daily"
+    ]
+  }
+}
