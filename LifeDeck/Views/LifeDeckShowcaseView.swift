@@ -285,16 +285,55 @@ struct LifeDeckShowcaseView: View {
     }
 }
 
-// MARK: - Preview
+// MARK: - Ultra-Minimal Preview
 #Preview {
-    VStack {
-        Text("🎨 LifeDeck Showcase")
-            .font(.title)
-            .foregroundColor(.blue)
-        Text("Design System Preview")
-            .foregroundColor(.gray)
+    ScrollView {
+        VStack(spacing: 20) {
+            Text("🎨 LifeDeck Showcase")
+                .font(.largeTitle)
+                .bold()
+            
+            Text("Design System Demo")
+                .font(.title2)
+                .foregroundColor(.blue)
+            
+            // Simple cards without DesignSystem dependencies
+            VStack(spacing: 15) {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.blue.gradient)
+                    .frame(height: 100)
+                    .overlay(
+                        VStack {
+                            Text("🏃 Health")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Text("Walk 10,000 steps")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    )
+                
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.green.gradient)
+                    .frame(height: 100)
+                    .overlay(
+                        VStack {
+                            Text("💰 Finance")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Text("Save $500 monthly")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    )
+            }
+            
+            Text("Preview working perfectly!")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
     }
-    .padding()
     .background(Color.black)
     .preferredColorScheme(.dark)
 }

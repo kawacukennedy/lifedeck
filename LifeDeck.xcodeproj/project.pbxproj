@@ -31,6 +31,7 @@
 		A100100100100100100100AG /* PreviewTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100AH /* PreviewTestView.swift */; };
 		A100100100100100100100BG /* MinimalPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100BH /* MinimalPreview.swift */; };
 		A100100100100100100100CG /* SimplePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100CH /* SimplePreview.swift */; };
+		A100100100100100100100EG /* ShowcasePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100EH /* ShowcasePreview.swift */; };
 		A1001001001001001001007A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007B /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +61,7 @@
 		A100100100100100100100AH /* PreviewTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewTestView.swift; sourceTree = "<group>"; };
 		A100100100100100100100BH /* MinimalPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimalPreview.swift; sourceTree = "<group>"; };
 		A100100100100100100100CH /* SimplePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreview.swift; sourceTree = "<group>"; };
+		A100100100100100100100EH /* ShowcasePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcasePreview.swift; sourceTree = "<group>"; };
 		A1001001001001001001007B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1001001001001001001007C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -130,6 +132,7 @@
 				A100100100100100100100AH /* PreviewTestView.swift */,
 				A100100100100100100100BH /* MinimalPreview.swift */,
 				A100100100100100100100CH /* SimplePreview.swift */,
+				A100100100100100100100EH /* ShowcasePreview.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 				A100100100100100100100AG /* PreviewTestView.swift in Sources */,
 				A100100100100100100100BG /* MinimalPreview.swift in Sources */,
 				A100100100100100100100CG /* SimplePreview.swift in Sources */,
+				A100100100100100100100EG /* ShowcasePreview.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
