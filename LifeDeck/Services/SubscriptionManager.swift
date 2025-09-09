@@ -221,6 +221,7 @@ enum SubscriptionError: LocalizedError {
     case unknownPurchaseResult
     case productNotFound
     case networkError
+    case storeKitError(Error)
     
     var errorDescription: String? {
         switch self {
@@ -234,6 +235,8 @@ enum SubscriptionError: LocalizedError {
             return "The requested subscription is not available."
         case .networkError:
             return "Please check your internet connection and try again."
+        case .storeKitError(let error):
+            return "StoreKit error: \(error.localizedDescription)"
         }
     }
 }

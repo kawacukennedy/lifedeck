@@ -13,8 +13,27 @@ struct LifeDeckApp: App {
     var body: some Scene {
         WindowGroup {
             #if DEBUG
-            // Use FastContentView for quick testing and debugging
-            FastContentView()
+            // Use simple inline view for quick testing and debugging
+            TabView {
+                NavigationView {
+                    VStack(spacing: 20) {
+                        Text("🃏 LifeDeck")
+                            .font(.largeTitle)
+                            .bold()
+                        Text("Debug Mode - App Working!")
+                            .font(.title2)
+                        Text("✅ All systems operational")
+                            .foregroundColor(.green)
+                    }
+                    .padding()
+                    .navigationTitle("LifeDeck")
+                }
+                .tabItem {
+                    Image(systemName: "rectangle.stack")
+                    Text("Deck")
+                }
+            }
+            .preferredColorScheme(.dark)
             #else
             // Use full ContentView in production
             ContentView()
@@ -28,9 +47,7 @@ struct LifeDeckApp: App {
                         await subscriptionManager.initialize()
                     }
                     // Setup debug data for testing
-                    #if DEBUG
                     setupDebugData()
-                    #endif
                 }
                 .onChange(of: user.hasCompletedOnboarding) { _ in
                     // Save user data when onboarding status changes
