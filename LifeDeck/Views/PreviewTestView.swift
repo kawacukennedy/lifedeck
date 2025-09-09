@@ -51,13 +51,15 @@ struct PreviewTestView: View {
             
             Text("No app launch required")
                 .font(.caption)
-                .foregroundColor(.tertiary)
+                .foregroundColor(Color.secondary)
             
             Spacer()
         }
         .padding(24)
         .background(.background)
     }
+
+}
 
 // MARK: - Static Preview Provider
 struct PreviewTestView_Previews: PreviewProvider {
