@@ -286,44 +286,15 @@ struct LifeDeckShowcaseView: View {
 }
 
 // MARK: - Preview
-struct LifeDeckShowcaseView_Previews: PreviewProvider {
-    static var previews: some View {
-        // Simplified preview
-        ScrollView {
-            VStack(spacing: DesignSystem.Spacing.md) {
-                Text("🎨 Design System")
-                    .font(DesignSystem.Typography.largeTitle)
-                    .foregroundColor(.lifeDeckTextPrimary)
-                
-                Text("LifeDeck Design Showcase")
-                    .font(DesignSystem.Typography.headline)
-                    .foregroundColor(.lifeDeckTextSecondary)
-                
-                // Sample domain card
-                HStack {
-                    Image(systemName: "figure.run")
-                        .font(.title2)
-                        .foregroundColor(.lifeDeckHealth)
-                    
-                    Text("Health Domain")
-                        .font(DesignSystem.Typography.headline)
-                        .foregroundColor(.lifeDeckTextPrimary)
-                    
-                    Spacer()
-                    
-                    Text("🏃")
-                        .font(.title2)
-                }
-                .responsiveCardPadding()
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.lifeDeckCardBackground)
-                )
-            }
-            .responsiveHorizontalPadding()
-        }
-        .background(Color.lifeDeckBackground.ignoresSafeArea())
-        .previewDevice("iPhone 15 Pro")
-        .preferredColorScheme(.dark)
+#Preview {
+    VStack {
+        Text("🎨 LifeDeck Showcase")
+            .font(.title)
+            .foregroundColor(.blue)
+        Text("Design System Preview")
+            .foregroundColor(.gray)
     }
+    .padding()
+    .background(Color.black)
+    .preferredColorScheme(.dark)
 }

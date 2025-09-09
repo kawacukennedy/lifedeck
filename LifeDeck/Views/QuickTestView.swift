@@ -185,10 +185,15 @@ struct QuickTestView: View {
 }
 
 // MARK: - Preview
-struct QuickTestView_Previews: PreviewProvider {
-    static var previews: some View {
-        QuickTestView()
-            .previewDevice("iPhone 15 Pro")
-            .preferredColorScheme(.dark)
+#Preview {
+    VStack {
+        Text("📊 QuickTest")
+            .font(.title)
+            .foregroundColor(.green)
+        Text("Design System Test")
+            .foregroundColor(.gray)
     }
+    .padding()
+    .background(Color.black)
+    .preferredColorScheme(.dark)
 }
