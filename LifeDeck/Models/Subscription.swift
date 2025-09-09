@@ -276,6 +276,33 @@ struct SubscriptionProducts {
     static let productIds: [String] = allProducts.map { $0.id }
 }
 
+// MARK: - Subscription Errors
+enum SubscriptionError: LocalizedError {
+    case verificationFailed
+    case purchasePending
+    case unknownPurchaseResult
+    case productNotFound
+    case networkError
+    case storeKitError(Error)
+    
+    var errorDescription: String? {
+        switch self {
+        case .verificationFailed:
+            return "Unable to verify purchase. Please try again."
+        case .purchasePending:
+            return "Purchase is pending approval."
+        case .unknownPurchaseResult:
+            return "Unknown purchase result."
+        case .productNotFound:
+            return "Product not found in App Store."
+        case .networkError:
+            return "Network error. Please check your connection."
+        case .storeKitError(let error):
+            return "StoreKit error: \(error.localizedDescription)"
+        }
+    }
+}
+
 // MARK: - Trial Information
 struct TrialInfo: Codable {
     let isEligible: Bool

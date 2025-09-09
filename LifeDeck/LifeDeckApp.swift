@@ -12,6 +12,11 @@ struct LifeDeckApp: App {
     
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            // Use FastContentView for quick testing and debugging
+            FastContentView()
+            #else
+            // Use full ContentView in production
             ContentView()
                 .environmentObject(user)
                 .environmentObject(subscriptionManager)
@@ -31,6 +36,7 @@ struct LifeDeckApp: App {
                     // Save user data when onboarding status changes
                     saveUserData()
                 }
+            #endif
         }
     }
     

@@ -256,7 +256,7 @@ extension ContentView {
     private func applyAppStyling<Content: View>(@ViewBuilder content: @escaping () -> Content) -> some View {
         content()
             .background(Color.lifeDeckBackground.ignoresSafeArea())
-            .preferredColorScheme(.light) // Force light mode for consistency
+            .preferredColorScheme(.dark) // Force dark mode for LifeDeck design
     }
 }
 
