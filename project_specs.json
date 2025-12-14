@@ -1,0 +1,209 @@
+{
+  "project_overview": {
+    "app_name": "LifeDeck",
+    "app_description": "LifeDeck is an AI-powered micro-coaching platform that delivers context-aware, actionable life-improvement cards across health, finance, productivity, and mindfulness. The app focuses on habit compounding through small daily actions, adaptive intelligence, and cross-domain insights.",
+    "target_audience": [
+      "Busy professionals",
+      "University students",
+      "Startup founders",
+      "Remote workers",
+      "Individuals seeking self-improvement without overwhelm"
+    ],
+    "core_objectives": [
+      "Help users build sustainable habits through micro-actions",
+      "Provide adaptive AI coaching without information overload",
+      "Offer a genuinely useful free tier",
+      "Convert users to premium through value, not pressure",
+      "Achieve high retention via streaks and personalization"
+    ],
+    "key_features": [
+      "Swipable AI-generated coaching cards",
+      "Context-aware notifications",
+      "Life Score analytics across domains",
+      "Freemium subscription model",
+      "Wearable, finance, and calendar integrations"
+    ],
+    "success_metrics": [
+      "Day-7 retention > 40%",
+      "Free-to-paid conversion > 6%",
+      "Average daily card completion > 3",
+      "Monthly churn < 4%",
+      "Net Promoter Score (NPS) > 45"
+    ]
+  },
+  "system_architecture": {
+    "overall_architecture_diagram_description": "Client applications (iOS, Android, Web) communicate with a unified API gateway. Requests are authenticated via JWT. Core services include User Service, Card Engine Service, Analytics Service, Notification Service, and Billing Service. Data persists in PostgreSQL with Redis caching. AI recommendations are generated asynchronously using a worker queue.",
+    "client_side": {
+      "architecture_type": "Hybrid (Native Mobile + Web SPA)",
+      "state_management": "Global state managed via Redux Toolkit (Android/Web) and SwiftUI ObservableObjects (iOS). Domain-specific slices include user, cards, streaks, subscription, and notifications.",
+      "routing_strategy": "iOS uses NavigationStack, Android uses React Navigation v6, Web uses Next.js App Router with route guards.",
+      "caching_strategy": "Local cache via SQLite (mobile) and IndexedDB (web) with stale-while-revalidate strategy for cards and dashboard data."
+    },
+    "server_side": {
+      "architecture_pattern": "Modular Monolith transitioning to Microservices",
+      "service_dependencies": [
+        { "service": "User Service", "description": "User profiles, preferences, roles" },
+        { "service": "Card Engine Service", "description": "AI-generated card logic" },
+        { "service": "Analytics Service", "description": "Life Score computation and trends" },
+        { "service": "Notification Service", "description": "Push scheduling and delivery" },
+        { "service": "Billing Service", "description": "Subscriptions and entitlements" }
+      ],
+      "data_flow_diagram": "Client -> API Gateway -> Auth Middleware -> Service Layer -> Database/Cache -> Response",
+      "scalability_approach": "Horizontal scaling via stateless services, Redis caching, queue-based AI processing, read replicas for analytics."
+    },
+    "data_architecture": {
+      "database_design": "Relational PostgreSQL schema with normalized user data and denormalized analytics tables.",
+      "data_flow": "Transactional data written to primary DB; analytics events streamed to aggregation tables.",
+      "storage_strategy": "PostgreSQL for core data, Redis for cache, S3-compatible object storage for logs.",
+      "backup_recovery_strategy": "Nightly full backups, 15-minute WAL archiving, 30-day retention."
+    }
+  },
+  "technology_stack": {
+    "frontend": {
+      "ios": {
+        "framework": "SwiftUI (iOS 17)",
+        "state_management": "Combine",
+        "styling_framework": "Native SwiftUI Styles",
+        "build_tools": ["Xcode 15"],
+        "testing_framework": "XCTest",
+        "additional_libraries": [
+          { "name": "Alamofire", "version": "5.9", "purpose": "Networking" }
+        ]
+      },
+      "android": {
+        "framework": "React Native 0.74",
+        "state_management": "Redux Toolkit 2.1",
+        "styling_framework": "Styled Components 6.1",
+        "testing_framework": "Jest 29",
+        "additional_libraries": [
+          { "name": "React Navigation", "version": "6.1", "purpose": "Navigation" }
+        ]
+      },
+      "web": {
+        "framework": "Next.js 14",
+        "state_management": "Zustand 4.5",
+        "styling_framework": "TailwindCSS 3.4",
+        "testing_framework": "Playwright",
+        "additional_libraries": [
+          { "name": "Recharts", "version": "2.10", "purpose": "Dashboard charts" }
+        ]
+      }
+    },
+    "backend": {
+      "runtime_environment": "Node.js 20",
+      "framework": "NestJS 10",
+      "authentication_library": "Passport.js 0.7",
+      "api_specification": "REST",
+      "database": "PostgreSQL 16",
+      "orm_odm": "Prisma 5",
+      "caching_solution": "Redis 7",
+      "queue_system": "BullMQ 5",
+      "additional_services": [
+        { "service": "OpenAI API", "version": "gpt-4.1", "purpose": "Card generation" }
+      ]
+    },
+    "devops_infrastructure": {
+      "hosting_platform": "AWS",
+      "ci_cd_pipeline": "GitHub Actions with lint, test, build, deploy stages",
+      "containerization": "Docker 25",
+      "monitoring_tools": ["Datadog"],
+      "logging_solution": "Winston + CloudWatch",
+      "performance_monitoring": "Datadog APM"
+    }
+  },
+  "ui_ux_specifications": {
+    "design_system": {
+      "color_palette": {
+        "primary_colors": [
+          { "name": "Primary Blue", "hex": "#3B6BA5", "rgb": "59,107,165", "usage": "Primary actions" }
+        ],
+        "secondary_colors": [
+          { "name": "Teal", "hex": "#3AA79D", "rgb": "58,167,157", "usage": "Highlights" }
+        ],
+        "neutral_colors": [
+          { "name": "Background", "hex": "#1E1E1E", "rgb": "30,30,30", "usage": "App background" }
+        ],
+        "semantic_colors": [
+          { "name": "Success", "hex": "#4CAF50" },
+          { "name": "Warning", "hex": "#FFB84D" },
+          { "name": "Error", "hex": "#E57373" }
+        ]
+      },
+      "typography_scale": {
+        "font_family": "SF Pro",
+        "font_weights": { "regular": 400, "medium": 500, "bold": 700 },
+        "type_scale": {
+          "h1": { "font_size": 32, "line_height": 40 },
+          "body": { "font_size": 16, "line_height": 24 }
+        }
+      },
+      "spacing_system": {
+        "base_unit": 8,
+        "spacing_scale": { "sm": 8, "md": 16, "lg": 24, "xl": 32 }
+      }
+    },
+    "user_flows": {
+      "onboarding_flow": "Splash → Welcome → Goals → Data Sync → Quiz → Deck Ready",
+      "authentication_flow": "Apple/Google OAuth → JWT issuance → Session restore",
+      "main_workflow": "Open app → Swipe cards → Earn streaks → View dashboard",
+      "error_handling_flow": "Inline message → Retry → Fallback content"
+    }
+  },
+  "backend_specifications": {
+    "api_specification": {
+      "api_type": "REST",
+      "base_url": "https://api.lifedeck.app",
+      "versioning_strategy": "URI versioning (/v1)",
+      "authentication_mechanism": "JWT Bearer tokens",
+      "rate_limiting": "100 requests/min per user",
+      "endpoints": [
+        {
+          "endpoint_id": "get_cards",
+          "endpoint_path": "/v1/cards",
+          "http_method": "GET",
+          "description": "Fetch daily cards",
+          "authentication_required": true,
+          "request_parameters": [
+            { "name": "limit", "type": "number", "required": false }
+          ],
+          "response_schema": {
+            "cards": [
+              { "id": "uuid", "text": "string", "domain": "string", "premium": "boolean" }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "security_specifications": {
+    "data_protection": {
+      "encryption_strategies": ["AES-256 at rest", "TLS 1.3 in transit"]
+    },
+    "compliance_requirements": {
+      "gdpr_compliance": "Right to access, delete, export data supported"
+    }
+  },
+  "testing_strategy": {
+    "unit_testing": { "coverage_requirements": 85 },
+    "end_to_end_testing": {
+      "testing_framework": "Playwright",
+      "critical_user_journeys": ["Onboarding", "Upgrade to Premium"]
+    }
+  },
+  "deployment_operations": {
+    "deployment_pipeline": {
+      "deployment_strategy": "Blue-Green",
+      "rollback_procedure": "Instant traffic switch to previous version"
+    }
+  },
+  "project_timeline_milestones": {
+    "development_phases": [
+      {
+        "phase_name": "MVP",
+        "duration_weeks": 10,
+        "deliverables": ["Core app", "Subscription system"],
+        "success_criteria": ["App Store approval", "100 beta users"]
+      }
+    ]
+  }
+}

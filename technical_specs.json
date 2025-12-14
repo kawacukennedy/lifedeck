@@ -1,0 +1,249 @@
+{
+  "project_overview": {
+    "app_name": "LifeDeck",
+    "app_description": "LifeDeck is a calm, AI-powered life optimization interface that delivers daily micro-actions as swipeable cards across health, finance, productivity, and mindfulness, designed to reduce cognitive load while increasing long-term behavioral change.",
+    "target_platforms": ["web", "mobile_web", "pwa", "desktop"],
+    "supported_browsers": [
+      "Chrome >= 118",
+      "Firefox >= 115",
+      "Safari >= 17",
+      "Edge >= 118"
+    ],
+    "supported_devices": {
+      "mobile": "320px – 480px viewport width",
+      "tablet": "481px – 1024px viewport width",
+      "desktop": "1025px – 1920px+ viewport width"
+    },
+    "accessibility_standards": "WCAG 2.1 AA"
+  },
+  "technical_architecture": {
+    "application_type": "SPA with SSR and PWA support",
+    "framework_selection": {
+      "web": {
+        "primary_framework": "Next.js 14.1",
+        "justification": "SEO, performance, app-router architecture, server components",
+        "framework_specific_patterns": "App Router, Server Components for static pages, Client Components for interactive dashboards"
+      },
+      "ios": {
+        "primary_framework": "SwiftUI (iOS 17)",
+        "justification": "Native performance, gesture-driven UI, haptics",
+        "framework_specific_patterns": "MVVM, NavigationStack, ObservableObjects"
+      },
+      "android": {
+        "primary_framework": "React Native 0.74",
+        "justification": "Cross-platform velocity with native gestures",
+        "framework_specific_patterns": "Functional components, hooks, Redux Toolkit"
+      }
+    },
+    "state_management": {
+      "client_state_solution": "Zustand 4.5 (Web), Redux Toolkit 2.1 (Android), Combine (iOS)",
+      "state_architecture": {
+        "store_structure": {
+          "user": "auth status, preferences, subscription",
+          "cards": "daily cards, completion status",
+          "streaks": "daily and weekly streaks",
+          "ui": "theme, modals, animations"
+        },
+        "persistence_strategy": "IndexedDB (Web/PWA), AsyncStorage (Android), UserDefaults (iOS)"
+      },
+      "server_state_solution": "React Query 5",
+      "caching_strategy": {
+        "cache_time": 3600,
+        "stale_time": 300,
+        "cache_invalidation_strategy": "Invalidate on card completion or subscription change"
+      }
+    },
+    "routing_solution": {
+      "web": {
+        "router_library": "Next.js App Router",
+        "route_structure": [
+          "/", "/onboarding", "/login", "/dashboard", "/deck", "/life-score", "/premium", "/settings"
+        ]
+      },
+      "ios_android": {
+        "navigation_pattern": "Bottom Tab Navigation + Modal Stack"
+      }
+    }
+  },
+  "design_system": {
+    "design_tokens": {
+      "color_palette": {
+        "primaries": [
+          {
+            "name": "Midnight Blue",
+            "hex": "#1F2A37",
+            "rgb": "31,42,55",
+            "usage_context": "Primary background",
+            "accessibility_contrast": "AAA"
+          },
+          {
+            "name": "Steel Blue",
+            "hex": "#3B6BA5",
+            "rgb": "59,107,165",
+            "usage_context": "Primary CTA",
+            "accessibility_contrast": "AA"
+          }
+        ],
+        "semantics": {
+          "success": {"light": "#4CAF50", "dark": "#1B5E20", "contrast": "4.7:1"},
+          "warning": {"light": "#FFB300", "dark": "#FF6F00", "contrast": "4.5:1"},
+          "error": {"light": "#E57373", "dark": "#B71C1C", "contrast": "4.8:1"},
+          "info": {"light": "#64B5F6", "dark": "#1565C0", "contrast": "4.6:1"}
+        },
+        "themes": {
+          "light_theme": "Muted greys, low-saturation blues",
+          "dark_theme": "Charcoal backgrounds, soft blue accents",
+          "high_contrast_theme": "Pure black/white with bold accents"
+        }
+      },
+      "typography": {
+        "font_families": {
+          "primary": "Inter, SF Pro, system-ui",
+          "secondary": "SF Rounded",
+          "monospace": "JetBrains Mono"
+        },
+        "scale": {
+          "h1": {"font_size": "32px", "line_height": 1.25, "font_weight": 700},
+          "h2": {"font_size": "24px", "line_height": 1.3, "font_weight": 600},
+          "body_medium": {"font_size": "16px", "line_height": 1.6, "font_weight": 400},
+          "caption": {"font_size": "12px", "line_height": 1.4, "font_weight": 400}
+        }
+      },
+      "spacing": {
+        "base_unit": "8px",
+        "scale": {
+          "xs": "4px",
+          "sm": "8px",
+          "md": "16px",
+          "lg": "24px",
+          "xl": "32px",
+          "2xl": "48px"
+        }
+      },
+      "borders": {
+        "radius_scale": {
+          "sm": "6px",
+          "md": "12px",
+          "lg": "20px",
+          "full": "9999px"
+        }
+      },
+      "motion": {
+        "duration_scale": {
+          "fast": "120ms",
+          "normal": "220ms",
+          "slow": "320ms"
+        },
+        "easing_functions": {
+          "ease_out": "cubic-bezier(0, 0, 0.2, 1)"
+        }
+      }
+    }
+  },
+  "page_specifications": {
+    "total_pages": 12,
+    "page_hierarchy": {
+      "public_pages": ["/", "/login", "/onboarding"],
+      "protected_pages": [
+        "/dashboard",
+        "/deck",
+        "/life-score",
+        "/premium",
+        "/settings"
+      ]
+    },
+    "pages": [
+      {
+        "page_id": "deck",
+        "page_name": "Daily Deck",
+        "page_route": "/deck",
+        "page_type": "protected",
+        "layout_template": "mobile-first centered layout",
+        "components": [
+          {
+            "component_name": "SwipeableCard",
+            "props_configuration": {
+              "height": "420px",
+              "border_radius": "20px",
+              "shadow": "level_3"
+            },
+            "interactions": [
+              "Swipe right = complete",
+              "Swipe left = dismiss",
+              "Swipe down = snooze"
+            ],
+            "animations": [
+              "spring swipe animation",
+              "completion confetti for streak milestones"
+            ]
+          }
+        ]
+      },
+      {
+        "page_id": "premium",
+        "page_name": "Premium Paywall",
+        "page_route": "/premium",
+        "page_type": "protected",
+        "layout_template": "comparison layout",
+        "components": [
+          {
+            "component_name": "FeatureComparisonTable",
+            "props_configuration": {
+              "free_column": "dimmed",
+              "premium_column": "glowing border"
+            }
+          },
+          {
+            "component_name": "UpgradeButton",
+            "props_configuration": {
+              "text": "Unlock Premium",
+              "height": "56px",
+              "animation": "pulse"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "user_interactions": {
+    "gesture_support": {
+      "touch_gestures": ["tap", "swipe", "long_press"],
+      "keyboard_interactions": ["Tab", "Enter", "Escape"]
+    },
+    "micro_interactions": [
+      {
+        "interaction_name": "card_complete",
+        "animation": "scale + glow",
+        "duration": "200ms"
+      }
+    ]
+  },
+  "accessibility_specifications": {
+    "keyboard_navigation": {
+      "tab_order": "logical",
+      "focus_traps": ["modals", "paywall"]
+    },
+    "screen_reader_support": {
+      "aria_labels": "required for all actions",
+      "heading_hierarchy": "single h1 per page"
+    }
+  },
+  "performance_requirements": {
+    "core_web_vitals_targets": {
+      "lcp": "2.5s",
+      "fid": "100ms",
+      "cls": "0.1"
+    },
+    "bundle_size_limits": {
+      "initial_load": "100kb gzipped"
+    }
+  },
+  "deployment_requirements": {
+    "hosting_platform": "Vercel",
+    "cdn_configuration": "Cloudflare",
+    "monitoring_integration": {
+      "error_tracking": "Sentry",
+      "analytics": "Amplitude"
+    }
+  }
+}
