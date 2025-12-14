@@ -5,9 +5,10 @@ struct DesignSystem {
     static let primaryBlue = Color(hex: "#3B6BA5")
     static let teal = Color(hex: "#3AA79D")
     static let background = Color(hex: "#1E1E1E")
-    static let success = Color(hex: "#4CAF50")
-    static let warning = Color(hex: "#FFB84D")
-    static let error = Color(hex: "#E57373")
+    static let success = Color.success
+    static let warning = Color.warning
+    static let error = Color.error
+    static let info = Color.info
 
     // Domain Colors
     static let healthColor = Color(hex: "#FF6B6B")
