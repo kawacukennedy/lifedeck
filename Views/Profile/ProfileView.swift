@@ -49,6 +49,10 @@ struct ProfileView: View {
                                 viewModel.updatePreferences(notificationsEnabled: enabled)
                             }
 
+                            NavigationLink(destination: NotificationSettingsView()) {
+                                SettingsRow(title: "Notification Settings")
+                            }
+
                             NavigationLink(destination: FocusAreasView(selectedAreas: $viewModel.user.preferences.focusAreas)) {
                                 SettingsRow(title: "Focus Areas", value: "\(viewModel.user.preferences.focusAreas.count) selected")
                             }
