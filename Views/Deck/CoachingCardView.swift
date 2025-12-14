@@ -58,9 +58,14 @@ struct CoachingCardView: View {
                 HStack {
                     difficultyIndicator
                     Spacer()
-                    Text(card.domain.rawValue.capitalized)
-                        .font(.caption)
-                        .foregroundColor(cardTextColor.opacity(0.7))
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(card.domain.rawValue.capitalized)
+                            .font(.caption)
+                            .foregroundColor(cardTextColor.opacity(0.7))
+                        Text("\(card.estimatedTime) min")
+                            .font(.caption2)
+                            .foregroundColor(cardTextColor.opacity(0.5))
+                    }
                 }
             }
             .padding(DesignSystem.xl)
