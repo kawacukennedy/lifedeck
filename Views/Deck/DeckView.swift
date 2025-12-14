@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DeckView: View {
     @StateObject private var viewModel: DeckViewModel
@@ -85,6 +86,9 @@ struct DeckView: View {
     }
 
     private func handleCardAction(_ action: CardAction, for card: CoachingCard) {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+
         switch action {
         case .complete:
             viewModel.completeCard(card)
