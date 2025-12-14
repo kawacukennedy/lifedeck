@@ -71,6 +71,17 @@ struct CoachingCardView: View {
                     }
                 }
         )
+        .accessibilityLabel("\(card.domain.rawValue.capitalized) card: \(card.text)")
+        .accessibilityHint("Swipe right to complete, left to dismiss, or up to snooze")
+        .accessibilityAction(named: "Complete") {
+            onSwipe(.complete)
+        }
+        .accessibilityAction(named: "Dismiss") {
+            onSwipe(.dismiss)
+        }
+        .accessibilityAction(named: "Snooze") {
+            onSwipe(.snooze)
+        }
     }
 
     private var cardBackground: some ShapeStyle {
