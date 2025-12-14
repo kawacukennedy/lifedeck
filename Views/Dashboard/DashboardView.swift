@@ -50,6 +50,8 @@ struct DashboardView: View {
                                     .foregroundColor(.white.opacity(0.7))
                             }
                         }
+                        .accessibilityLabel("Life Score: \(Int(viewModel.lifeScore)) out of 100")
+                        .accessibilityValue("\(Int(viewModel.lifeScore))%")
                     }
                     .padding(.horizontal)
 
