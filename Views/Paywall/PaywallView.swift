@@ -55,6 +55,8 @@ struct PaywallView: View {
                     .buttonStyle(.premium)
                     .disabled(isPurchasing)
                     .padding(.horizontal)
+                    .scaleEffect(isPurchasing ? 0.95 : 1.0)
+                    .animation(.easeInOut(duration: 0.2), value: isPurchasing)
 
                     // Free Tier Reminder
                     VStack(spacing: DesignSystem.sm) {
