@@ -70,12 +70,20 @@ class DeckViewModel: ObservableObject {
             user.lifeDomains[index].score = user.lifeDomains[index].progress * 100
         }
         user.lifePoints += card.difficulty * 10
+        saveUser()
     }
 
     private func updateStreak() {
         user.streaks.currentStreak += 1
         user.streaks.longestStreak = max(user.streaks.longestStreak, user.streaks.currentStreak)
         user.streaks.dailyStreak += 1
+        saveUser()
+    }
+
+    private func saveUser() {
+        if let data = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(data, forKey: "user")
+        }
     }
 
     var currentCard: CoachingCard? {
