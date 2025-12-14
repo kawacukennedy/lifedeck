@@ -36,4 +36,17 @@ class ProfileViewModel: ObservableObject {
             UserDefaults.standard.set(data, forKey: "user")
         }
     }
+
+    func resetProgress() {
+        user.lifeDomains = user.lifeDomains.map { domain in
+            var newDomain = domain
+            newDomain.score = 50
+            newDomain.progress = 0.5
+            newDomain.completedCards = 0
+            return newDomain
+        }
+        user.streaks = Streaks(currentStreak: 0, longestStreak: 0, dailyStreak: 0, weeklyStreak: 0)
+        user.lifePoints = 0
+        saveUser()
+    }
 }

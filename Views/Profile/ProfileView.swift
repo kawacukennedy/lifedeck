@@ -72,6 +72,15 @@ struct ProfileView: View {
                                 SettingsRow(title: "Terms of Service", showChevron: false)
                             }
                         }
+
+                        #if DEBUG
+                        SettingsSection(title: "Debug") {
+                            Button(action: resetProgress) {
+                                SettingsRow(title: "Reset Progress", showChevron: false)
+                                    .foregroundColor(.error)
+                            }
+                        }
+                        #endif
                     }
                     .padding(.horizontal)
 
