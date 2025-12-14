@@ -63,6 +63,16 @@ struct OnboardingView: View {
                                 .cornerRadius(DesignSystem.cornerRadius)
                         }
                         .disabled(!canProceed)
+
+                        if currentStep != .welcome {
+                            Button(action: skipOnboarding) {
+                                Text("Skip")
+                                    .frame(width: 100, height: 56)
+                                    .background(Color.clear)
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .cornerRadius(DesignSystem.cornerRadius)
+                            }
+                        }
                     }
                     .padding(.horizontal)
                 }
@@ -182,6 +192,14 @@ struct OnboardingView: View {
 
     private func completeOnboarding() {
         let user = User(name: userName, preferences: Preferences(focusAreas: selectedGoals))
+        if let data = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(data, forKey: "user")
+        }
+        isOnboardingComplete = true
+    }
+
+    private func skipOnboarding() {
+        let user = User(name: "User")
         if let data = try? JSONEncoder().encode(user) {
             UserDefaults.standard.set(data, forKey: "user")
         }
