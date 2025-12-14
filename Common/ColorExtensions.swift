@@ -17,4 +17,10 @@ extension Color {
     static let midnightBlue = Color(hex: "#1F2A37")
     static let steelBlue = Color(hex: "#3B6BA5")
     static let premiumGold = Color(hex: "#FFD700")
+
+    // Additional semantic colors
+    static let info = Color(hex: "#64B5F6")
+    static let warning = Color(hex: "#FFB300")
+    static let error = Color(hex: "#E57373")
+    static let success = Color(hex: "#4CAF50")
 }
