@@ -195,3 +195,5 @@ The app includes:
 ---
 
 **Built with ❤️ using SwiftUI • Ready for production deployment! 🚀**
+
+© 2024 LifeDeck. All rights reserved.
