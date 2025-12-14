@@ -53,6 +53,16 @@ struct ProfileView: View {
                                 SettingsRow(title: "Notification Settings")
                             }
 
+                            Picker("Theme", selection: $viewModel.user.preferences.theme) {
+                                Text("System").tag("system")
+                                Text("Light").tag("light")
+                                Text("Dark").tag("dark")
+                            }
+                            .pickerStyle(.menu)
+                            .onChange(of: viewModel.user.preferences.theme) { newTheme in
+                                viewModel.updatePreferences(theme: newTheme)
+                            }
+
                             NavigationLink(destination: FocusAreasView(selectedAreas: $viewModel.user.preferences.focusAreas)) {
                                 SettingsRow(title: "Focus Areas", value: "\(viewModel.user.preferences.focusAreas.count) selected")
                             }
