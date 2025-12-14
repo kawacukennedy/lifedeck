@@ -41,14 +41,20 @@ struct DeckView: View {
 
                 // Card stack
                 ZStack {
-                    ForEach(viewModel.cards.indices, id: \.self) { index in
-                        if index >= viewModel.currentCardIndex && index < viewModel.currentCardIndex + 3 {
-                            CoachingCardView(card: viewModel.cards[index]) { action in
-                                handleCardAction(action, for: viewModel.cards[index])
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.primary))
+                            .scaleEffect(1.5)
+                    } else {
+                        ForEach(viewModel.cards.indices, id: \.self) { index in
+                            if index >= viewModel.currentCardIndex && index < viewModel.currentCardIndex + 3 {
+                                CoachingCardView(card: viewModel.cards[index]) { action in
+                                    handleCardAction(action, for: viewModel.cards[index])
+                                }
+                                .zIndex(Double(viewModel.cards.count - index))
+                                .offset(y: CGFloat(index - viewModel.currentCardIndex) * 8)
+                                .scaleEffect(1.0 - CGFloat(index - viewModel.currentCardIndex) * 0.05)
                             }
-                            .zIndex(Double(viewModel.cards.count - index))
-                            .offset(y: CGFloat(index - viewModel.currentCardIndex) * 8)
-                            .scaleEffect(1.0 - CGFloat(index - viewModel.currentCardIndex) * 0.05)
                         }
                     }
                 }
