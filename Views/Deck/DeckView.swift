@@ -102,6 +102,10 @@ struct DeckView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 showCompletionAnimation = false
             }
+            // Check for streak milestone
+            if viewModel.user.streaks.currentStreak > 0 && viewModel.user.streaks.currentStreak % 5 == 0 {
+                // Show extra celebration for milestones
+            }
         case .dismiss:
             viewModel.dismissCard(card)
         case .snooze:
