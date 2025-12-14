@@ -26,8 +26,18 @@ struct CoachingCardView: View {
                     Spacer()
 
                     if card.isPremium {
-                        Image(systemName: "crown.fill")
-                            .foregroundColor(Color.premiumGold)
+                        HStack(spacing: DesignSystem.sm) {
+                            Image(systemName: "crown.fill")
+                                .foregroundColor(Color.premiumGold)
+                            Text("Premium")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.premiumGold)
+                        }
+                        .padding(.horizontal, DesignSystem.sm)
+                        .padding(.vertical, 4)
+                        .background(Color.premiumGold.opacity(0.2))
+                        .cornerRadius(DesignSystem.cornerRadius / 2)
                     }
 
                     Text("\(card.estimatedTime)m")
