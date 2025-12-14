@@ -75,7 +75,7 @@ struct ProfileView: View {
                         }
 
                         SettingsSection(title: "Support") {
-                            SettingsRow(title: "Version", value: "1.0.0")
+                            SettingsRow(title: "Version", value: "\(appVersion) (\(appBuild))")
                             Button(action: shareApp) {
                                 SettingsRow(title: "Share LifeDeck", showChevron: false)
                             }
