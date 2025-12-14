@@ -76,6 +76,9 @@ struct ProfileView: View {
 
                         SettingsSection(title: "Support") {
                             SettingsRow(title: "Version", value: "1.0.0")
+                            Button(action: shareApp) {
+                                SettingsRow(title: "Share LifeDeck", showChevron: false)
+                            }
                             Button(action: {}) {
                                 SettingsRow(title: "Contact Support", showChevron: false)
                             }
@@ -106,6 +109,12 @@ struct ProfileView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
+    }
+
+    private func shareApp() {
+        let text = "Check out LifeDeck - AI-powered life coaching app! Download now: [App Store Link]"
+        // In a real app, present UIActivityViewController
+        print("Sharing: \(text)")
     }
 
     private func SubscriptionStatusCard() -> some View {
