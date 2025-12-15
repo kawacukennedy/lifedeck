@@ -3,18 +3,18 @@ import SwiftUI
 // MARK: - Primary Button Style
 struct LifeDeckPrimaryButtonStyle: ButtonStyle {
     let isDisabled: Bool
-    
+
     init(isDisabled: Bool = false) {
         self.isDisabled = isDisabled
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 17, weight: .semibold, design: .rounded))
             .foregroundColor(.white)
-            .frame(minWidth: 200, minHeight: 50)
+            .frame(minWidth: 200, minHeight: 56)
             .background(
-                RoundedRectangle(cornerRadius: 25)
+                RoundedRectangle(cornerRadius: 28)
                     .fill(
                         isDisabled ? Color.gray :
                         (configuration.isPressed ? Color.lifeDeckPrimary.opacity(0.8) : Color.lifeDeckPrimary)

@@ -1,0 +1,181 @@
+{
+  "project_overview": {
+    "app_name": "LifeDeck",
+    "app_description": "LifeDeck is a cross-platform AI-powered life optimization platform that delivers personalized, actionable micro-coaching to help users improve health, productivity, mindfulness, and personal growth. It leverages daily AI-generated cards, habit tracking, analytics, and gamification elements to motivate users to achieve measurable improvements across multiple life domains.",
+    "target_platforms": ["web", "mobile_web", "pwa", "desktop"],
+    "supported_browsers": ["Chrome >= 115", "Firefox >= 116", "Safari >= 16", "Edge >= 115"],
+    "supported_devices": {
+      "mobile": "min-width: 320px, max-width: 767px",
+      "tablet": "min-width: 768px, max-width: 1024px",
+      "desktop": "min-width: 1025px, max-width: 3840px"
+    },
+    "accessibility_standards": "WCAG 2.1 AA compliance with ARIA support for dynamic content"
+  },
+  
+  "technical_architecture": {
+    "application_type": "SPA for web, PWA for mobile web, Native iOS using SwiftUI, Native Android using React Native",
+    "framework_selection": {
+      "primary_framework": "Next.js 14 for Web, SwiftUI 5 for iOS, React Native 0.73 for Android",
+      "justification": "Next.js allows server-side rendering for SEO and fast initial load, SwiftUI provides native iOS experience with performance optimization, React Native enables cross-platform mobile development with near-native performance.",
+      "framework_specific_patterns": "Next.js will use App Router with layout nesting, React Native will use React Navigation with stack/tab navigators, SwiftUI will use NavigationStack and custom Combine-based state management."
+    },
+    "state_management": {
+      "client_state_solution": "Zustand 4.5 for web, Redux Toolkit 2.0 for React Native, ObservableObject + Combine for SwiftUI",
+      "state_architecture": {
+        "store_structure": {
+          "user": {"id": "uuid", "profile": "object", "subscriptionStatus": "enum"},
+          "cards": {"dailyCards": "array", "completedCards": "array"},
+          "analytics": {"lifeScore": "number", "streaks": "object"},
+          "ui": {"theme": "light/dark", "language": "string"}
+        },
+        "actions_definition": [
+          {"name": "loadDailyCards", "payload": "none"},
+          {"name": "completeCard", "payload": {"cardId": "uuid"}},
+          {"name": "updateProfile", "payload": {"profile": "object"}}
+        ],
+        "reducers_selectors": {
+          "cards": {
+            "getCompletedCards": "selector returning array of completed cards",
+            "getPendingCards": "selector returning array of pending cards"
+          },
+          "user": {
+            "getSubscriptionStatus": "selector returning enum",
+            "getUserProfile": "selector returning profile object"
+          }
+        },
+        "middlewares": [
+          {"name": "logger", "purpose": "logs actions and state changes"},
+          {"name": "persistence", "purpose": "sync specific slices with localStorage/AsyncStorage"}
+        ],
+        "persistence_strategy": {
+          "web": {"storage": "localStorage", "keys": ["user", "ui"]},
+          "mobile": {"storage": "AsyncStorage/Keychain", "keys": ["user", "ui"]}
+        }
+      },
+      "server_state_solution": "React Query 5 for web and React Native, Combine Publishers for SwiftUI",
+      "caching_strategy": {
+        "cache_time": 3600,
+        "stale_time": 300,
+        "cache_invalidation_strategy": "Stale-while-revalidate, invalidation on mutation or daily reset"
+      }
+    },
+    "routing_solution": {
+      "router_library": "Next.js App Router 14 for web, React Navigation 6 for React Native, NavigationStack for SwiftUI",
+      "routing_configuration": {
+        "route_structure": [
+          { "path": "/", "component": "LandingPage", "authRequired": false },
+          { "path": "/login", "component": "LoginPage", "authRequired": false },
+          { "path": "/dashboard", "component": "DashboardPage", "authRequired": true },
+          { "path": "/profile", "component": "ProfilePage", "authRequired": true },
+          { "path": "/settings", "component": "SettingsPage", "authRequired": true },
+          { "path": "/cards/:cardId", "component": "CardDetailPage", "authRequired": true }
+        ],
+        "dynamic_routes": ["/cards/:cardId"],
+        "route_guards": [
+          {"route": "/dashboard", "guard": "isAuthenticated"},
+          {"route": "/profile", "guard": "isAuthenticated"}
+        ],
+        "route_transitions": [
+          {"route": "/dashboard", "transition": "fade", "duration": 200},
+          {"route": "/cards/:cardId", "transition": "slide-left", "duration": 300}
+        ],
+        "scroll_restoration": "automatic restoration to previous scroll position per route",
+        "error_boundaries_per_route": true
+      }
+    },
+    "internationalization": {
+      "i18n_library": "i18next 23",
+      "supported_languages": ["en", "es", "fr", "de", "zh", "ar"],
+      "translation_structure": {
+        "namespace_organization": {"common": "shared texts", "dashboard": "dashboard-specific", "cards": "card-specific"},
+        "key_naming_convention": "camelCase",
+        "pluralization_rules": "i18next plural rules per language",
+        "rtl_support": true
+      }
+    },
+    "performance_optimization": {
+      "code_splitting_strategy": {
+        "route_level_splitting": true,
+        "component_level_splitting": ["CardDetail", "DashboardAnalytics", "ProfileEditor"],
+        "vendor_splitting": "React, Zustand, Chart.js separated into vendor chunks"
+      },
+      "asset_optimization": {
+        "image_optimization_strategy": "Next/Image with responsive sizes, AVIF/WebP formats, lazy-loading",
+        "font_loading_strategy": "Google Fonts with preconnect and font-display: swap",
+        "critical_css_extraction": true
+      },
+      "rendering_strategy": {
+        "initial_render": "SSR for web, CSR for mobile PWA, Native rendering for iOS and Android",
+        "hydration_strategy": "automatic hydration per route with suspense fallback",
+        "suspense_boundaries": ["DashboardCards", "AnalyticsCharts", "ProfileForm"]
+      }
+    }
+  },
+  
+  "design_system": {
+    "design_tokens": {
+      "color_palette": {
+        "primaries": [
+          {"name": "primary-50", "hex": "#E3F2FD", "rgb": "227,242,253", "usage_context": "backgrounds", "accessibility_contrast": "AA"},
+          {"name": "primary-500", "hex": "#2196F3", "rgb": "33,150,243", "usage_context": "primary buttons, links", "accessibility_contrast": "AAA"},
+          {"name": "primary-900", "hex": "#0D47A1", "rgb": "13,71,161", "usage_context": "headers, high emphasis", "accessibility_contrast": "AAA"}
+        ],
+        "semantics": {
+          "success": {"light": "#4CAF50", "dark": "#388E3C", "contrast": "AAA"},
+          "warning": {"light": "#FFB74D", "dark": "#F57C00", "contrast": "AA"},
+          "error": {"light": "#E57373", "dark": "#D32F2F", "contrast": "AAA"},
+          "info": {"light": "#64B5F6", "dark": "#1976D2", "contrast": "AAA"}
+        },
+        "themes": {
+          "light_theme": {"background": "#FFFFFF", "text": "#212121", "primary": "#2196F3"},
+          "dark_theme": {"background": "#121212", "text": "#E0E0E0", "primary": "#2196F3"},
+          "high_contrast_theme": {"background": "#000000", "text": "#FFFFFF", "primary": "#FFEB3B"}
+        }
+      },
+      "typography": {
+        "font_families": {
+          "primary": "'Inter', sans-serif",
+          "secondary": "'Roboto', sans-serif",
+          "monospace": "'Fira Code', monospace"
+        },
+        "scale": {
+          "h1": {"font_size": "36px", "line_height": "44px", "letter_spacing": "0px", "font_weight": 700, "margin": "0 0 24px 0"},
+          "h2": {"font_size": "30px", "line_height": "38px", "letter_spacing": "0px", "font_weight": 600, "margin": "0 0 20px 0"},
+          "body_large": {"font_size": "18px", "line_height": "28px", "letter_spacing": "0px", "font_weight": 400},
+          "body_medium": {"font_size": "16px", "line_height": "24px", "letter_spacing": "0px", "font_weight": 400},
+          "body_small": {"font_size": "14px", "line_height": "20px", "letter_spacing": "0px", "font_weight": 400},
+          "caption": {"font_size": "12px", "line_height": "16px", "letter_spacing": "0px", "font_weight": 400}
+        },
+        "responsive_typography": {
+          "breakpoints": {
+            "mobile": {"h1_size": "28px", "scale_factor": 0.78},
+            "tablet": {"h1_size": "32px", "scale_factor": 0.89},
+            "desktop": {"h1_size": "36px", "scale_factor": 1}
+          }
+        }
+      },
+      "spacing": {
+        "base_unit": "8px",
+        "scale": {"0": "0px", "xs": "8px", "sm": "16px", "md": "24px", "lg": "32px", "xl": "48px", "2xl": "64px", "3xl": "96px", "4xl": "128px"}
+      },
+      "borders": {
+        "radius_scale": {"none": "0px", "sm": "4px", "md": "8px", "lg": "16px", "xl": "24px", "full": "9999px"},
+        "width_scale": {"thin": "1px", "medium": "2px", "thick": "3px"}
+      },
+      "shadows": {
+        "elevation_levels": {
+          "level_0": "none",
+          "level_1": "0 1px 3px rgba(0,0,0,0.12)",
+          "level_2": "0 4px 6px rgba(0,0,0,0.16)",
+          "level_3": "0 10px 20px rgba(0,0,0,0.19)"
+        },
+        "usage_context": {"cards": "level_1", "modals": "level_3", "dropdowns": "level_2", "buttons": "level_1"}
+      },
+      "motion": {
+        "duration_scale": {"instant": "0ms", "fast": "100ms", "normal": "200ms", "slow": "300ms", "slower": "500ms"},
+        "easing_functions": {"linear": "cubic-bezier(0,0,1,1)", "ease_in": "cubic-bezier(0.4,0,1,1)", "ease_out": "cubic-bezier(0,0,0.2,1)", "ease_in_out": "cubic-bezier(0.4,0,0.2,1)"}
+      },
+      "z_index_scale": {"base": "0", "dropdown": "1000", "modal": "1050", "tooltip": "1070", "toast": "1080"}
+    }
+  }
+}
