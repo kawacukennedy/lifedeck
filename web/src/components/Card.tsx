@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useStore, CoachingCard } from '../store/useStore';
+import { webNotificationService } from '../lib/notifications';
 import {
   Heart,
   DollarSign,
@@ -110,7 +111,10 @@ export default function Card({ card, onAction }: CardProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => onAction(card.id, 'complete')}
+          onClick={() => {
+            onAction(card.id, 'complete');
+            webNotificationService.showCardCompletedToast(card.title);
+          }}
           className="flex-1 bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
         >
           <CheckCircle className="w-4 h-4" />

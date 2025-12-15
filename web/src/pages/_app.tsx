@@ -2,6 +2,8 @@ import type { AppProps } from 'next/app';
 import '../styles/globals.css';
 import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { webNotificationService } from '../lib/notifications';
+import { Toaster } from 'react-hot-toast';
 
 export default function App({ Component, pageProps }: AppProps) {
   const { setUser } = useStore();
@@ -30,7 +32,25 @@ export default function App({ Component, pageProps }: AppProps) {
     };
 
     setUser(sampleUser);
+
+    // Initialize notifications
+    webNotificationService.initialize();
+    webNotificationService.showWelcomeToast();
   }, [setUser]);
 
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <Component {...pageProps} />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: '#1e1e1e',
+            color: '#fff',
+            border: '1px solid #333',
+          },
+        }}
+      />
+    </>
+  );
 }
