@@ -32,6 +32,8 @@
     "@invertase/react-native-apple-authentication": "^2.2.2",
     "react-native-permissions": "^4.0.1",
     "react-native-push-notification": "^8.1.1",
+    "@react-native-firebase/messaging": "^18.5.0",
+    "react-native-iap": "^12.10.0",
     "react-native-chart-kit": "^6.12.0"
   },
   "devDependencies": {
