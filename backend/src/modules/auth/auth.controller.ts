@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -18,8 +18,32 @@ export class AuthController {
     return this.authService.register(body.email, body.password, body.name);
   }
 
+  @Get('google')
   @UseGuards(JwtAuthGuard)
-  @Post('profile')
+  googleAuth() {
+    // This will be handled by Passport
+  }
+
+  @Get('google/callback')
+  @UseGuards(JwtAuthGuard)
+  googleAuthRedirect(@Request() req) {
+    return this.authService.validateOAuthLogin(req.user, 'google');
+  }
+
+  @Get('apple')
+  @UseGuards(JwtAuthGuard)
+  appleAuth() {
+    // This will be handled by Passport
+  }
+
+  @Get('apple/callback')
+  @UseGuards(JwtAuthGuard)
+  appleAuthRedirect(@Request() req) {
+    return this.authService.validateOAuthLogin(req.user, 'apple');
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
   getProfile(@Request() req) {
     return req.user;
   }

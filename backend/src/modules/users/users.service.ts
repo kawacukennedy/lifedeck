@@ -25,7 +25,12 @@ export class UsersService {
     avatar?: string;
   }): Promise<User> {
     return this.prisma.user.create({
-      data,
+      data: {
+        email: data.email,
+        name: data.name,
+        avatar: data.avatar,
+        ...(data.password && { password: data.password }),
+      },
     });
   }
 

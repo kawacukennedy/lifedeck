@@ -50,6 +50,7 @@ export class AuthService {
       });
     }
 
-    return this.login(user);
+    const { password, ...result } = user;
+    return this.login(result);
   }
 }
