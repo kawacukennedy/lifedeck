@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
     CardsModule,
     AnalyticsModule,
     SubscriptionsModule,
+    AiModule,
   ],
 })
 export class AppModule {}

@@ -1,22 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { AiService } from '../ai/ai.service';
 import { Card, LifeDomain } from '@prisma/client';
 
 @Injectable()
 export class CardsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private aiService: AiService,
+  ) {}
 
   async findDailyCards(userId: string): Promise<Card[]> {
     // Get user's preferred domains and settings
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { settings: true },
+      include: { settings: true, progress: true },
     });
 
     if (!user) throw new Error('User not found');
 
-    // For now, return sample cards. In production, this would use AI to generate personalized cards
-    return this.getSampleCards(userId);
+    try {
+      // Generate AI-powered personalized cards
+      const aiCards = await this.aiService.generateDailyCardSet(userId, {
+        progress: user.progress,
+        settings: user.settings,
+        subscriptionTier: user.subscriptionTier,
+      });
+
+      // Convert AI cards to database format and save
+      const savedCards = [];
+      for (const aiCard of aiCards) {
+        const card = await this.prisma.card.create({
+          data: {
+            ...aiCard,
+            userId,
+            createdAt: new Date(),
+          },
+        });
+        savedCards.push(card);
+      }
+
+      return savedCards;
+    } catch (error) {
+      console.error('Failed to generate AI cards, using fallback:', error);
+      // Fallback to sample cards
+      return this.getSampleCards(userId);
+    }
   }
 
   async createCard(data: any): Promise<Card> {
