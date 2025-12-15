@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String?
+  avatar            String?
+  subscriptionTier  SubscriptionTier @default(FREE)
+  subscriptionStatus SubscriptionStatus @default(NOT_SUBSCRIBED)
+  subscriptionExpiryDate DateTime?
+  joinDate          DateTime @default(now())
+  lastActiveDate    DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  cards             Card[]
+  progress          UserProgress?
+  settings          UserSettings?
+  achievements      Achievement[]
+  activities        Activity[]
+
+  @@map("users")
+}
+
+model Card {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  actionText    String
+  domain        LifeDomain
+  actionType    CardActionType @default(STANDARD)
+  priority      CardPriority @default(MEDIUM)
+  icon          String
+  backgroundColor String?
+  tips          String[] // JSON array
+  benefits      String[] // JSON array
+  status        CardStatus @default(PENDING)
+  createdAt     DateTime @default(now())
+  completedAt   DateTime?
+  dismissedAt   DateTime?
+  snoozedUntil  DateTime?
+  viewCount     Int @default(0)
+  timeSpentViewing Float @default(0)
+  aiGenerated   Boolean @default(false)
+  templateId    String?
+  userId        String
+
+  // Relations
+  user          User @db.ObjectId
+
+  @@map("cards")
+}
+
+model UserProgress {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  healthScore        Float @default(0)
+  financeScore       Float @default(0)
+  productivityScore  Float @default(0)
+  mindfulnessScore   Float @default(0)
+  lifeScore          Float @default(0)
+  currentStreak      Int @default(0)
+  longestStreak      Int @default(0)
+  lifePoints         Int @default(0)
+  totalCardsCompleted Int @default(0)
+  lastActiveDate     DateTime?
+
+  // Relations
+  user              User @db.ObjectId
+
+  @@map("user_progress")
+}
+
+model UserSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  notificationsEnabled Boolean @default(true)
+  dailyReminderTime   DateTime
+  preferredDomains    LifeDomain[]
+  maxDailyCards       Int @default(5)
+  soundEnabled        Boolean @default(true)
+  hapticEnabled       Boolean @default(true)
+  dataShareEnabled    Boolean @default(false)
+  healthKitEnabled    Boolean @default(false)
+  calendarEnabled     Boolean @default(false)
+  locationEnabled     Boolean @default(false)
+
+  // Relations
+  user                User @db.ObjectId
+
+  @@map("user_settings")
+}
+
+model Achievement {
+  id              String   @id @default(cuid())
+  userId          String
+  title           String
+  description     String
+  icon            String
+  pointsRequired  Int
+  isUnlocked      Boolean @default(false)
+  unlockedDate    DateTime?
+  category        LifeDomain?
+
+  // Relations
+  user            User @db.ObjectId
+
+  @@map("achievements")
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  type        ActivityType
+  domain      LifeDomain?
+  points      Int @default(0)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User @db.ObjectId
+
+  @@map("activities")
+}
+
+model Subscription {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  tier              SubscriptionTier
+  status            SubscriptionStatus
+  startDate         DateTime?
+  expiryDate        DateTime?
+  autoRenewEnabled  Boolean @default(false)
+  productId         String?
+  transactionId     String?
+  originalTransactionId String?
+  purchaseDate      DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User @db.ObjectId
+
+  @@map("subscriptions")
+}
+
+// Enums
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  NOT_SUBSCRIBED
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING_RENEWAL
+  IN_GRACE_PERIOD
+}
+
+enum LifeDomain {
+  HEALTH
+  FINANCE
+  PRODUCTIVITY
+  MINDFULNESS
+}
+
+enum CardActionType {
+  QUICK
+  STANDARD
+  EXTENDED
+  HABIT
+  REFLECTION
+}
+
+enum CardPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum CardStatus {
+  PENDING
+  COMPLETED
+  DISMISSED
+  SNOOZED
+  EXPIRED
+}
+
+enum ActivityType {
+  CARD_COMPLETED
+  ACHIEVEMENT_UNLOCKED
+  STREAK_MILESTONE
+  SUBSCRIPTION_UPGRADE
+  PROFILE_UPDATE
+}
