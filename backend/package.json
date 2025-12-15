@@ -39,6 +39,8 @@
     "reflect-metadata": "^0.1.13",
     "dotenv": "^16.0.0",
     "openai": "^4.0.0",
+    "plaid": "^15.0.0",
+    "googleapis": "^118.0.0",
     "redis": "^4.6.0",
     "@nestjs/cache-manager": "^2.0.0",
     "cache-manager-redis-store": "^3.0.1",
