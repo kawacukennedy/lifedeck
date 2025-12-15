@@ -1,5 +1,8 @@
 import Foundation
 import StoreKit
+
+// Enhanced subscription manager with cross-platform support
+class SubscriptionManager: NSObject, ObservableObject {
 import SwiftUI
 
 @MainActor

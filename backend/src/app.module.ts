@@ -12,6 +12,9 @@ import { CardsModule } from './modules/cards/cards.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { AiModule } from './modules/ai/ai.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { SocialModule } from './modules/social/social.module';
 
 @Module({
   imports: [
@@ -42,6 +45,9 @@ import { AiModule } from './modules/ai/ai.module';
     AnalyticsModule,
     SubscriptionsModule,
     AiModule,
+    NotificationsModule,
+    IntegrationsModule,
+    SocialModule,
   ],
 })
 export class AppModule {}

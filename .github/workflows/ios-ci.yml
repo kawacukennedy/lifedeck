@@ -1,0 +1,109 @@
+name: iOS CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'LifeDeck/**'
+      - '.github/workflows/ios-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'LifeDeck/**'
+      - '.github/workflows/ios-ci.yml'
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.0'
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v3
+      with:
+        path: LifeDeck/Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
+    - name: Install CocoaPods
+      run: |
+        cd LifeDeck
+        pod install
+
+    - name: Run SwiftLint
+      run: |
+        brew install swiftlint
+        swiftlint --strict --config .swiftlint.yml
+
+    - name: Build and test
+      run: |
+        cd LifeDeck
+        xcodebuild clean test \
+          -workspace LifeDeck.xcworkspace \
+          -scheme LifeDeck \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+          -enableCodeCoverage YES \
+          -resultBundlePath TestResults \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: LifeDeck/TestResults.xcresult
+
+  deploy:
+    needs: test
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.0'
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v3
+      with:
+        path: LifeDeck/Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
+    - name: Install CocoaPods
+      run: |
+        cd LifeDeck
+        pod install
+
+    - name: Build for TestFlight
+      run: |
+        cd LifeDeck
+        xcodebuild clean archive \
+          -workspace LifeDeck.xcworkspace \
+          -scheme LifeDeck \
+          -archivePath build/LifeDeck.xcarchive \
+          -configuration Release \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Upload to TestFlight
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: LifeDeck/build/LifeDeck.xcarchive/Products/Applications/LifeDeck.app
+        issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APP_STORE_API_KEY_ID }}
+        api-private-key: ${{ secrets.APP_STORE_API_PRIVATE_KEY }}
