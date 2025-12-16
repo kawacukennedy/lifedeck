@@ -5,6 +5,29 @@ import { PrismaService } from '../../database/prisma.service';
 export class SubscriptionsService {
   constructor(private prisma: PrismaService) {}
 
+  async checkPremiumAccess(userId: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionTier: true },
+    });
+
+    return user?.subscriptionTier === 'PREMIUM';
+  }
+
+  async getPremiumFeatures(userId: string) {
+    const isPremium = await this.checkPremiumAccess(userId);
+
+    return {
+      advancedAnalytics: isPremium,
+      unlimitedCards: isPremium,
+      prioritySupport: isPremium,
+      exportData: isPremium,
+      customGoals: isPremium,
+      streakProtection: isPremium,
+      aiInsights: isPremium,
+    };
+  }
+
   async getSubscription(userId: string) {
     return this.prisma.subscription.findUnique({
       where: { userId },

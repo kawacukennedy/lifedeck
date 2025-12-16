@@ -54,6 +54,7 @@ model Card {
   viewCount     Int @default(0)
   timeSpentViewing Float @default(0)
   aiGenerated   Boolean @default(false)
+  isPremium     Boolean @default(false)
   templateId    String?
   userId        String
 

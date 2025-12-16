@@ -19,6 +19,33 @@ export class CardsService {
 
     if (!user) throw new Error('User not found');
 
+    // Check premium limits
+    const isPremium = user.subscriptionTier === 'PREMIUM';
+    const maxCards = isPremium ? 10 : 3; // Premium gets more cards
+
+    // Check if user has already received cards today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const existingCards = await this.prisma.card.findMany({
+      where: {
+        userId,
+        createdAt: {
+          gte: today,
+          lt: tomorrow,
+        },
+        status: 'PENDING',
+      },
+    });
+
+    if (existingCards.length >= maxCards) {
+      return existingCards.slice(0, maxCards);
+    }
+
+    const cardsNeeded = maxCards - existingCards.length;
+
     try {
       // Generate AI-powered personalized cards
       const aiCards = await this.aiService.generateDailyCardSet(userId, {
@@ -27,24 +54,40 @@ export class CardsService {
         subscriptionTier: user.subscriptionTier,
       });
 
+      // Limit cards for free users
+      const cardsToCreate = aiCards.slice(0, cardsNeeded);
+
       // Convert AI cards to database format and save
       const savedCards = [];
-      for (const aiCard of aiCards) {
+      for (const aiCard of cardsToCreate) {
         const card = await this.prisma.card.create({
           data: {
             ...aiCard,
             userId,
             createdAt: new Date(),
+            isPremium: aiCard.isPremium || false,
           },
         });
         savedCards.push(card);
       }
 
-      return savedCards;
+      return [...existingCards, ...savedCards];
     } catch (error) {
       console.error('Failed to generate AI cards, using fallback:', error);
       // Fallback to sample cards
-      return this.getSampleCards(userId);
+      const fallbackCards = this.getSampleCards(userId).slice(0, cardsNeeded);
+      const savedFallbackCards = [];
+      for (const card of fallbackCards) {
+        const savedCard = await this.prisma.card.create({
+          data: {
+            ...card,
+            userId,
+            createdAt: new Date(),
+          },
+        });
+        savedFallbackCards.push(savedCard);
+      }
+      return [...existingCards, ...savedFallbackCards];
     }
   }
 
