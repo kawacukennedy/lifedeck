@@ -61,13 +61,24 @@ struct WatchDashboardView: View {
 
                 // Quick Actions
                 VStack(spacing: 8) {
+                    NavigationLink(destination: WatchDeckView()) {
+                        HStack {
+                            Image(systemName: "rectangle.stack.fill")
+                            Text("View Deck")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(8)
+                    }
+
                     Button(action: {
                         // Quick log a card completion
                         WKInterfaceDevice.current().play(.click)
                     }) {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
-                            Text("Complete Card")
+                            Text("Quick Complete")
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -85,7 +96,7 @@ struct WatchDashboardView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color.blue.opacity(0.2))
+                        .background(Color.gray.opacity(0.2))
                         .cornerRadius(8)
                     }
                 }
