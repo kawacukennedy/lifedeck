@@ -348,63 +348,60 @@ struct StatCard: View {
 // MARK: - Premium Analytics Section
 struct PremiumAnalyticsSection: View {
     let user: User
-    
+    @State private var insights: [AnalyticsInsight] = []
+    @State private var trends: AnalyticsTrends?
+    @State private var isLoading = true
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
                 Text("Advanced Analytics")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.lifeDeckTextPrimary)
-                
+
                 Spacer()
-                
+
                 Image(systemName: "crown.fill")
                     .font(.title3)
                     .foregroundColor(.lifeDeckPremiumGold)
             }
             .padding(.horizontal)
-            
-            // Weekly Trend Chart Placeholder
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Weekly Trends")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.lifeDeckTextPrimary)
-                
-                // Simulated chart area
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.lifeDeckPrimary.opacity(0.3),
-                                Color.lifeDeckSecondary.opacity(0.1)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(height: 120)
-                    .cornerRadius(12)
-                    .overlay(
-                        Text("📈 Life Score trending up +8% this week")
+
+            if isLoading {
+                ProgressView("Loading analytics...")
+                    .foregroundColor(.lifeDeckTextSecondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 40)
+            } else {
+                // Weekly Trend Chart
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Weekly Trends")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.lifeDeckTextPrimary)
+
+                    TrendChart(trends: trends)
+                }
+                .padding(.horizontal)
+
+                // AI Insights
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("AI Insights")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.lifeDeckTextPrimary)
+
+                    if insights.isEmpty {
+                        Text("Complete more cards to unlock personalized insights!")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.lifeDeckTextSecondary)
-                    )
-            }
-            .padding(.horizontal)
-            
-            // Insights
-            VStack(alignment: .leading, spacing: 12) {
-                Text("AI Insights")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.lifeDeckTextPrimary)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    InsightRow(icon: "💤", text: "Your sleep quality improved when you completed evening mindfulness cards.")
-                    InsightRow(icon: "💰", text: "Financial stress decreased after consistent budgeting exercises.")
-                    InsightRow(icon: "🎯", text: "Productivity peaks at 10 AM - schedule important cards then.")
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(insights) { insight in
+                            InsightRow(icon: insight.icon, text: insight.description)
+                        }
+                    }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
         .padding(.vertical, 16)
         .background(
@@ -426,18 +423,119 @@ struct PremiumAnalyticsSection: View {
                 )
         )
         .padding(.horizontal)
+        .onAppear {
+            loadAnalytics()
+        }
+    }
+
+    private func loadAnalytics() {
+        // In a real implementation, this would call the analytics API
+        // For now, we'll simulate loading and show sample data
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.insights = [
+                AnalyticsInsight(
+                    id: "1",
+                    icon: "💤",
+                    description: "Your sleep quality improved when you completed evening mindfulness cards.",
+                    type: .correlation
+                ),
+                AnalyticsInsight(
+                    id: "2",
+                    icon: "💰",
+                    description: "Financial stress decreased after consistent budgeting exercises.",
+                    type: .improvement
+                ),
+                AnalyticsInsight(
+                    id: "3",
+                    icon: "🎯",
+                    description: "Productivity peaks at 10 AM - schedule important cards then.",
+                    type: .pattern
+                )
+            ]
+
+            self.trends = AnalyticsTrends(
+                dates: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                values: [65, 68, 72, 70, 75, 78, 80],
+                trend: .up,
+                average: 72.6,
+                changePercent: 8.2
+            )
+
+            self.isLoading = false
+        }
+    }
+}
+
+struct TrendChart: View {
+    let trends: AnalyticsTrends?
+
+    var body: some View {
+        ZStack {
+            if let trends = trends {
+                // Simple bar chart representation
+                HStack(alignment: .bottom, spacing: 4) {
+                    ForEach(Array(trends.values.enumerated()), id: \.offset) { index, value in
+                        VStack(spacing: 4) {
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.lifeDeckPrimary.opacity(0.8),
+                                            Color.lifeDeckSecondary.opacity(0.6)
+                                        ]),
+                                        startPoint: .bottom,
+                                        endPoint: .top
+                                    )
+                                )
+                                .frame(width: 20, height: CGFloat(value) * 1.2)
+
+                            Text(trends.dates[index])
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.lifeDeckTextTertiary)
+                        }
+                    }
+                }
+                .frame(height: 120)
+
+                // Trend indicator
+                VStack {
+                    Spacer()
+                    HStack {
+                        Image(systemName: trends.trend == .up ? "arrow.up" : "arrow.down")
+                            .foregroundColor(trends.trend == .up ? .lifeDeckSuccess : .lifeDeckError)
+                        Text("\(String(format: "%.1f", trends.changePercent))% this week")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.lifeDeckTextSecondary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.lifeDeckBackground.opacity(0.8))
+                    .cornerRadius(8)
+                }
+            } else {
+                Rectangle()
+                    .fill(Color.lifeDeckCardBorder.opacity(0.3))
+                    .frame(height: 120)
+                    .cornerRadius(12)
+                    .overlay(
+                        Text("📈 Loading trends...")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.lifeDeckTextSecondary)
+                    )
+            }
+        }
     }
 }
 
 struct InsightRow: View {
     let icon: String
     let text: String
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Text(icon)
                 .font(.title3)
-            
+
             Text(text)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.lifeDeckTextSecondary)
@@ -450,4 +548,29 @@ struct InsightRow: View {
                 .fill(Color.lifeDeckBackground.opacity(0.5))
         )
     }
+}
+
+// MARK: - Analytics Models
+
+struct AnalyticsInsight: Identifiable {
+    let id: String
+    let icon: String
+    let description: String
+    let type: InsightType
+}
+
+enum InsightType {
+    case correlation, improvement, pattern, achievement
+}
+
+struct AnalyticsTrends {
+    let dates: [String]
+    let values: [Double]
+    let trend: TrendDirection
+    let average: Double
+    let changePercent: Double
+}
+
+enum TrendDirection {
+    case up, down, stable
 }
