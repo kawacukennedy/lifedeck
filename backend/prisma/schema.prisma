@@ -150,6 +150,27 @@ model DeviceToken {
   @@map("device_tokens")
 }
 
+model LocationTrigger {
+  id                String   @id @default(cuid())
+  userId            String
+  triggerType       LocationTriggerType
+  location          Json? // { latitude, longitude, radius }
+  contexts          String[] // JSON array of required contexts
+  excludedContexts  String[] // JSON array of excluded contexts
+  cardId            String?
+  message           String
+  isActive          Boolean @default(true)
+  cooldownMinutes   Int @default(60)
+  lastTriggered     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User @db.ObjectId
+
+  @@map("location_triggers")
+}
+
 enum Platform {
   IOS
   ANDROID
@@ -228,4 +249,11 @@ enum ActivityType {
   STREAK_MILESTONE
   SUBSCRIPTION_UPGRADE
   PROFILE_UPDATE
+}
+
+enum LocationTriggerType {
+  GEOFENCE_ENTRY
+  GEOFENCE_EXIT
+  CONTEXT_CHANGE
+  TIME_LOCATION
 }

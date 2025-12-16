@@ -8,6 +8,7 @@ import {
   User,
   Crown,
   Palette,
+  HelpCircle,
 } from 'lucide-react';
 
 const navigation = [
@@ -17,6 +18,7 @@ const navigation = [
   { name: 'Premium', href: '/premium', icon: Crown },
   { name: 'Profile', href: '/profile', icon: User },
   { name: 'Design', href: '/design', icon: Palette },
+  { name: 'Help', href: '/help', icon: HelpCircle },
 ];
 
 export default function Sidebar() {

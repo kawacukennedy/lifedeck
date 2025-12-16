@@ -1,12 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { PrismaService } from '../../database/prisma.service';
 import { LifeDomain } from '@prisma/client';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private prisma: PrismaService,
+  ) {}
 
   async getUserAnalytics(userId: string, timeframe: 'week' | 'month' | 'year' = 'month') {
+    const cacheKey = `analytics-${userId}-${timeframe}`;
+
+    // Check cache first
+    const cachedAnalytics = await this.cacheManager.get(cacheKey);
+    if (cachedAnalytics) {
+      return cachedAnalytics;
+    }
+
     const progress = await this.prisma.userProgress.findUnique({
       where: { userId },
     });
@@ -21,23 +34,41 @@ export class AnalyticsService {
     const trends = await this.calculateTrends(userId, timeframe);
     const correlations = await this.analyzeCorrelations(userId);
 
-    return {
+    const analytics = {
       progress,
       activities,
       insights,
       trends,
       correlations,
     };
+
+    // Cache for 30 minutes
+    await this.cacheManager.set(cacheKey, analytics, 30 * 60 * 1000);
+
+    return analytics;
   }
 
   async getLifeScore(userId: string) {
+    const cacheKey = `life-score-${userId}`;
+
+    // Check cache first
+    const cachedScore = await this.cacheManager.get(cacheKey);
+    if (cachedScore !== undefined) {
+      return cachedScore;
+    }
+
     const progress = await this.prisma.userProgress.findUnique({
       where: { userId },
     });
 
-    if (!progress) return 0;
+    const score = progress
+      ? (progress.healthScore + progress.financeScore + progress.productivityScore + progress.mindfulnessScore) / 4
+      : 0;
 
-    return (progress.healthScore + progress.financeScore + progress.productivityScore + progress.mindfulnessScore) / 4;
+    // Cache for 15 minutes
+    await this.cacheManager.set(cacheKey, score, 15 * 60 * 1000);
+
+    return score;
   }
 
   async getDomainAnalytics(userId: string, domain: LifeDomain) {

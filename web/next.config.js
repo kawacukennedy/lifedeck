@@ -13,6 +13,11 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
+  // Performance optimizations
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   async rewrites() {
     return [
       {

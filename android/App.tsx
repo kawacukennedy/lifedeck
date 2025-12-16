@@ -8,6 +8,7 @@ import {store, persistor} from './src/store';
 import AppNavigator from './src/navigation/AppNavigator';
 import {ThemeProvider} from './src/utils/theme';
 import {notificationService} from './src/services/notifications';
+import {locationService} from './src/services/LocationService';
 
 const App = () => {
   useEffect(() => {
@@ -16,7 +17,32 @@ const App = () => {
 
     // Schedule daily reminder
     notificationService.scheduleDailyReminder(9, 0); // 9 AM daily
+
+    // Initialize location services
+    initializeLocationServices();
   }, []);
+
+  const initializeLocationServices = async () => {
+    const hasPermission = await locationService.requestPermissions();
+    if (hasPermission) {
+      // Start location tracking for context-aware notifications
+      locationService.startLocationTracking(
+        async (location) => {
+          // Send location update to backend for processing
+          try {
+            const contexts = locationService.getLocationContext(location);
+            // TODO: Send to backend API
+            console.log('Location update:', location, 'Contexts:', contexts);
+          } catch (error) {
+            console.error('Failed to process location update:', error);
+          }
+        },
+        (error) => {
+          console.error('Location tracking error:', error);
+        },
+      );
+    }
+  };
 
   return (
     <Provider store={store}>

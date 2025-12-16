@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ interface CardComponentProps {
   onAction: (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => void;
 }
 
-const CardComponent: React.FC<CardComponentProps> = ({card, onAction}) => {
+const CardComponent = memo<CardComponentProps>(({card, onAction}) => {
   const getDomainColor = (domain: string) => {
     switch (domain) {
       case 'health':
@@ -102,28 +102,28 @@ const CardComponent: React.FC<CardComponentProps> = ({card, onAction}) => {
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.completeButton]}
-          onPress={() => onAction(card.id, 'complete')}>
+          onPress={useCallback(() => onAction(card.id, 'complete'), [card.id, onAction])}>
           <Icon name="check_circle" size={20} color="#fff" />
           <Text style={styles.completeButtonText}>Complete</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.actionButton, styles.secondaryButton]}
-          onPress={() => onAction(card.id, 'snooze')}>
+          onPress={useCallback(() => onAction(card.id, 'snooze'), [card.id, onAction])}>
           <Icon name="snooze" size={20} color="#888" />
           <Text style={styles.secondaryButtonText}>Snooze</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.actionButton, styles.secondaryButton]}
-          onPress={() => onAction(card.id, 'dismiss')}>
+          onPress={useCallback(() => onAction(card.id, 'dismiss'), [card.id, onAction])}>
           <Icon name="close" size={20} color="#888" />
           <Text style={styles.secondaryButtonText}>Dismiss</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {

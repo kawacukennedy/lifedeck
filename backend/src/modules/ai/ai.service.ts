@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import OpenAI from 'openai';
 import { LifeDomain } from '@prisma/client';
 
@@ -6,7 +8,9 @@ import { LifeDomain } from '@prisma/client';
 export class AiService {
   private openai: OpenAI;
 
-  constructor() {
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -17,6 +21,16 @@ export class AiService {
     domain: LifeDomain,
     userContext: any = {},
   ) {
+    // Create cache key based on user context and domain
+    const contextHash = this.hashUserContext(userContext);
+    const cacheKey = `ai-card-${domain}-${contextHash}`;
+
+    // Check cache first
+    const cachedCard = await this.cacheManager.get(cacheKey);
+    if (cachedCard) {
+      return cachedCard;
+    }
+
     const prompt = this.buildCardGenerationPrompt(domain, userContext);
 
     try {
@@ -39,11 +53,21 @@ export class AiService {
       const response = completion.choices[0]?.message?.content;
       if (!response) throw new Error('No response from OpenAI');
 
-      return this.parseCardResponse(response, domain);
+      const card = this.parseCardResponse(response, domain);
+
+      // Cache the result for 24 hours
+      await this.cacheManager.set(cacheKey, card, 24 * 60 * 60 * 1000);
+
+      return card;
     } catch (error) {
       console.error('AI card generation failed:', error);
       // Fallback to template-based cards
-      return this.generateFallbackCard(domain);
+      const fallbackCard = this.generateFallbackCard(domain);
+
+      // Cache fallback for shorter time (1 hour)
+      await this.cacheManager.set(cacheKey, fallbackCard, 60 * 60 * 1000);
+
+      return fallbackCard;
     }
   }
 
@@ -144,6 +168,26 @@ Make it personal, achievable, and immediately actionable.`;
       return 'LOW';
     }
     return 'MEDIUM';
+  }
+
+  private hashUserContext(userContext: any): string {
+    // Create a simple hash of relevant user context for caching
+    const relevantKeys = ['progress', 'settings', 'subscriptionTier'];
+    const contextString = relevantKeys
+      .map(key => {
+        const value = userContext[key];
+        return value ? JSON.stringify(value) : '';
+      })
+      .join('|');
+
+    // Simple hash function
+    let hash = 0;
+    for (let i = 0; i < contextString.length; i++) {
+      const char = contextString.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString();
   }
 
   private generateFallbackCard(domain: LifeDomain) {

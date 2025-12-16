@@ -15,6 +15,8 @@ import { AiModule } from './modules/ai/ai.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { SocialModule } from './modules/social/social.module';
+import { HealthModule } from './common/health/health.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { SocialModule } from './modules/social/social.module';
     NotificationsModule,
     IntegrationsModule,
     SocialModule,
+    HealthModule,
+    CommonModule,
   ],
 })
 export class AppModule {}

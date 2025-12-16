@@ -1,3 +1,4 @@
+import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useStore, CoachingCard } from '../store/useStore';
 import { webNotificationService } from '../lib/notifications';
@@ -30,11 +31,11 @@ const domainColors = {
   mindfulness: 'text-purple-400',
 };
 
-export default function Card({ card, onAction }: CardProps) {
+const Card = memo(function Card({ card, onAction }: CardProps) {
   const DomainIcon = domainIcons[card.domain];
   const domainColor = domainColors[card.domain];
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = useCallback((event: any, info: any) => {
     const threshold = 100;
     const { offset } = info;
 
@@ -46,7 +47,7 @@ export default function Card({ card, onAction }: CardProps) {
       // Swipe left - dismiss
       onAction(card.id, 'dismiss');
     }
-  };
+  }, [card.id, card.title, onAction]);
 
   return (
     <motion.div
@@ -160,10 +161,10 @@ export default function Card({ card, onAction }: CardProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => {
+          onClick={useCallback(() => {
             onAction(card.id, 'complete');
             webNotificationService.showCardCompletedToast(card.title);
-          }}
+          }, [card.id, card.title, onAction])}
           className="flex-1 bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
         >
           <CheckCircle className="w-4 h-4" />
@@ -173,7 +174,7 @@ export default function Card({ card, onAction }: CardProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => onAction(card.id, 'snooze')}
+          onClick={useCallback(() => onAction(card.id, 'snooze'), [card.id, onAction])}
           className="flex-1 bg-lifedeck-background hover:bg-lifedeck-border text-lifedeck-text font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
         >
           <ClockIcon className="w-4 h-4" />
@@ -183,7 +184,7 @@ export default function Card({ card, onAction }: CardProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => onAction(card.id, 'dismiss')}
+          onClick={useCallback(() => onAction(card.id, 'dismiss'), [card.id, onAction])}
           className="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
         >
           <X className="w-4 h-4" />
@@ -198,4 +199,6 @@ export default function Card({ card, onAction }: CardProps) {
       </div>
     </motion.div>
   );
-}
+});
+
+export default Card;

@@ -9,6 +9,7 @@ import DashboardScreen from '../screens/DashboardScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import PremiumScreen from '../screens/PremiumScreen';
 import DesignShowcaseScreen from '../screens/DesignShowcaseScreen';
+import HelpScreen from '../screens/HelpScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import {RootState} from '../store';
 
@@ -32,6 +33,8 @@ const MainTabNavigator = () => {
             iconName = 'palette';
           } else if (route.name === 'Profile') {
             iconName = 'person';
+          } else if (route.name === 'Help') {
+            iconName = 'help';
           } else {
             iconName = 'circle';
           }
@@ -76,6 +79,11 @@ const MainTabNavigator = () => {
         name="Profile"
         component={ProfileScreen}
         options={{title: 'Profile'}}
+      />
+      <Tab.Screen
+        name="Help"
+        component={HelpScreen}
+        options={{title: 'Help'}}
       />
     </Tab.Navigator>
   );
