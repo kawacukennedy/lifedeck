@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import DeckScreen from '../screens/DeckScreen';
@@ -8,6 +9,8 @@ import DashboardScreen from '../screens/DashboardScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import PremiumScreen from '../screens/PremiumScreen';
 import DesignShowcaseScreen from '../screens/DesignShowcaseScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
+import {RootState} from '../store';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -79,6 +82,8 @@ const MainTabNavigator = () => {
 };
 
 const AppNavigator = () => {
+  const user = useSelector((state: RootState) => state.user);
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -90,11 +95,19 @@ const AppNavigator = () => {
           fontWeight: 'bold',
         },
       }}>
-      <Stack.Screen
-        name="Main"
-        component={MainTabNavigator}
-        options={{headerShown: false}}
-      />
+      {user?.hasCompletedOnboarding ? (
+        <Stack.Screen
+          name="Main"
+          component={MainTabNavigator}
+          options={{headerShown: false}}
+        />
+      ) : (
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{headerShown: false}}
+        />
+      )}
     </Stack.Navigator>
   );
 };
