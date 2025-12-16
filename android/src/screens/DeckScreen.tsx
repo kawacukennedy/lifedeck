@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Animated,
+  PanResponder,
+  Dimensions,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {completeCard, dismissCard, snoozeCard} from '../store/slices/cardsSlice';
 import CardComponent from '../components/CardComponent';
+import SwipeableCard from '../components/SwipeableCard';
 
 const DeckScreen = () => {
   const dispatch = useDispatch();
@@ -70,14 +74,7 @@ const DeckScreen = () => {
         dispatch({type: 'user/completeCard'});
         break;
       case 'dismiss':
-        Alert.alert(
-          'Dismiss Card',
-          'Are you sure you want to dismiss this card?',
-          [
-            {text: 'Cancel', style: 'cancel'},
-            {text: 'Dismiss', onPress: () => dispatch(dismissCard(cardId))},
-          ],
-        );
+        dispatch(dismissCard(cardId));
         break;
       case 'snooze':
         const snoozeUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
@@ -86,8 +83,22 @@ const DeckScreen = () => {
     }
   };
 
+  const handleCardSwipe = (cardId: string, direction: 'left' | 'right') => {
+    if (direction === 'right') {
+      // Swipe right = complete
+      handleCardAction(cardId, 'complete');
+    } else {
+      // Swipe left = dismiss
+      handleCardAction(cardId, 'dismiss');
+    }
+  };
+
   const renderCard = ({item}: {item: any}) => (
-    <CardComponent card={item} onAction={handleCardAction} />
+    <SwipeableCard
+      card={item}
+      onAction={handleCardAction}
+      onSwipe={(direction) => handleCardSwipe(item.id, direction)}
+    />
   );
 
   if (isLoading) {
