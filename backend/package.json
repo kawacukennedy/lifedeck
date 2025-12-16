@@ -48,6 +48,7 @@
     "@nestjs/bull": "^10.0.0",
     "stripe": "^13.0.0",
     "@types/stripe": "^8.0.417",
+    "firebase-admin": "^11.11.0",
     "helmet": "^7.0.0",
     "compression": "^1.7.4"
   },

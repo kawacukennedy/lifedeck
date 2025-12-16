@@ -135,6 +135,26 @@ model Activity {
   @@map("activities")
 }
 
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  Platform
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User @db.ObjectId
+
+  @@map("device_tokens")
+}
+
+enum Platform {
+  IOS
+  ANDROID
+  WEB
+}
+
 model Subscription {
   id                String   @id @default(cuid())
   userId            String   @unique
