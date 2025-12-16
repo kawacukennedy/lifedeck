@@ -59,6 +59,10 @@ export default function Card({ card, onAction }: CardProps) {
       onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.02 }}
       className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border shadow-lg cursor-grab active:cursor-grabbing relative overflow-hidden"
+      role="button"
+      tabIndex={0}
+      aria-label={`${card.title}. ${card.description}. ${card.actionText}`}
+      aria-describedby={`card-benefits-${card.id}`}
     >
       {/* Swipe indicators */}
       <motion.div
@@ -138,7 +142,7 @@ export default function Card({ card, onAction }: CardProps) {
       )}
 
       {card.benefits.length > 0 && (
-        <div className="mb-6">
+        <div className="mb-6" id={`card-benefits-${card.id}`}>
           <h4 className="text-sm font-semibold text-lifedeck-primary mb-2">
             🎯 Benefits:
           </h4>

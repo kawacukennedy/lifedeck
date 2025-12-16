@@ -168,5 +168,18 @@ struct CoachingCardView: View {
                     }
                 }
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(card.title). \(card.description). \(card.actionText)")
+        .accessibilityHint("Swipe right to complete, left to dismiss, or down to snooze")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction(named: "Complete") {
+            onCompleted()
+        }
+        .accessibilityAction(named: "Dismiss") {
+            onDismissed()
+        }
+        .accessibilityAction(named: "Snooze") {
+            onSnoozed()
+        }
     }
 }

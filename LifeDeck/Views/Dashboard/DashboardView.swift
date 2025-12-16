@@ -92,8 +92,10 @@ struct DashboardView: View {
                     )
 .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 2)
                     .padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("Life Score: \(Int(user.progress.lifeScore)) out of 100. \(lifeScoreDescription)")
+                     .accessibilityElement(children: .combine)
+                     .accessibilityLabel("Life Score: \(Int(user.progress.lifeScore)) out of 100. \(lifeScoreDescription)")
+                     .accessibilityHint("Double tap to view detailed analytics")
+                     .accessibilityValue("\(Int(user.progress.lifeScore))%")
                     
                     // Domain Progress
                     VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {

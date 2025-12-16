@@ -48,7 +48,12 @@ const CardComponent: React.FC<CardComponentProps> = ({card, onAction}) => {
   };
 
   return (
-    <View style={[styles.card, {borderLeftColor: getDomainColor(card.domain)}]}>
+    <View
+      style={[styles.card, {borderLeftColor: getDomainColor(card.domain)}]}
+      accessible={true}
+      accessibilityLabel={`${card.title}. ${card.description}. ${card.actionText}`}
+      accessibilityHint="Double tap to expand actions, or swipe to complete or dismiss"
+      accessibilityRole="button">
       <View style={styles.cardHeader}>
         <View style={styles.domainIndicator}>
           <Icon name={card.icon} size={24} color={getDomainColor(card.domain)} />
