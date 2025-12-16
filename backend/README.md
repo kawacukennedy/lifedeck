@@ -56,24 +56,39 @@ npm run start:dev
 
 The API will be available at `http://localhost:3000/v1`
 
-## API Endpoints
+## API Documentation
 
-### Authentication
+The complete API documentation is available in OpenAPI 3.0 format at [`backend/openapi.yaml`](../backend/openapi.yaml)
+
+### Key Endpoints
+
+#### Authentication
 - `POST /v1/auth/login` - User login
 - `POST /v1/auth/register` - User registration
 - `GET /v1/auth/profile` - Get user profile
 
-### Cards
+#### Cards
 - `GET /v1/cards/daily` - Get daily coaching cards
 - `PATCH /v1/cards/:id/complete` - Complete a card
+- `POST /v1/cards` - Create custom card
 
-### Analytics
-- `GET /v1/analytics` - Get user analytics
-- `GET /v1/analytics/life-score` - Get life score
+#### Analytics
+- `GET /v1/analytics` - Get comprehensive analytics
+- `GET /v1/analytics/life-score` - Get current life score
+- `GET /v1/analytics/domain/:domain` - Get domain-specific analytics
 
-### Subscriptions
+#### Subscriptions
 - `GET /v1/subscriptions` - Get subscription status
-- `POST /v1/subscriptions/upgrade` - Upgrade to premium
+- `POST /v1/subscriptions/stripe/create-subscription` - Create Stripe subscription
+- `POST /v1/subscriptions/stripe/cancel` - Cancel subscription
+
+#### Notifications
+- `POST /v1/notifications/register-device` - Register device for push notifications
+- `POST /v1/notifications/test-notification` - Send test notification
+
+#### Integrations
+- `GET /v1/integrations/plaid/link-token` - Get Plaid link token for bank connections
+- `GET /v1/integrations/google-calendar/auth-url` - Get Google Calendar auth URL
 
 ## Database Schema
 
