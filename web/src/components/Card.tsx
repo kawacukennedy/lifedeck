@@ -34,13 +34,58 @@ export default function Card({ card, onAction }: CardProps) {
   const DomainIcon = domainIcons[card.domain];
   const domainColor = domainColors[card.domain];
 
+  const handleDragEnd = (event: any, info: any) => {
+    const threshold = 100;
+    const { offset } = info;
+
+    if (offset.x > threshold) {
+      // Swipe right - complete
+      onAction(card.id, 'complete');
+      webNotificationService.showCardCompletedToast(card.title);
+    } else if (offset.x < -threshold) {
+      // Swipe left - dismiss
+      onAction(card.id, 'dismiss');
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border shadow-lg"
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.7}
+      onDragEnd={handleDragEnd}
+      whileDrag={{ scale: 1.02 }}
+      className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border shadow-lg cursor-grab active:cursor-grabbing relative overflow-hidden"
     >
+      {/* Swipe indicators */}
+      <motion.div
+        className="absolute inset-y-0 left-0 flex items-center justify-start pl-4 pointer-events-none"
+        initial={{ opacity: 0, x: -20 }}
+        whileDrag={{ opacity: 1, x: 0 }}
+        drag="x"
+        dragConstraints={{ left: -100, right: 100 }}
+      >
+        <div className="flex items-center space-x-2 text-red-400">
+          <X className="w-6 h-6" />
+          <span className="font-medium">Dismiss</span>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 pointer-events-none"
+        initial={{ opacity: 0, x: 20 }}
+        whileDrag={{ opacity: 1, x: 0 }}
+        drag="x"
+        dragConstraints={{ left: -100, right: 100 }}
+      >
+        <div className="flex items-center space-x-2 text-green-400">
+          <CheckCircle className="w-6 h-6" />
+          <span className="font-medium">Complete</span>
+        </div>
+      </motion.div>
       <div className="flex items-start justify-between mb-4">
         <div className={`p-3 rounded-full bg-lifedeck-background ${domainColor}`}>
           <DomainIcon className="w-6 h-6" />
@@ -139,6 +184,13 @@ export default function Card({ card, onAction }: CardProps) {
         >
           <X className="w-4 h-4" />
         </motion.button>
+      </div>
+
+      {/* Drag hint */}
+      <div className="mt-4 text-center">
+        <span className="text-xs text-lifedeck-textTertiary">
+          💡 Drag left to dismiss, right to complete
+        </span>
       </div>
     </motion.div>
   );
