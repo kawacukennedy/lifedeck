@@ -140,6 +140,27 @@ class ApiService {
     return response.data;
   }
 
+  // Stripe-specific subscription endpoints
+  async createStripeCustomer(paymentMethodId: string) {
+    const response = await this.axiosInstance.post('/subscriptions/stripe/create-customer', { paymentMethodId });
+    return response.data;
+  }
+
+  async createStripeSubscription(customerId: string, priceId: string) {
+    const response = await this.axiosInstance.post('/subscriptions/stripe/create-subscription', { customerId, priceId });
+    return response.data;
+  }
+
+  async getStripeProducts() {
+    const response = await this.axiosInstance.get('/subscriptions/stripe/products');
+    return response.data;
+  }
+
+  async cancelStripeSubscription(subscriptionId: string) {
+    const response = await this.axiosInstance.post('/subscriptions/stripe/cancel', { subscriptionId });
+    return response.data;
+  }
+
   // Achievement endpoints
   async getUserAchievements() {
     const response = await this.axiosInstance.get('/achievements');
