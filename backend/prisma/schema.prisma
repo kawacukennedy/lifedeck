@@ -24,12 +24,18 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  // Integration tokens
+  googleFitAccessToken  String?
+  googleFitRefreshToken String?
+  appleHealthConnected  Boolean @default(false)
+
   // Relations
   cards             Card[]
   progress          UserProgress?
   settings          UserSettings?
   achievements      Achievement[]
   activities        Activity[]
+  healthData        HealthData[]
 
   @@map("users")
 }
@@ -169,6 +175,26 @@ model LocationTrigger {
   user              User @db.ObjectId
 
   @@map("location_triggers")
+}
+
+model HealthData {
+  id            String   @id @default(cuid())
+  userId        String
+  date          String   // YYYY-MM-DD format
+  steps         Int @default(0)
+  calories      Float @default(0)
+  activeMinutes Int @default(0)
+  sleepHours    Float @default(0)
+  heartRate     Int?
+  source        String   // 'google-fit', 'apple-healthkit', 'manual'
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User @db.ObjectId
+
+  @@unique([userId, date])
+  @@map("health_data")
 }
 
 enum Platform {

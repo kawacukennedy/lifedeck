@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, UseGuards, Request, Query } from '@nestjs/common';
 import { PlaidService } from './plaid.service';
 import { GoogleCalendarService } from './google-calendar.service';
+import { HealthService } from './health.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('integrations')
@@ -9,6 +10,7 @@ export class IntegrationsController {
   constructor(
     private readonly plaidService: PlaidService,
     private readonly googleCalendarService: GoogleCalendarService,
+    private readonly healthService: HealthService,
   ) {}
 
   @Get('plaid/link-token')
@@ -106,5 +108,47 @@ export class IntegrationsController {
       body.title,
       date,
     );
+  }
+
+  // Health Integration
+  @Get('health/google-fit/auth-url')
+  getGoogleFitAuthUrl(@Request() req) {
+    return {
+      auth_url: this.healthService.generateGoogleFitAuthUrl(req.user.id),
+    };
+  }
+
+  @Post('health/google-fit/callback')
+  async handleGoogleFitCallback(@Request() req, @Body() body: { code: string; state: string }) {
+    const tokens = await this.healthService.getGoogleFitTokens(body.code);
+
+    // Store tokens in user profile
+    // This would typically be done in a user service
+    return { success: true, tokens };
+  }
+
+  @Get('health/data')
+  async getHealthData(@Request() req, @Query('days') days?: number) {
+    return await this.healthService.getHealthData(req.user.id, days || 30);
+  }
+
+  @Get('health/insights')
+  async getHealthInsights(@Request() req, @Query('days') days?: number) {
+    return await this.healthService.getHealthInsights(req.user.id, days || 30);
+  }
+
+  @Post('health/sync')
+  async syncHealthData(@Request() req) {
+    return await this.healthService.syncHealthData(req.user.id);
+  }
+
+  @Post('health/apple-health')
+  async processAppleHealthData(@Request() req, @Body() healthData: any) {
+    return await this.healthService.processAppleHealthData(req.user.id, healthData);
+  }
+
+  @Post('health/manual')
+  async storeManualHealthData(@Request() req, @Body() data: { steps: number; calories: number; activeMinutes: number; sleepHours: number; date: string }) {
+    return await this.healthService.storeHealthData(req.user.id, data, 'manual');
   }
 }
