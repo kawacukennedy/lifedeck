@@ -181,6 +181,39 @@ class ApiService {
     const response = await this.axiosInstance.get('/achievements/check');
     return response.data;
   }
+
+  // Health integration endpoints
+  async getHealthData(days?: number) {
+    const params = days ? { days } : {};
+    const response = await this.axiosInstance.get('/integrations/health/data', { params });
+    return response.data;
+  }
+
+  async getHealthInsights(days?: number) {
+    const params = days ? { days } : {};
+    const response = await this.axiosInstance.get('/integrations/health/insights', { params });
+    return response.data;
+  }
+
+  async syncHealthData() {
+    const response = await this.axiosInstance.post('/integrations/health/sync');
+    return response.data;
+  }
+
+  async storeManualHealthData(data: { steps: number; calories: number; activeMinutes: number; sleepHours: number; date: string }) {
+    const response = await this.axiosInstance.post('/integrations/health/manual', data);
+    return response.data;
+  }
+
+  async getGoogleFitAuthUrl() {
+    const response = await this.axiosInstance.get('/integrations/health/google-fit/auth-url');
+    return response.data;
+  }
+
+  async connectGoogleFit(code: string, state: string) {
+    const response = await this.axiosInstance.post('/integrations/health/google-fit/callback', { code, state });
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();

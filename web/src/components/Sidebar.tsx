@@ -10,12 +10,14 @@ import {
   Palette,
   HelpCircle,
   Trophy,
+  Heart,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Deck', href: '/deck', icon: CreditCard },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Health', href: '/health', icon: Heart },
   { name: 'Achievements', href: '/achievements', icon: Trophy },
   { name: 'Premium', href: '/premium', icon: Crown },
   { name: 'Profile', href: '/profile', icon: User },
