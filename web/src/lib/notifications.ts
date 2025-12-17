@@ -48,20 +48,9 @@ class WebNotificationService {
 
   async registerDeviceToken(token: string) {
     try {
-      const response = await fetch('/api/notifications/register-device', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          platform: 'web',
-        }),
-      });
-
-      if (response.ok) {
-        console.log('Web device token registered successfully');
-      }
+      const { apiService } = await import('./api');
+      await apiService.registerDevice(token, 'web');
+      console.log('Web device token registered successfully');
     } catch (error) {
       console.error('Failed to register web device token:', error);
     }
@@ -88,8 +77,20 @@ class WebNotificationService {
   }
 
   sendStreakCelebration(streakCount: number) {
-    toast(`🎉 Amazing! ${streakCount}-day streak!`, {
+    const messages = {
+      3: 'Great start! You\'re building momentum! 🔥',
+      7: 'One week strong! You\'re unstoppable! 💪',
+      14: 'Two weeks! Your habits are becoming second nature! 🌟',
+      30: '30 days! You\'re a habit master! 🏆',
+      50: '50 days! Legendary commitment! 👑',
+      100: '100 days! You\'re absolutely incredible! 🎉',
+    };
+
+    const message = messages[streakCount] || `${streakCount} day streak! Keep it up! 🚀`;
+
+    toast(message, {
       duration: 6000,
+      icon: '🔥',
       style: {
         background: '#4CAF50',
         color: '#fff',
@@ -100,9 +101,59 @@ class WebNotificationService {
   sendAchievementNotification(achievementTitle: string) {
     toast(`🏆 Achievement Unlocked: ${achievementTitle}`, {
       duration: 6000,
+      icon: '🏆',
       style: {
         background: '#FFD700',
         color: '#000',
+      },
+    });
+  }
+
+  sendContextAwareNotification(context: {
+    location?: string;
+    timeOfDay?: string;
+    activity?: string;
+    weather?: string;
+  }) {
+    let title = 'LifeDeck Moment';
+    let body = 'A timely reminder for your well-being';
+
+    // Customize based on context
+    if (context.timeOfDay === 'morning' && context.weather === 'sunny') {
+      title = 'Good Morning! ☀️';
+      body = 'Perfect weather for a mindful walk. Ready to start your day?';
+    } else if (context.location === 'work' && context.timeOfDay === 'afternoon') {
+      title = 'Afternoon Break';
+      body = 'Take 5 minutes for a quick mindfulness exercise at your desk.';
+    } else if (context.activity === 'commuting') {
+      title = 'Commute Time';
+      body = 'Use this time for a breathing exercise or gratitude reflection.';
+    }
+
+    toast(body, {
+      duration: 8000,
+      icon: '💡',
+      style: {
+        background: '#3B6BA5',
+        color: '#fff',
+      },
+    });
+  }
+
+  sendWeeklySummary(summary: {
+    lifeScore: number;
+    cardsCompleted: number;
+    currentStreak: number;
+  }) {
+    const { lifeScore, cardsCompleted, currentStreak } = summary;
+    const message = `This week: ${cardsCompleted} cards completed, ${currentStreak} day streak, Life Score: ${lifeScore}%`;
+
+    toast(message, {
+      duration: 10000,
+      icon: '📊',
+      style: {
+        background: '#2196F3',
+        color: '#fff',
       },
     });
   }
