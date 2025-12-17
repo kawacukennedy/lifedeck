@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { AiService } from '../ai/ai.service';
+import { AchievementsService } from '../achievements/achievements.service';
 import { Card, LifeDomain } from '@prisma/client';
 
 @Injectable()
@@ -8,6 +9,7 @@ export class CardsService {
   constructor(
     private prisma: PrismaService,
     private aiService: AiService,
+    private achievementsService: AchievementsService,
   ) {}
 
   async findDailyCards(userId: string): Promise<Card[]> {
@@ -122,6 +124,9 @@ export class CardsService {
 
     // Update user progress
     await this.updateUserProgress(userId, card.domain);
+
+    // Check for achievement unlocks
+    await this.achievementsService.checkAndUnlockAchievements(userId);
 
     return card;
   }

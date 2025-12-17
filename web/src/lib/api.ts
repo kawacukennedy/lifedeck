@@ -139,6 +139,27 @@ class ApiService {
     const response = await this.axiosInstance.get('/subscriptions/features');
     return response.data;
   }
+
+  // Achievement endpoints
+  async getUserAchievements() {
+    const response = await this.axiosInstance.get('/achievements');
+    return response.data;
+  }
+
+  async getAvailableAchievements() {
+    const response = await this.axiosInstance.get('/achievements/available');
+    return response.data;
+  }
+
+  async getAchievementStats() {
+    const response = await this.axiosInstance.get('/achievements/stats');
+    return response.data;
+  }
+
+  async checkAchievements() {
+    const response = await this.axiosInstance.get('/achievements/check');
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();
