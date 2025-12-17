@@ -80,13 +80,31 @@ class ApiService {
   }
 
   // Analytics endpoints
-  async getAnalytics() {
-    const response = await this.axiosInstance.get('/analytics');
+  async getAnalytics(timeframe?: 'week' | 'month' | 'year') {
+    const params = timeframe ? { timeframe } : {};
+    const response = await this.axiosInstance.get('/analytics', { params });
     return response.data;
   }
 
   async getLifeScore() {
     const response = await this.axiosInstance.get('/analytics/life-score');
+    return response.data;
+  }
+
+  async getDomainAnalytics(domain: string) {
+    const response = await this.axiosInstance.get(`/analytics/domain/${domain}`);
+    return response.data;
+  }
+
+  async getInsights(timeframe?: 'week' | 'month' | 'year') {
+    const params = timeframe ? { timeframe } : {};
+    const response = await this.axiosInstance.get('/analytics/insights', { params });
+    return response.data;
+  }
+
+  async getTrends(timeframe?: 'week' | 'month' | 'year') {
+    const params = timeframe ? { timeframe } : {};
+    const response = await this.axiosInstance.get('/analytics/trends', { params });
     return response.data;
   }
 
