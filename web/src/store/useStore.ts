@@ -12,6 +12,8 @@ export interface User {
   subscriptionExpiryDate?: string;
   progress: UserProgress;
   joinDate: string;
+  preferredDomains?: string[];
+  goals?: string;
 }
 
 export interface UserProgress {

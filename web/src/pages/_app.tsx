@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import '../styles/globals.css';
 import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
@@ -7,7 +8,8 @@ import { webNotificationService } from '../lib/notifications';
 import { Toaster } from 'react-hot-toast';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { setUser } = useStore();
+  const { user, setUser } = useStore();
+  const router = useRouter();
 
   useEffect(() => {
     // Initialize with sample user data
@@ -15,7 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
       id: '1',
       email: 'user@lifedeck.app',
       name: 'Alex Johnson',
-      hasCompletedOnboarding: true,
+      hasCompletedOnboarding: false, // Set to false to test onboarding
       subscriptionTier: 'free' as const,
       progress: {
         healthScore: 65,
@@ -38,6 +40,17 @@ export default function App({ Component, pageProps }: AppProps) {
     webNotificationService.initialize();
     webNotificationService.showWelcomeToast();
   }, [setUser]);
+
+  // Route guard for onboarding
+  useEffect(() => {
+    if (user && !user.hasCompletedOnboarding && router.pathname !== '/onboarding') {
+      // Allow access to auth-related pages
+      const publicPaths = ['/login', '/register', '/onboarding'];
+      if (!publicPaths.includes(router.pathname)) {
+        router.push('/onboarding');
+      }
+    }
+  }, [user, router.pathname, router]);
 
   return (
     <>
