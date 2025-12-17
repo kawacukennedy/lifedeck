@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../store';
-import {completeCard, dismissCard, snoozeCard} from '../store/slices/cardsSlice';
+import {completeCard, dismissCard, snoozeCard, loadDailyCards, completeCardAsync, dismissCardAsync, snoozeCardAsync} from '../store/slices/cardsSlice';
 import CardComponent from '../components/CardComponent';
 import SwipeableCard from '../components/SwipeableCard';
 
@@ -25,61 +25,26 @@ const DeckScreen = () => {
 
   useEffect(() => {
     // Load daily cards on mount
-    loadDailyCards();
+    dispatch(loadDailyCards());
   }, []);
 
-  const loadDailyCards = () => {
-    // TODO: Implement API call to load daily cards
-    // For now, use sample data
-    const sampleCards = [
-      {
-        id: '1',
-        title: 'Take a Mindful Walk',
-        description: 'Step outside for a 10-minute walk and focus on your breathing',
-        actionText: 'Walk for 10 minutes outside',
-        domain: 'health' as const,
-        actionType: 'standard' as const,
-        priority: 'medium' as const,
-        icon: 'directions_walk',
-        tips: ['Leave your phone behind', 'Focus on your breathing'],
-        benefits: ['Improves cardiovascular health', 'Reduces stress'],
-        status: 'pending' as const,
-        createdAt: new Date().toISOString(),
-        aiGenerated: false,
-      },
-      {
-        id: '2',
-        title: 'Review Yesterday\'s Expenses',
-        description: 'Take 5 minutes to review what you spent money on yesterday',
-        actionText: 'Review and categorize yesterday\'s spending',
-        domain: 'finance' as const,
-        actionType: 'standard' as const,
-        priority: 'medium' as const,
-        icon: 'account_balance_wallet',
-        tips: ['Use your banking app', 'Look for unnecessary purchases'],
-        benefits: ['Increases spending awareness', 'Helps identify waste'],
-        status: 'pending' as const,
-        createdAt: new Date().toISOString(),
-        aiGenerated: false,
-      },
-    ];
-
-    dispatch({type: 'cards/setDailyCards', payload: sampleCards});
-  };
-
-  const handleCardAction = (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => {
-    switch (action) {
-      case 'complete':
-        dispatch(completeCard(cardId));
-        dispatch({type: 'user/completeCard'});
-        break;
-      case 'dismiss':
-        dispatch(dismissCard(cardId));
-        break;
-      case 'snooze':
-        const snoozeUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-        dispatch(snoozeCard({id: cardId, until: snoozeUntil}));
-        break;
+  const handleCardAction = async (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => {
+    try {
+      switch (action) {
+        case 'complete':
+          await dispatch(completeCardAsync(cardId));
+          dispatch({type: 'user/completeCard'});
+          break;
+        case 'dismiss':
+          await dispatch(dismissCardAsync(cardId));
+          break;
+        case 'snooze':
+          const snoozeUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+          await dispatch(snoozeCardAsync({id: cardId, until: snoozeUntil}));
+          break;
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to perform card action. Please try again.');
     }
   };
 
@@ -128,7 +93,7 @@ const DeckScreen = () => {
         showsVerticalScrollIndicator={false}
       />
 
-      <TouchableOpacity style={styles.refreshButton} onPress={loadDailyCards}>
+      <TouchableOpacity style={styles.refreshButton} onPress={() => dispatch(loadDailyCards())}>
         <Text style={styles.refreshButtonText}>Refresh Cards</Text>
       </TouchableOpacity>
     </View>
