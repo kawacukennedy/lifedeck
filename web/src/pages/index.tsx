@@ -8,71 +8,26 @@ export default function Home() {
   const {
     user,
     dailyCards,
-    setDailyCards,
     completeCard,
-    setLoading,
+    loadDailyCards,
     loading,
+    error,
   } = useStore();
 
   useEffect(() => {
-    loadDashboardData();
+    loadDailyCards();
   }, []);
 
-  const loadDashboardData = async () => {
-    setLoading(true);
-    try {
-      // Load sample data for now
-      const sampleCards = [
-        {
-          id: '1',
-          title: 'Take a Mindful Walk',
-          description: 'Step outside for a 10-minute walk and focus on your breathing',
-          actionText: 'Walk for 10 minutes outside',
-          domain: 'health' as const,
-          actionType: 'standard' as const,
-          priority: 'medium' as const,
-          icon: 'heart',
-          tips: ['Leave your phone behind', 'Focus on your breathing'],
-          benefits: ['Improves cardiovascular health', 'Reduces stress'],
-          status: 'pending' as const,
-          createdAt: new Date().toISOString(),
-          aiGenerated: false,
-        },
-        {
-          id: '2',
-          title: 'Review Yesterday\'s Expenses',
-          description: 'Take 5 minutes to review what you spent money on yesterday',
-          actionText: 'Review and categorize yesterday\'s spending',
-          domain: 'finance' as const,
-          actionType: 'standard' as const,
-          priority: 'medium' as const,
-          icon: 'dollar-sign',
-          tips: ['Use your banking app', 'Look for unnecessary purchases'],
-          benefits: ['Increases spending awareness', 'Helps identify waste'],
-          status: 'pending' as const,
-          createdAt: new Date().toISOString(),
-          aiGenerated: false,
-        },
-      ];
-
-      setDailyCards(sampleCards);
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCardAction = (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => {
+  const handleCardAction = async (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => {
     switch (action) {
       case 'complete':
-        completeCard(cardId);
+        await completeCard(cardId);
         break;
       case 'dismiss':
-        // Handle dismiss
+        // Handle dismiss - will be implemented
         break;
       case 'snooze':
-        // Handle snooze
+        // Handle snooze - will be implemented
         break;
     }
   };

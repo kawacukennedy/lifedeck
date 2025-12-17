@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { apiService } from '../lib/api';
 
 export interface User {
   id: string;
@@ -50,6 +51,7 @@ interface UIState {
   theme: 'light' | 'dark';
   sidebarOpen: boolean;
   loading: boolean;
+  error: string | null;
 }
 
 interface AppState extends UIState {
@@ -60,11 +62,15 @@ interface AppState extends UIState {
   // Actions
   setUser: (user: User | null) => void;
   updateProgress: (progress: Partial<UserProgress>) => void;
-  completeCard: (cardId: string) => void;
+  completeCard: (cardId: string) => Promise<void>;
+  dismissCard: (cardId: string) => Promise<void>;
+  snoozeCard: (cardId: string, until: string) => Promise<void>;
+  loadDailyCards: () => Promise<void>;
   setDailyCards: (cards: CoachingCard[]) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   setSidebarOpen: (open: boolean) => void;
   setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
 }
 
 const initialProgress: UserProgress = {
@@ -89,6 +95,7 @@ export const useStore = create<AppState>()(
       theme: 'dark',
       sidebarOpen: false,
       loading: false,
+      error: null,
 
       // Actions
       setUser: (user) => set({ user }),
@@ -114,38 +121,117 @@ export const useStore = create<AppState>()(
         }
       },
 
-      completeCard: (cardId) => {
-        const { dailyCards, completedCards, user } = get();
+      completeCard: async (cardId) => {
+        try {
+          set({ loading: true, error: null });
+          await apiService.completeCard(cardId);
 
-        const cardIndex = dailyCards.findIndex((card) => card.id === cardId);
-        if (cardIndex !== -1) {
-          const completedCard = {
-            ...dailyCards[cardIndex],
-            status: 'completed' as const,
-            completedAt: new Date().toISOString(),
-          };
+          const { dailyCards, completedCards, user } = get();
+          const cardIndex = dailyCards.findIndex((card) => card.id === cardId);
 
-          set({
-            dailyCards: dailyCards.filter((_, index) => index !== cardIndex),
-            completedCards: [completedCard, ...completedCards],
-          });
-
-          // Update user progress
-          if (user) {
-            const updatedProgress = {
-              ...user.progress,
-              totalCardsCompleted: user.progress.totalCardsCompleted + 1,
-              lifePoints: user.progress.lifePoints + 10,
-              lastActiveDate: new Date().toISOString(),
+          if (cardIndex !== -1) {
+            const completedCard = {
+              ...dailyCards[cardIndex],
+              status: 'completed' as const,
+              completedAt: new Date().toISOString(),
             };
 
             set({
-              user: {
-                ...user,
-                progress: updatedProgress,
-              },
+              dailyCards: dailyCards.filter((_, index) => index !== cardIndex),
+              completedCards: [completedCard, ...completedCards],
             });
+
+            // Update user progress
+            if (user) {
+              const updatedProgress = {
+                ...user.progress,
+                totalCardsCompleted: user.progress.totalCardsCompleted + 1,
+                lifePoints: user.progress.lifePoints + 10,
+                lastActiveDate: new Date().toISOString(),
+              };
+
+              set({
+                user: {
+                  ...user,
+                  progress: updatedProgress,
+                },
+              });
+            }
           }
+        } catch (error) {
+          console.error('Failed to complete card:', error);
+          set({ error: 'Failed to complete card. Please try again.' });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      dismissCard: async (cardId) => {
+        try {
+          set({ loading: true, error: null });
+          await apiService.dismissCard(cardId);
+
+          const { dailyCards } = get();
+          set({
+            dailyCards: dailyCards.filter((card) => card.id !== cardId),
+          });
+        } catch (error) {
+          console.error('Failed to dismiss card:', error);
+          set({ error: 'Failed to dismiss card. Please try again.' });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      snoozeCard: async (cardId, until) => {
+        try {
+          set({ loading: true, error: null });
+          await apiService.snoozeCard(cardId, until);
+
+          const { dailyCards } = get();
+          const updatedCards = dailyCards.map((card) =>
+            card.id === cardId
+              ? { ...card, status: 'snoozed' as const, snoozedUntil: until }
+              : card
+          );
+          set({ dailyCards: updatedCards });
+        } catch (error) {
+          console.error('Failed to snooze card:', error);
+          set({ error: 'Failed to snooze card. Please try again.' });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      loadDailyCards: async () => {
+        try {
+          set({ loading: true, error: null });
+          const response = await apiService.getDailyCards();
+          set({ dailyCards: response });
+        } catch (error) {
+          console.error('Failed to load daily cards:', error);
+          set({ error: 'Failed to load daily cards. Using sample data.' });
+          // Fallback to sample data
+          const sampleCards = [
+            {
+              id: '1',
+              title: 'Take a Mindful Walk',
+              description: 'Step outside for a 10-minute walk and focus on your breathing',
+              actionText: 'Walk for 10 minutes outside',
+              domain: 'health' as const,
+              actionType: 'standard' as const,
+              priority: 'medium' as const,
+              icon: 'heart',
+              tips: ['Leave your phone behind', 'Focus on your breathing'],
+              benefits: ['Improves cardiovascular health', 'Reduces stress'],
+              status: 'pending' as const,
+              createdAt: new Date().toISOString(),
+              aiGenerated: false,
+            },
+          ];
+          set({ dailyCards: sampleCards });
+        } finally {
+          set({ loading: false });
         }
       },
 
@@ -156,6 +242,8 @@ export const useStore = create<AppState>()(
       setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
 
       setLoading: (loading) => set({ loading }),
+
+      setError: (error) => set({ error }),
     }),
     {
       name: 'lifedeck-storage',

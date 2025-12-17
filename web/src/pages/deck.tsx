@@ -4,64 +4,25 @@ import Layout from '../components/Layout';
 import Card from '../components/Card';
 
 export default function DeckPage() {
-  const { dailyCards, setDailyCards, completeCard } = useStore();
+  const { dailyCards, loadDailyCards, completeCard } = useStore();
 
   useEffect(() => {
     // Load daily cards if not already loaded
     if (dailyCards.length === 0) {
-      loadCards();
+      loadDailyCards();
     }
   }, []);
 
-  const loadCards = () => {
-    // Sample cards for demonstration
-    const sampleCards = [
-      {
-        id: '1',
-        title: 'Take a Mindful Walk',
-        description: 'Step outside for a 10-minute walk and focus on your breathing',
-        actionText: 'Walk for 10 minutes outside',
-        domain: 'health' as const,
-        actionType: 'standard' as const,
-        priority: 'medium' as const,
-        icon: 'heart',
-        tips: ['Leave your phone behind', 'Focus on your breathing'],
-        benefits: ['Improves cardiovascular health', 'Reduces stress'],
-        status: 'pending' as const,
-        createdAt: new Date().toISOString(),
-        aiGenerated: false,
-      },
-      {
-        id: '2',
-        title: 'Review Yesterday\'s Expenses',
-        description: 'Take 5 minutes to review what you spent money on yesterday',
-        actionText: 'Review and categorize yesterday\'s spending',
-        domain: 'finance' as const,
-        actionType: 'standard' as const,
-        priority: 'medium' as const,
-        icon: 'dollar-sign',
-        tips: ['Use your banking app', 'Look for unnecessary purchases'],
-        benefits: ['Increases spending awareness', 'Helps identify waste'],
-        status: 'pending' as const,
-        createdAt: new Date().toISOString(),
-        aiGenerated: false,
-      },
-    ];
-
-    setDailyCards(sampleCards);
-  };
-
-  const handleCardAction = (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => {
+  const handleCardAction = async (cardId: string, action: 'complete' | 'dismiss' | 'snooze') => {
     switch (action) {
       case 'complete':
-        completeCard(cardId);
+        await completeCard(cardId);
         break;
       case 'dismiss':
-        // Handle dismiss - remove from daily cards
-        setDailyCards(dailyCards.filter(card => card.id !== cardId));
+        // Handle dismiss - will be implemented
         break;
       case 'snooze':
-        // Handle snooze - could move to later or hide temporarily
+        // Handle snooze - will be implemented
         break;
     }
   };
@@ -93,12 +54,12 @@ export default function DeckPage() {
             <div className="text-lifedeck-textSecondary mb-4">
               No cards in your deck right now
             </div>
-            <button
-              onClick={loadCards}
-              className="bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-            >
-              Load New Cards
-            </button>
+             <button
+               onClick={loadDailyCards}
+               className="bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+             >
+               Load New Cards
+             </button>
           </div>
         )}
       </div>
