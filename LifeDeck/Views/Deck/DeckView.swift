@@ -49,13 +49,15 @@ struct DeckView: View {
                         })
                     }
                     .frame(maxHeight: .infinity)
-                } else {
-                    DeckView(cards: viewModel.cards) { card, direction in
-                        handleCardAction(card, direction: direction)
-                    }
-                    .frame(maxHeight: .infinity)
-                    .padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
-                }
+                 } else {
+                     DeckView(cards: viewModel.cards) { card, direction in
+                         Task {
+                             await handleCardAction(card, direction: direction)
+                         }
+                     }
+                     .frame(maxHeight: .infinity)
+                     .padding(.horizontal, DesignSystem.Spacing.screenHorizontal)
+                 }
 
                 // Refresh button
                 PrimaryButton(text: "Refresh Cards", onPress: {
@@ -80,15 +82,15 @@ struct DeckView: View {
         }
     }
 
-    private func handleCardAction(_ card: CoachingCard, direction: SwipeDirection) {
+    private func handleCardAction(_ card: CoachingCard, direction: SwipeDirection) async {
         switch direction {
         case .right:
-            viewModel.completeCard(card)
+            await viewModel.completeCard(card)
             user.completeCard()
         case .left:
-            viewModel.dismissCard(card)
+            await viewModel.dismissCard(card)
         case .down:
-            viewModel.snoozeCard(card)
+            await viewModel.snoozeCard(card)
         case .up:
             // Could show details or something
             break

@@ -34,24 +34,38 @@ class DeckViewModel: ObservableObject {
         await loadDailyCards()
     }
 
-    func completeCard(_ card: CoachingCard) {
-        // Mark card as completed
-        if let index = cards.firstIndex(where: { $0.id == card.id }) {
-            cards[index].markCompleted()
+    func completeCard(_ card: CoachingCard) async {
+        do {
+            try await apiService.completeCard(card.id.uuidString)
+            // Update local state
+            if let index = cards.firstIndex(where: { $0.id == card.id }) {
+                cards[index].markCompleted()
+            }
+        } catch {
+            self.error = error
         }
     }
 
-    func dismissCard(_ card: CoachingCard) {
-        // Mark card as dismissed
-        if let index = cards.firstIndex(where: { $0.id == card.id }) {
-            cards[index].markDismissed()
+    func dismissCard(_ card: CoachingCard) async {
+        do {
+            try await apiService.dismissCard(card.id.uuidString)
+            // Remove from local state
+            cards.removeAll { $0.id == card.id }
+        } catch {
+            self.error = error
         }
     }
 
-    func snoozeCard(_ card: CoachingCard) {
-        // Snooze card for later
-        if let index = cards.firstIndex(where: { $0.id == card.id }) {
-            cards[index].snooze(until: Date().addingTimeInterval(24 * 60 * 60)) // 24 hours
+    func snoozeCard(_ card: CoachingCard) async {
+        let snoozeUntil = Date().addingTimeInterval(24 * 60 * 60) // 24 hours
+        do {
+            try await apiService.snoozeCard(card.id.uuidString, until: snoozeUntil)
+            // Update local state
+            if let index = cards.firstIndex(where: { $0.id == card.id }) {
+                cards[index].snooze(until: snoozeUntil)
+            }
+        } catch {
+            self.error = error
         }
     }
 }
