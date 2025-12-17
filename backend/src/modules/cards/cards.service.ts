@@ -22,6 +22,7 @@ export class CardsService {
     // Check premium limits
     const isPremium = user.subscriptionTier === 'PREMIUM';
     const maxCards = isPremium ? 10 : 3; // Premium gets more cards
+    const allowAIGenerated = isPremium; // Only premium users get AI-generated cards
 
     // Check if user has already received cards today
     const today = new Date();
@@ -47,33 +48,39 @@ export class CardsService {
     const cardsNeeded = maxCards - existingCards.length;
 
     try {
-      // Generate AI-powered personalized cards
-      const aiCards = await this.aiService.generateDailyCardSet(userId, {
-        progress: user.progress,
-        settings: user.settings,
-        subscriptionTier: user.subscriptionTier,
-      });
+      let cardsToCreate = [];
 
-      // Limit cards for free users
-      const cardsToCreate = aiCards.slice(0, cardsNeeded);
+      if (allowAIGenerated) {
+        // Generate AI-powered personalized cards for premium users
+        const aiCards = await this.aiService.generateDailyCardSet(userId, {
+          progress: user.progress,
+          settings: user.settings,
+          subscriptionTier: user.subscriptionTier,
+        });
+        cardsToCreate = aiCards.slice(0, cardsNeeded);
+      } else {
+        // Use template-based cards for free users
+        const templateCards = this.getTemplateCards(userId, user.progress).slice(0, cardsNeeded);
+        cardsToCreate = templateCards;
+      }
 
-      // Convert AI cards to database format and save
+      // Convert cards to database format and save
       const savedCards = [];
-      for (const aiCard of cardsToCreate) {
-        const card = await this.prisma.card.create({
+      for (const card of cardsToCreate) {
+        const savedCard = await this.prisma.card.create({
           data: {
-            ...aiCard,
+            ...card,
             userId,
             createdAt: new Date(),
-            isPremium: aiCard.isPremium || false,
+            isPremium: card.isPremium || false,
           },
         });
-        savedCards.push(card);
+        savedCards.push(savedCard);
       }
 
       return [...existingCards, ...savedCards];
     } catch (error) {
-      console.error('Failed to generate AI cards, using fallback:', error);
+      console.error('Failed to generate cards, using fallback:', error);
       // Fallback to sample cards
       const fallbackCards = this.getSampleCards(userId).slice(0, cardsNeeded);
       const savedFallbackCards = [];
@@ -169,10 +176,9 @@ export class CardsService {
     }
   }
 
-  private getSampleCards(userId: string): Card[] {
-    return [
+  private getTemplateCards(userId: string, progress: any): any[] {
+    const templates = [
       {
-        id: '1',
         title: 'Take a Mindful Walk',
         description: 'Step outside for a 10-minute walk and focus on your breathing',
         actionText: 'Walk for 10 minutes outside',
@@ -180,7 +186,92 @@ export class CardsService {
         actionType: 'STANDARD',
         priority: 'MEDIUM',
         icon: 'figure.walk',
-        backgroundColor: null,
+        tips: ['Leave your phone behind', 'Focus on your breathing'],
+        benefits: ['Improves cardiovascular health', 'Reduces stress'],
+        aiGenerated: false,
+        templateId: 'health-walk-001',
+      },
+      {
+        title: 'Review Yesterday\'s Expenses',
+        description: 'Take 5 minutes to review what you spent money on yesterday',
+        actionText: 'Review and categorize yesterday\'s spending',
+        domain: 'FINANCE',
+        actionType: 'STANDARD',
+        priority: 'MEDIUM',
+        icon: 'chart.line.uptrend.xyaxis',
+        tips: ['Use your banking app', 'Look for unnecessary purchases'],
+        benefits: ['Increases spending awareness', 'Helps identify waste'],
+        aiGenerated: false,
+        templateId: 'finance-review-001',
+      },
+      {
+        title: 'Clear Your Desk',
+        description: 'Spend 5 minutes organizing your workspace for better focus',
+        actionText: 'Organize and clear your desk',
+        domain: 'PRODUCTIVITY',
+        actionType: 'QUICK',
+        priority: 'MEDIUM',
+        icon: 'desktopcomputer',
+        tips: ['Keep only essentials visible', 'Use organizers for supplies'],
+        benefits: ['Reduces distractions', 'Improves focus', 'Creates calm environment'],
+        aiGenerated: false,
+        templateId: 'productivity-desk-001',
+      },
+      {
+        title: 'Take 5 Deep Breaths',
+        description: 'Pause and take five slow, intentional breaths',
+        actionText: 'Complete 5 deep breathing cycles',
+        domain: 'MINDFULNESS',
+        actionType: 'QUICK',
+        priority: 'MEDIUM',
+        icon: 'lungs.fill',
+        tips: ['Inhale for 4 counts', 'Hold for 2 counts', 'Exhale for 6 counts'],
+        benefits: ['Reduces stress', 'Improves focus', 'Calms nervous system'],
+        aiGenerated: false,
+        templateId: 'mindfulness-breathing-001',
+      },
+    ];
+
+    // Prioritize domains with lower scores
+    const domainPriority = [
+      { domain: 'HEALTH', score: progress?.healthScore || 0 },
+      { domain: 'FINANCE', score: progress?.financeScore || 0 },
+      { domain: 'PRODUCTIVITY', score: progress?.productivityScore || 0 },
+      { domain: 'MINDFULNESS', score: progress?.mindfulnessScore || 0 },
+    ].sort((a, b) => a.score - b.score);
+
+    const selectedTemplates = [];
+    for (const { domain } of domainPriority) {
+      const domainTemplates = templates.filter(t => t.domain === domain);
+      if (domainTemplates.length > 0) {
+        selectedTemplates.push(domainTemplates[0]);
+        if (selectedTemplates.length >= 3) break;
+      }
+    }
+
+    return selectedTemplates.map(template => ({
+      ...template,
+      status: 'PENDING',
+      createdAt: new Date(),
+      completedAt: null,
+      dismissedAt: null,
+      snoozedUntil: null,
+      viewCount: 0,
+      timeSpentViewing: 0,
+      userId,
+    }));
+  }
+
+  private getSampleCards(userId: string): any[] {
+    return [
+      {
+        title: 'Take a Mindful Walk',
+        description: 'Step outside for a 10-minute walk and focus on your breathing',
+        actionText: 'Walk for 10 minutes outside',
+        domain: 'HEALTH',
+        actionType: 'STANDARD',
+        priority: 'MEDIUM',
+        icon: 'figure.walk',
         tips: ['Leave your phone behind', 'Focus on your breathing'],
         benefits: ['Improves cardiovascular health', 'Reduces stress'],
         status: 'PENDING',
@@ -191,11 +282,10 @@ export class CardsService {
         viewCount: 0,
         timeSpentViewing: 0,
         aiGenerated: false,
-        templateId: null,
+        templateId: 'health-walk-001',
         userId,
       },
       {
-        id: '2',
         title: 'Review Yesterday\'s Expenses',
         description: 'Take 5 minutes to review what you spent money on yesterday',
         actionText: 'Review and categorize yesterday\'s spending',
@@ -203,7 +293,6 @@ export class CardsService {
         actionType: 'STANDARD',
         priority: 'MEDIUM',
         icon: 'chart.line.uptrend.xyaxis',
-        backgroundColor: null,
         tips: ['Use your banking app', 'Look for unnecessary purchases'],
         benefits: ['Increases spending awareness', 'Helps identify waste'],
         status: 'PENDING',
@@ -214,9 +303,9 @@ export class CardsService {
         viewCount: 0,
         timeSpentViewing: 0,
         aiGenerated: false,
-        templateId: null,
+        templateId: 'finance-review-001',
         userId,
       },
-    ] as Card[];
+    ];
   }
 }

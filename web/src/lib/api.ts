@@ -121,12 +121,22 @@ class ApiService {
 
   // Subscription endpoints
   async getSubscriptionStatus() {
-    const response = await this.axiosInstance.get('/subscriptions/status');
+    const response = await this.axiosInstance.get('/subscriptions');
     return response.data;
   }
 
   async createSubscription(subscriptionData: any) {
-    const response = await this.axiosInstance.post('/subscriptions', subscriptionData);
+    const response = await this.axiosInstance.post('/subscriptions/upgrade', subscriptionData);
+    return response.data;
+  }
+
+  async cancelSubscription() {
+    const response = await this.axiosInstance.post('/subscriptions/cancel');
+    return response.data;
+  }
+
+  async getPremiumFeatures() {
+    const response = await this.axiosInstance.get('/subscriptions/features');
     return response.data;
   }
 }
