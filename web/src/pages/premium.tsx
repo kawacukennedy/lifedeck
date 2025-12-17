@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { apiService } from '../lib/api';
 import Layout from '../components/Layout';
+import StripePaymentForm from '../components/StripePaymentForm';
 import { motion } from 'framer-motion';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import {
   Crown,
   Check,
@@ -14,6 +17,7 @@ import {
   Target,
   Shield,
   Sparkles,
+  X,
 } from 'lucide-react';
 
 interface SubscriptionPlan {
@@ -104,10 +108,18 @@ const premiumFeatures = [
   },
 ];
 
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+
 export default function PremiumPage() {
   const { user } = useStore();
   const [loading, setLoading] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [stripeProducts, setStripeProducts] = useState<any>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
     loadSubscriptionStatus();
@@ -115,25 +127,37 @@ export default function PremiumPage() {
 
   const loadSubscriptionStatus = async () => {
     try {
-      const response = await apiService.getSubscriptionStatus();
-      setSubscription(response);
+      const [subscriptionResponse, productsResponse] = await Promise.all([
+        apiService.getSubscriptionStatus(),
+        apiService.getStripeProducts(),
+      ]);
+      setSubscription(subscriptionResponse);
+      setStripeProducts(productsResponse.products);
     } catch (error) {
-      console.error('Failed to load subscription:', error);
+      console.error('Failed to load subscription data:', error);
     }
   };
 
-  const handleSubscribe = async (planId: string) => {
-    setLoading(true);
-    try {
-      // TODO: Integrate with Stripe/Payment processor
-      console.log('Subscribing to plan:', planId);
-      // const response = await apiService.createSubscription({ planId });
-      // Handle payment flow
-    } catch (error) {
-      console.error('Failed to subscribe:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSubscribe = (plan: SubscriptionPlan) => {
+    if (isPremium) return;
+    setSelectedPlan(plan);
+    setShowPaymentModal(true);
+    setPaymentError(null);
+  };
+
+  const handlePaymentSuccess = async (stripeSubscription: any) => {
+    setShowPaymentModal(false);
+    setSelectedPlan(null);
+    // Reload subscription status to reflect the new premium status
+    await loadSubscriptionStatus();
+    // Show success message
+    setShowSuccessMessage(true);
+    // Hide success message after 5 seconds
+    setTimeout(() => setShowSuccessMessage(false), 5000);
+  };
+
+  const handlePaymentError = (error: string) => {
+    setPaymentError(error);
   };
 
   const isPremium = user?.subscriptionTier === 'premium' || subscription?.tier === 'PREMIUM';
@@ -158,6 +182,28 @@ export default function PremiumPage() {
             Get unlimited access to AI-powered coaching, advanced analytics, and exclusive features.
           </p>
         </motion.div>
+
+        {/* Success Message */}
+        {showSuccessMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl p-6 mb-12"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                <Check className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-green-400">Welcome to LifeDeck Premium!</h3>
+                <p className="text-lifedeck-textSecondary">
+                  Your subscription has been activated. Enjoy all premium features!
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Current Status */}
         {isPremium && (
@@ -235,19 +281,19 @@ export default function PremiumPage() {
                 ))}
               </ul>
 
-              <button
-                onClick={() => handleSubscribe(plan.id)}
-                disabled={loading || isPremium}
-                className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
-                  isPremium
-                    ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                    : plan.popular
-                    ? 'bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white'
-                    : 'bg-lifedeck-background hover:bg-lifedeck-border text-lifedeck-text'
-                }`}
-              >
-                {isPremium ? 'Current Plan' : loading ? 'Processing...' : 'Subscribe Now'}
-              </button>
+               <button
+                 onClick={() => handleSubscribe(plan)}
+                 disabled={loading || isPremium}
+                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                   isPremium
+                     ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                     : plan.popular
+                     ? 'bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white'
+                     : 'bg-lifedeck-background hover:bg-lifedeck-border text-lifedeck-text'
+                 }`}
+               >
+                 {isPremium ? 'Current Plan' : loading ? 'Processing...' : 'Subscribe Now'}
+               </button>
             </div>
           ))}
         </motion.div>
@@ -336,6 +382,56 @@ export default function PremiumPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Payment Modal */}
+        {showPaymentModal && selectedPlan && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-lifedeck-surface rounded-xl max-w-md w-full p-6 border border-lifedeck-border"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-lifedeck-text">
+                  Subscribe to {selectedPlan.name}
+                </h3>
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  className="text-lifedeck-textSecondary hover:text-lifedeck-text"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-lifedeck-textSecondary">Plan</span>
+                  <span className="font-semibold text-lifedeck-text">{selectedPlan.name}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-lifedeck-textSecondary">Price</span>
+                  <span className="font-semibold text-lifedeck-text">
+                    ${selectedPlan.price}/{selectedPlan.interval}
+                  </span>
+                </div>
+              </div>
+
+              {paymentError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{paymentError}</p>
+                </div>
+              )}
+
+              <Elements stripe={stripePromise}>
+                <StripePaymentForm
+                  priceId={stripeProducts?.[selectedPlan.id]?.id || ''}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                />
+              </Elements>
+            </motion.div>
+          </div>
+        )}
       </div>
     </Layout>
   );
