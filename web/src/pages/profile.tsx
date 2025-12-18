@@ -70,6 +70,11 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile');
+  const [integrationStatus, setIntegrationStatus] = useState({
+    googleCalendar: false,
+    googleFit: false,
+    plaid: false,
+  });
 
   useEffect(() => {
     loadProfileData();
@@ -84,23 +89,26 @@ export default function ProfilePage() {
       ]);
 
       setProfile(profileResponse);
-       setSettings(settingsResponse || {
-         notificationsEnabled: true,
-         dailyReminderTime: '09:00',
-         preferredDomains: ['health', 'productivity'],
-         maxDailyCards: 5,
-         soundEnabled: true,
-         hapticEnabled: true,
-         dataShareEnabled: false,
-         healthKitEnabled: false,
-         calendarEnabled: false,
-         locationEnabled: false,
-         contextAwareEnabled: false,
-         morningReminders: false,
-         workBreakReminders: false,
-         commuteReminders: false,
-         locationBasedReminders: false,
-       });
+      setSettings(settingsResponse || {
+        notificationsEnabled: true,
+        dailyReminderTime: '09:00',
+        preferredDomains: ['health', 'productivity'],
+        maxDailyCards: 5,
+        soundEnabled: true,
+        hapticEnabled: true,
+        dataShareEnabled: false,
+        healthKitEnabled: false,
+        calendarEnabled: false,
+        locationEnabled: false,
+        contextAwareEnabled: false,
+        morningReminders: false,
+        workBreakReminders: false,
+        commuteReminders: false,
+        locationBasedReminders: false,
+      });
+
+      // Load integration status
+      await loadIntegrationStatus();
     } catch (error) {
       console.error('Failed to load profile:', error);
       // Use store data as fallback
@@ -124,6 +132,20 @@ export default function ProfilePage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadIntegrationStatus = async () => {
+    try {
+      // This would call API endpoints to check connection status
+      // For now, mock the status
+      setIntegrationStatus({
+        googleCalendar: false, // Would check if tokens exist
+        googleFit: false,
+        plaid: false,
+      });
+    } catch (error) {
+      console.error('Failed to load integration status:', error);
     }
   };
 
@@ -590,59 +612,121 @@ export default function ProfilePage() {
              </div>
 
              {/* Integrations */}
-            <div className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border">
-              <h2 className="text-xl font-semibold text-lifedeck-text mb-6">Integrations</h2>
+             <div className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border">
+               <h2 className="text-xl font-semibold text-lifedeck-text mb-6">Integrations</h2>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-lifedeck-text">Health Data</h3>
-                    <p className="text-sm text-lifedeck-textSecondary">Sync with Apple Health or Google Fit</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.healthKitEnabled}
-                      onChange={(e) => setSettings({ ...settings, healthKitEnabled: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
-                  </label>
-                </div>
+               <div className="space-y-6">
+                 <div className="flex items-center justify-between">
+                   <div className="flex-1">
+                     <div className="flex items-center space-x-3">
+                       <h3 className="font-medium text-lifedeck-text">Google Calendar</h3>
+                       {integrationStatus.googleCalendar ? (
+                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Connected</span>
+                       ) : (
+                         <span className="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded-full">Not Connected</span>
+                       )}
+                     </div>
+                     <p className="text-sm text-lifedeck-textSecondary">Sync habits and schedule reminders</p>
+                   </div>
+                   <div className="flex items-center space-x-3">
+                     <label className="relative inline-flex items-center cursor-pointer">
+                       <input
+                         type="checkbox"
+                         checked={settings.calendarEnabled}
+                         onChange={(e) => setSettings({ ...settings, calendarEnabled: e.target.checked })}
+                         className="sr-only peer"
+                       />
+                       <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                     </label>
+                     <button
+                       onClick={() => window.open('/api/integrations/google-calendar/auth-url', '_blank')}
+                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                         integrationStatus.googleCalendar
+                           ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+                           : 'bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white'
+                       }`}
+                     >
+                       {integrationStatus.googleCalendar ? 'Disconnect' : 'Connect'}
+                     </button>
+                   </div>
+                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-lifedeck-text">Calendar Sync</h3>
-                    <p className="text-sm text-lifedeck-textSecondary">Sync habits with your calendar</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.calendarEnabled}
-                      onChange={(e) => setSettings({ ...settings, calendarEnabled: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
-                  </label>
-                </div>
+                 <div className="flex items-center justify-between">
+                   <div className="flex-1">
+                     <div className="flex items-center space-x-3">
+                       <h3 className="font-medium text-lifedeck-text">Google Fit</h3>
+                       {integrationStatus.googleFit ? (
+                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Connected</span>
+                       ) : (
+                         <span className="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded-full">Not Connected</span>
+                       )}
+                     </div>
+                     <p className="text-sm text-lifedeck-textSecondary">Sync health and fitness data</p>
+                   </div>
+                   <div className="flex items-center space-x-3">
+                     <label className="relative inline-flex items-center cursor-pointer">
+                       <input
+                         type="checkbox"
+                         checked={settings.healthKitEnabled}
+                         onChange={(e) => setSettings({ ...settings, healthKitEnabled: e.target.checked })}
+                         className="sr-only peer"
+                       />
+                       <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                     </label>
+                     <button
+                       onClick={() => window.open('/api/integrations/health/google-fit/auth-url', '_blank')}
+                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                         integrationStatus.googleFit
+                           ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+                           : 'bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white'
+                       }`}
+                     >
+                       {integrationStatus.googleFit ? 'Disconnect' : 'Connect'}
+                     </button>
+                   </div>
+                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-lifedeck-text">Location Services</h3>
-                    <p className="text-sm text-lifedeck-textSecondary">Enable location-based reminders</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.locationEnabled}
-                      onChange={(e) => setSettings({ ...settings, locationEnabled: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
-                  </label>
-                </div>
-              </div>
-            </div>
+                 <div className="flex items-center justify-between">
+                   <div className="flex-1">
+                     <div className="flex items-center space-x-3">
+                       <h3 className="font-medium text-lifedeck-text">Plaid (Finance)</h3>
+                       {integrationStatus.plaid ? (
+                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Connected</span>
+                       ) : (
+                         <span className="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded-full">Not Connected</span>
+                       )}
+                     </div>
+                     <p className="text-sm text-lifedeck-textSecondary">Connect bank accounts for spending insights</p>
+                   </div>
+                   <button
+                     onClick={() => window.open('/api/integrations/plaid/link-token', '_blank')}
+                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                       integrationStatus.plaid
+                         ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+                         : 'bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white'
+                     }`}
+                   >
+                     {integrationStatus.plaid ? 'Disconnect' : 'Connect'}
+                   </button>
+                 </div>
+
+                 <div className="flex items-center justify-between">
+                   <div>
+                     <h3 className="font-medium text-lifedeck-text">Location Services</h3>
+                     <p className="text-sm text-lifedeck-textSecondary">Enable location-based reminders</p>
+                   </div>
+                   <label className="relative inline-flex items-center cursor-pointer">
+                     <input
+                       type="checkbox"
+                       checked={settings.locationEnabled}
+                       onChange={(e) => setSettings({ ...settings, locationEnabled: e.target.checked })}
+                       className="sr-only peer"
+                     />
+                     <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                   </label>
+                 </div>
+               </div>
+             </div>
 
             {/* Preferences */}
             <div className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border">
