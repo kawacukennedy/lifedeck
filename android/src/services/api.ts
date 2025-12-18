@@ -66,8 +66,13 @@ export const cardsAPI = {
 };
 
 export const analyticsAPI = {
-  getAnalytics: () => api.get('/analytics'),
+  getAnalytics: (timeframe: 'week' | 'month' | 'year' = 'month') =>
+    api.get(`/analytics?timeframe=${timeframe}`),
   getLifeScore: () => api.get('/analytics/life-score'),
+  getTrends: (timeframe: 'week' | 'month' | 'year' = 'month') =>
+    api.get(`/analytics/trends?timeframe=${timeframe}`),
+  getInsights: (timeframe: 'week' | 'month' | 'year' = 'month') =>
+    api.get(`/analytics/insights?timeframe=${timeframe}`),
 };
 
 export const usersAPI = {

@@ -21,6 +21,12 @@ interface AnalyticsData {
     values: number[];
     trend: 'up' | 'down' | 'stable';
   };
+  insights?: Array<{
+    type: string;
+    title: string;
+    description: string;
+    impact: string;
+  }>;
 }
 
 const DashboardScreen = () => {
@@ -37,8 +43,17 @@ const DashboardScreen = () => {
   const loadAnalytics = async () => {
     try {
       if (isPremium) {
-        const response = await apiService.getAnalytics('month');
-        setAnalytics(response);
+        const [analyticsResponse, trendsResponse, insightsResponse] = await Promise.all([
+          apiService.getAnalytics(timeframe),
+          apiService.getTrends(timeframe),
+          apiService.getInsights(timeframe),
+        ]);
+
+        setAnalytics({
+          progress: analyticsResponse.progress,
+          trends: trendsResponse,
+          insights: insightsResponse,
+        });
       } else {
         // Free users only get basic progress
         if (user?.progress) {
@@ -49,6 +64,7 @@ const DashboardScreen = () => {
               values: [],
               trend: 'stable',
             },
+            insights: [],
           });
         }
       }
@@ -63,6 +79,7 @@ const DashboardScreen = () => {
             values: [],
             trend: 'stable',
           },
+          insights: [],
         });
       }
     } finally {
