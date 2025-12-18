@@ -36,7 +36,22 @@ export const loadDailyCards = createAsyncThunk(
 
 export const completeCardAsync = createAsyncThunk(
   'cards/completeCard',
-  async (cardId: string, { rejectWithValue }) => {
+  async (cardId: string, { getState, dispatch, rejectWithValue }) => {
+    const state = getState() as any;
+    const isOnline = state.cards.isOnline;
+
+    if (!isOnline) {
+      // Add to pending actions for offline sync
+      dispatch(addPendingAction({
+        id: `complete-${cardId}-${Date.now()}`,
+        type: 'complete',
+        cardId,
+        timestamp: Date.now(),
+      }));
+      // Still update local state immediately
+      return { cardId, offline: true };
+    }
+
     try {
       const response = await cardsAPI.completeCard(cardId);
       return { cardId, card: response.data };
@@ -70,11 +85,55 @@ export const snoozeCardAsync = createAsyncThunk(
   },
 );
 
+export const syncPendingActions = createAsyncThunk(
+  'cards/syncPendingActions',
+  async (_, { getState, dispatch, rejectWithValue }) => {
+    const state = getState() as any;
+    const pendingActions = state.cards.pendingActions;
+
+    if (pendingActions.length === 0) return;
+
+    const results = [];
+
+    for (const action of pendingActions) {
+      try {
+        switch (action.type) {
+          case 'complete':
+            await cardsAPI.completeCard(action.cardId);
+            break;
+          case 'dismiss':
+            await cardsAPI.dismissCard(action.cardId);
+            break;
+          case 'snooze':
+            await cardsAPI.snoozeCard(action.cardId, action.data.until);
+            break;
+        }
+        results.push({ id: action.id, success: true });
+        dispatch(removePendingAction(action.id));
+      } catch (error) {
+        results.push({ id: action.id, success: false, error });
+      }
+    }
+
+    return results;
+  },
+);
+
+interface PendingAction {
+  id: string;
+  type: 'complete' | 'dismiss' | 'snooze';
+  cardId: string;
+  data?: any;
+  timestamp: number;
+}
+
 interface CardsState {
   dailyCards: CoachingCard[];
   completedCards: CoachingCard[];
   isLoading: boolean;
   error: string | null;
+  isOnline: boolean;
+  pendingActions: PendingAction[];
 }
 
 const initialState: CardsState = {
@@ -82,6 +141,8 @@ const initialState: CardsState = {
   completedCards: [],
   isLoading: false,
   error: null,
+  isOnline: true,
+  pendingActions: [],
 };
 
 const cardsSlice = createSlice({
@@ -131,6 +192,24 @@ const cardsSlice = createSlice({
     },
     clearError: state => {
       state.error = null;
+    },
+    setOnlineStatus: (state, action: PayloadAction<boolean>) => {
+      state.isOnline = action.payload;
+      if (action.payload) {
+        // Trigger sync when coming back online
+        // This will be handled by middleware
+      }
+    },
+    addPendingAction: (state, action: PayloadAction<PendingAction>) => {
+      state.pendingActions.push(action.payload);
+    },
+    removePendingAction: (state, action: PayloadAction<string>) => {
+      state.pendingActions = state.pendingActions.filter(
+        pending => pending.id !== action.payload
+      );
+    },
+    clearPendingActions: state => {
+      state.pendingActions = [];
     },
   },
   extraReducers: (builder) => {
@@ -182,6 +261,13 @@ const cardsSlice = createSlice({
           state.dailyCards[cardIndex].status = 'snoozed';
           state.dailyCards[cardIndex].snoozedUntil = action.payload.until;
         }
+      })
+      .addCase(syncPendingActions.fulfilled, (state, action) => {
+        // Handle sync results if needed
+        console.log('Sync completed:', action.payload);
+      })
+      .addCase(syncPendingActions.rejected, (state, action) => {
+        console.error('Sync failed:', action.payload);
       });
   },
 });
@@ -194,7 +280,11 @@ export const {
   snoozeCard,
   setError,
   clearError,
+  setOnlineStatus,
+  addPendingAction,
+  removePendingAction,
+  clearPendingActions,
 } = cardsSlice.actions;
 
-export { loadDailyCards, completeCardAsync, dismissCardAsync, snoozeCardAsync };
+export { loadDailyCards, completeCardAsync, dismissCardAsync, snoozeCardAsync, syncPendingActions };
 export default cardsSlice.reducer;
