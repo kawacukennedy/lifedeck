@@ -45,10 +45,14 @@ struct ProfileView: View {
                         Text("Settings")
                             .font(.headline)
                             .padding(.horizontal)
-                        
+
                         VStack(spacing: 12) {
                             NavigationLink(destination: NotificationSettingsView()) {
                                 SettingsRow(title: "Notifications", systemImage: "bell", hasChevron: true)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            NavigationLink(destination: IntegrationSettingsView()) {
+                                SettingsRow(title: "Integrations", systemImage: "link", hasChevron: true)
                             }
                             .buttonStyle(PlainButtonStyle())
                             SettingsRow(title: "Data & Privacy", systemImage: "lock", hasChevron: true)
