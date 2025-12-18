@@ -28,14 +28,30 @@ const DashboardScreen = () => {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isPremium = user?.subscriptionTier === 'premium';
+
   useEffect(() => {
     loadAnalytics();
   }, []);
 
   const loadAnalytics = async () => {
     try {
-      const response = await apiService.getAnalytics('month');
-      setAnalytics(response);
+      if (isPremium) {
+        const response = await apiService.getAnalytics('month');
+        setAnalytics(response);
+      } else {
+        // Free users only get basic progress
+        if (user?.progress) {
+          setAnalytics({
+            progress: user.progress,
+            trends: {
+              dates: [],
+              values: [],
+              trend: 'stable',
+            },
+          });
+        }
+      }
     } catch (error) {
       console.error('Failed to load analytics:', error);
       // Fallback to user progress
@@ -124,70 +140,84 @@ const DashboardScreen = () => {
         </View>
       </View>
 
-      {/* Domain Breakdown */}
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Domain Breakdown</Text>
-        <PieChart
-          data={[
-            {
-              name: 'Health',
-              population: analytics.progress.healthScore,
-              color: '#4CAF50',
-              legendFontColor: '#fff',
-              legendFontSize: 12,
-            },
-            {
-              name: 'Finance',
-              population: analytics.progress.financeScore,
-              color: '#2196F3',
-              legendFontColor: '#fff',
-              legendFontSize: 12,
-            },
-            {
-              name: 'Productivity',
-              population: analytics.progress.productivityScore,
-              color: '#FF9800',
-              legendFontColor: '#fff',
-              legendFontSize: 12,
-            },
-            {
-              name: 'Mindfulness',
-              population: analytics.progress.mindfulnessScore,
-              color: '#9C27B0',
-              legendFontColor: '#fff',
-              legendFontSize: 12,
-            },
-          ]}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-        />
-      </View>
+      {isPremium ? (
+        <>
+          {/* Domain Breakdown */}
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Domain Breakdown</Text>
+            <PieChart
+              data={[
+                {
+                  name: 'Health',
+                  population: analytics.progress.healthScore,
+                  color: '#4CAF50',
+                  legendFontColor: '#fff',
+                  legendFontSize: 12,
+                },
+                {
+                  name: 'Finance',
+                  population: analytics.progress.financeScore,
+                  color: '#2196F3',
+                  legendFontColor: '#fff',
+                  legendFontSize: 12,
+                },
+                {
+                  name: 'Productivity',
+                  population: analytics.progress.productivityScore,
+                  color: '#FF9800',
+                  legendFontColor: '#fff',
+                  legendFontSize: 12,
+                },
+                {
+                  name: 'Mindfulness',
+                  population: analytics.progress.mindfulnessScore,
+                  color: '#9C27B0',
+                  legendFontColor: '#fff',
+                  legendFontSize: 12,
+                },
+              ]}
+              width={screenWidth - 40}
+              height={220}
+              chartConfig={chartConfig}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="15"
+            />
+          </View>
 
-      {/* Activity Trends */}
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Activity Trends (Last 7 Days)</Text>
-        <LineChart
-          data={trendData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          bezier
-          style={styles.chart}
-        />
-      </View>
+          {/* Activity Trends */}
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Activity Trends (Last 7 Days)</Text>
+            <LineChart
+              data={trendData}
+              width={screenWidth - 40}
+              height={220}
+              chartConfig={chartConfig}
+              bezier
+              style={styles.chart}
+            />
+          </View>
 
-      {/* Trend Indicator */}
-      <View style={styles.trendContainer}>
-        <Text style={styles.trendText}>
-          Trend: {analytics.trends.trend === 'up' ? '📈 Trending Up' :
-                  analytics.trends.trend === 'down' ? '📉 Trending Down' :
-                  '➡️ Stable'}
-        </Text>
-      </View>
+          {/* Trend Indicator */}
+          <View style={styles.trendContainer}>
+            <Text style={styles.trendText}>
+              Trend: {analytics.trends.trend === 'up' ? '📈 Trending Up' :
+                      analytics.trends.trend === 'down' ? '📉 Trending Down' :
+                      '➡️ Stable'}
+            </Text>
+          </View>
+        </>
+      ) : (
+        <View style={styles.premiumContainer}>
+          <Text style={styles.premiumTitle}>🔓 Advanced Analytics</Text>
+          <Text style={styles.premiumDescription}>
+            Unlock detailed charts, trends, and insights with LifeDeck Premium
+          </Text>
+          <View style={styles.upgradeButton}>
+            <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -251,6 +281,37 @@ const styles = StyleSheet.create({
   },
   trendText: {
     fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  premiumContainer: {
+    alignItems: 'center',
+    padding: 30,
+    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(33, 150, 243, 0.3)',
+    marginBottom: 20,
+  },
+  premiumTitle: {
+    fontSize: 20,
+    color: '#2196F3',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  premiumDescription: {
+    fontSize: 14,
+    color: '#888',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  upgradeButton: {
+    backgroundColor: '#2196F3',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  upgradeButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
