@@ -10,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CardComponent from './CardComponent';
 import {CoachingCard} from '../store/slices/cardsSlice';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const {width} = Dimensions.get('window');
 const SWIPE_THRESHOLD = width * 0.3;
@@ -37,56 +38,87 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({card, onAction, onSwipe}) 
       onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {
         useNativeDriver: false,
       }),
-      onPanResponderRelease: (evt, gestureState) => {
-        pan.flattenOffset();
+       onPanResponderRelease: (evt, gestureState) => {
+         pan.flattenOffset();
 
-        if (Math.abs(gestureState.dx) > SWIPE_THRESHOLD) {
-          const direction = gestureState.dx > 0 ? 'right' : 'left';
-          onSwipe(direction);
+         if (Math.abs(gestureState.dx) > SWIPE_THRESHOLD) {
+           const direction = gestureState.dx > 0 ? 'right' : 'left';
+           onSwipe(direction);
 
-          // Animate card off screen
-          Animated.timing(pan, {
-            toValue: {x: direction === 'right' ? width : -width, y: 0},
-            duration: 300,
-            useNativeDriver: false,
-          }).start(() => {
-            // Reset position after animation
-            pan.setValue({x: 0, y: 0});
-          });
-        } else {
-          // Snap back to center
-          Animated.spring(pan, {
-            toValue: {x: 0, y: 0},
-            useNativeDriver: false,
-          }).start();
-        }
-      },
+           // Haptic feedback for successful swipe
+           // ReactNativeHapticFeedback.trigger('impactLight');
+
+           // Animate card off screen with bounce effect
+           Animated.sequence([
+             Animated.timing(pan, {
+               toValue: {x: direction === 'right' ? width * 0.8 : -width * 0.8, y: 0},
+               duration: 200,
+               useNativeDriver: false,
+             }),
+             Animated.timing(pan, {
+               toValue: {x: direction === 'right' ? width : -width, y: 0},
+               duration: 150,
+               useNativeDriver: false,
+             }),
+           ]).start(() => {
+             // Reset position after animation
+             pan.setValue({x: 0, y: 0});
+           });
+         } else {
+           // Snap back to center with spring animation
+           Animated.spring(pan, {
+             toValue: {x: 0, y: 0},
+             friction: 5,
+             tension: 40,
+             useNativeDriver: false,
+           }).start();
+         }
+       },
     }),
   ).current;
 
   const getCardStyle = () => {
     const rotate = pan.x.interpolate({
       inputRange: [-width, 0, width],
-      outputRange: ['-10deg', '0deg', '10deg'],
+      outputRange: ['-8deg', '0deg', '8deg'],
+    });
+
+    const scale = pan.x.interpolate({
+      inputRange: [-width, -SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD, width],
+      outputRange: [0.95, 0.98, 1, 0.98, 0.95],
+    });
+
+    const opacity = pan.x.interpolate({
+      inputRange: [-width, -SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD, width],
+      outputRange: [0.7, 0.9, 1, 0.9, 0.7],
     });
 
     return {
-      transform: [{translateX: pan.x}, {rotate}],
+      transform: [{translateX: pan.x}, {rotate}, {scale}],
+      opacity,
     };
   };
 
   const getActionIndicator = () => {
     const translateX = pan.x.interpolate({
       inputRange: [-width, -SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD, width],
-      outputRange: [-100, -50, 0, 50, 100],
+      outputRange: [-120, -60, 0, 60, 120],
     });
 
     const opacity = pan.x.interpolate({
       inputRange: [-width, -SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD, width],
-      outputRange: [1, 0.5, 0, 0.5, 1],
+      outputRange: [1, 0.7, 0, 0.7, 1],
     });
 
-    return {transform: [{translateX}], opacity};
+    const scale = pan.x.interpolate({
+      inputRange: [-width, -SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD, width],
+      outputRange: [1.2, 1.1, 1, 1.1, 1.2],
+    });
+
+    return {
+      transform: [{translateX}, {scale}],
+      opacity,
+    };
   };
 
   return (
