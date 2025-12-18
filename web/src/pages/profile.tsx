@@ -55,6 +55,11 @@ interface UserSettings {
   healthKitEnabled: boolean;
   calendarEnabled: boolean;
   locationEnabled: boolean;
+  contextAwareEnabled: boolean;
+  morningReminders: boolean;
+  workBreakReminders: boolean;
+  commuteReminders: boolean;
+  locationBasedReminders: boolean;
 }
 
 export default function ProfilePage() {
@@ -79,18 +84,23 @@ export default function ProfilePage() {
       ]);
 
       setProfile(profileResponse);
-      setSettings(settingsResponse || {
-        notificationsEnabled: true,
-        dailyReminderTime: '09:00',
-        preferredDomains: ['health', 'productivity'],
-        maxDailyCards: 5,
-        soundEnabled: true,
-        hapticEnabled: true,
-        dataShareEnabled: false,
-        healthKitEnabled: false,
-        calendarEnabled: false,
-        locationEnabled: false,
-      });
+       setSettings(settingsResponse || {
+         notificationsEnabled: true,
+         dailyReminderTime: '09:00',
+         preferredDomains: ['health', 'productivity'],
+         maxDailyCards: 5,
+         soundEnabled: true,
+         hapticEnabled: true,
+         dataShareEnabled: false,
+         healthKitEnabled: false,
+         calendarEnabled: false,
+         locationEnabled: false,
+         contextAwareEnabled: false,
+         morningReminders: false,
+         workBreakReminders: false,
+         commuteReminders: false,
+         locationBasedReminders: false,
+       });
     } catch (error) {
       console.error('Failed to load profile:', error);
       // Use store data as fallback
@@ -106,6 +116,11 @@ export default function ProfilePage() {
         healthKitEnabled: false,
         calendarEnabled: false,
         locationEnabled: false,
+        contextAwareEnabled: false,
+        morningReminders: false,
+        workBreakReminders: false,
+        commuteReminders: false,
+        locationBasedReminders: false,
       });
     } finally {
       setLoading(false);
@@ -477,10 +492,104 @@ export default function ProfilePage() {
                     <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
                   </label>
                 </div>
-              </div>
-            </div>
+               </div>
+             </div>
 
-            {/* Integrations */}
+             {/* Context-Aware Notifications */}
+             <div className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border">
+               <h2 className="text-xl font-semibold text-lifedeck-text mb-6 flex items-center space-x-2">
+                 <Bell className="w-5 h-5" />
+                 <span>Smart Notifications</span>
+               </h2>
+
+               <div className="space-y-6">
+                 <div className="flex items-center justify-between">
+                   <div>
+                     <h3 className="font-medium text-lifedeck-text">Context-Aware Reminders</h3>
+                     <p className="text-sm text-lifedeck-textSecondary">Get personalized notifications based on your location, time, and activity</p>
+                   </div>
+                   <label className="relative inline-flex items-center cursor-pointer">
+                     <input
+                       type="checkbox"
+                       checked={settings.contextAwareEnabled}
+                       onChange={(e) => setSettings({ ...settings, contextAwareEnabled: e.target.checked })}
+                       className="sr-only peer"
+                     />
+                     <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                   </label>
+                 </div>
+
+                 {settings.contextAwareEnabled && (
+                   <div className="space-y-4 pl-6 border-l-2 border-lifedeck-border">
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <h4 className="font-medium text-lifedeck-text">Morning Motivation</h4>
+                         <p className="text-sm text-lifedeck-textSecondary">Remind me to start my day with a mindful activity when it's sunny</p>
+                       </div>
+                       <label className="relative inline-flex items-center cursor-pointer">
+                         <input
+                           type="checkbox"
+                           checked={settings.morningReminders}
+                           onChange={(e) => setSettings({ ...settings, morningReminders: e.target.checked })}
+                           className="sr-only peer"
+                         />
+                         <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                       </label>
+                     </div>
+
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <h4 className="font-medium text-lifedeck-text">Work Break Reminders</h4>
+                         <p className="text-sm text-lifedeck-textSecondary">Suggest quick mindfulness exercises during work hours</p>
+                       </div>
+                       <label className="relative inline-flex items-center cursor-pointer">
+                         <input
+                           type="checkbox"
+                           checked={settings.workBreakReminders}
+                           onChange={(e) => setSettings({ ...settings, workBreakReminders: e.target.checked })}
+                           className="sr-only peer"
+                         />
+                         <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                       </label>
+                     </div>
+
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <h4 className="font-medium text-lifedeck-text">Commute Time</h4>
+                         <p className="text-sm text-lifedeck-textSecondary">Use travel time for breathing exercises or reflection</p>
+                       </div>
+                       <label className="relative inline-flex items-center cursor-pointer">
+                         <input
+                           type="checkbox"
+                           checked={settings.commuteReminders}
+                           onChange={(e) => setSettings({ ...settings, commuteReminders: e.target.checked })}
+                           className="sr-only peer"
+                         />
+                         <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                       </label>
+                     </div>
+
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <h4 className="font-medium text-lifedeck-text">Location-Based</h4>
+                         <p className="text-sm text-lifedeck-textSecondary">Contextual reminders based on your current location</p>
+                       </div>
+                       <label className="relative inline-flex items-center cursor-pointer">
+                         <input
+                           type="checkbox"
+                           checked={settings.locationBasedReminders}
+                           onChange={(e) => setSettings({ ...settings, locationBasedReminders: e.target.checked })}
+                           className="sr-only peer"
+                         />
+                         <div className="w-11 h-6 bg-lifedeck-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lifedeck-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lifedeck-primary"></div>
+                       </label>
+                     </div>
+                   </div>
+                 )}
+               </div>
+             </div>
+
+             {/* Integrations */}
             <div className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border">
               <h2 className="text-xl font-semibold text-lifedeck-text mb-6">Integrations</h2>
 
