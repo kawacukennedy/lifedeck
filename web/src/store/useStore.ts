@@ -67,6 +67,7 @@ interface AppState extends UIState {
   completeCard: (cardId: string) => Promise<void>;
   dismissCard: (cardId: string) => Promise<void>;
   snoozeCard: (cardId: string, until: string) => Promise<void>;
+  recoverStreak: () => Promise<void>;
   loadDailyCards: () => Promise<void>;
   setDailyCards: (cards: CoachingCard[]) => void;
   setTheme: (theme: 'light' | 'dark') => void;
@@ -200,6 +201,38 @@ export const useStore = create<AppState>()(
         } catch (error) {
           console.error('Failed to snooze card:', error);
           set({ error: 'Failed to snooze card. Please try again.' });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      recoverStreak: async () => {
+        const { user } = get();
+        if (!user || user.subscriptionTier !== 'premium') {
+          set({ error: 'Streak recovery is only available for premium users.' });
+          return;
+        }
+
+        try {
+          set({ loading: true, error: null });
+          await apiService.recoverStreak();
+
+          // Update user progress - reset streak to 1 if it was broken
+          const updatedProgress = {
+            ...user.progress,
+            currentStreak: user.progress.currentStreak > 0 ? user.progress.currentStreak : 1,
+            lastActiveDate: new Date().toISOString(),
+          };
+
+          set({
+            user: {
+              ...user,
+              progress: updatedProgress,
+            },
+          });
+        } catch (error) {
+          console.error('Failed to recover streak:', error);
+          set({ error: 'Failed to recover streak. Please try again.' });
         } finally {
           set({ loading: false });
         }

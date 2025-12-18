@@ -63,12 +63,13 @@ interface UserSettings {
 }
 
 export default function ProfilePage() {
-  const { user, setUser } = useStore();
+  const { user, setUser, recoverStreak } = useStore();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [recoveringStreak, setRecoveringStreak] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile');
   const [integrationStatus, setIntegrationStatus] = useState({
     googleCalendar: false,
@@ -186,6 +187,17 @@ export default function ProfilePage() {
       console.error('Failed to save settings:', error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRecoverStreak = async () => {
+    setRecoveringStreak(true);
+    try {
+      await recoverStreak();
+    } catch (error) {
+      console.error('Failed to recover streak:', error);
+    } finally {
+      setRecoveringStreak(false);
     }
   };
 
@@ -425,7 +437,7 @@ export default function ProfilePage() {
             {/* Stats Overview */}
             <div className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border">
               <h2 className="text-xl font-semibold text-lifedeck-text mb-6">Your Progress</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-lifedeck-primary mb-1">
                     {profile.progress.lifeScore.toFixed(1)}
@@ -433,10 +445,21 @@ export default function ProfilePage() {
                   <div className="text-sm text-lifedeck-textSecondary">Life Score</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400 mb-1">
-                    {profile.progress.currentStreak}
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400 mb-1">
+                      {profile.progress.currentStreak}
+                    </div>
+                    <div className="text-sm text-lifedeck-textSecondary">Current Streak</div>
+                    {profile.subscriptionTier === 'premium' && profile.progress.currentStreak === 0 && (
+                      <button
+                        onClick={handleRecoverStreak}
+                        disabled={recoveringStreak}
+                        className="mt-2 px-3 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 text-xs rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {recoveringStreak ? 'Recovering...' : 'Recover Streak'}
+                      </button>
+                    )}
                   </div>
-                  <div className="text-sm text-lifedeck-textSecondary">Current Streak</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-yellow-400 mb-1">
@@ -451,6 +474,17 @@ export default function ProfilePage() {
                   <div className="text-sm text-lifedeck-textSecondary">Cards Completed</div>
                 </div>
               </div>
+              {profile.subscriptionTier === 'premium' && profile.progress.currentStreak === 0 && (
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Award className="w-5 h-5 text-green-400" />
+                    <span className="text-sm font-medium text-green-400">Streak Protection Active</span>
+                  </div>
+                  <p className="text-xs text-lifedeck-textSecondary">
+                    As a premium user, you can recover your streak if you've missed a day. Keep your momentum going!
+                  </p>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
