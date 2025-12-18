@@ -71,6 +71,8 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>('month');
 
+  const isPremium = user?.subscriptionTier === 'premium';
+
   useEffect(() => {
     loadAnalytics();
   }, [timeframe]);
@@ -78,8 +80,25 @@ export default function AnalyticsPage() {
   const loadAnalytics = async () => {
     setLoading(true);
     try {
-      const response = await apiService.getAnalytics(timeframe);
-      setAnalytics(response);
+      if (isPremium) {
+        const response = await apiService.getAnalytics(timeframe);
+        setAnalytics(response);
+      } else {
+        // Free users only get basic progress data
+        if (user?.progress) {
+          setAnalytics({
+            progress: user.progress,
+            insights: [],
+            trends: {
+              dates: [],
+              values: [],
+              trend: 'stable',
+              average: 0,
+              bestDay: '',
+            },
+          });
+        }
+      }
     } catch (error) {
       console.error('Failed to load analytics:', error);
       // Fallback to user progress data
@@ -250,126 +269,174 @@ export default function AnalyticsPage() {
         </motion.div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Domain Breakdown */}
+        {isPremium ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Domain Breakdown */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border"
+            >
+              <h3 className="text-xl font-bold text-lifedeck-text mb-4">
+                Domain Breakdown
+              </h3>
+              <div className="h-64">
+                <Doughnut
+                  data={domainData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        position: 'bottom' as const,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Activity Trends */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-lifedeck-text">
+                  Activity Trends
+                </h3>
+                <div className="flex items-center space-x-2">
+                  {analytics.trends.trend === 'up' && (
+                    <TrendingUp className="w-5 h-5 text-green-400" />
+                  )}
+                  {analytics.trends.trend === 'down' && (
+                    <TrendingDown className="w-5 h-5 text-red-400" />
+                  )}
+                  <span className={`text-sm font-medium ${
+                    analytics.trends.trend === 'up' ? 'text-green-400' :
+                    analytics.trends.trend === 'down' ? 'text-red-400' :
+                    'text-lifedeck-textSecondary'
+                  }`}>
+                    {analytics.trends.trend === 'up' ? 'Trending Up' :
+                     analytics.trends.trend === 'down' ? 'Trending Down' :
+                     'Stable'}
+                  </span>
+                </div>
+              </div>
+              <div className="h-64">
+                <Line
+                  data={trendData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </motion.div>
+          </div>
+        ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border"
+            className="bg-gradient-to-r from-lifedeck-primary/10 to-lifedeck-primary/5 border border-lifedeck-primary/20 rounded-xl p-8 text-center mb-8"
           >
-            <h3 className="text-xl font-bold text-lifedeck-text mb-4">
-              Domain Breakdown
-            </h3>
-            <div className="h-64">
-              <Doughnut
-                data={domainData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: 'bottom' as const,
-                    },
-                  },
-                }}
-              />
+            <div className="mb-6">
+              <BarChart3 className="w-16 h-16 text-lifedeck-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-lifedeck-text mb-2">
+                Advanced Analytics
+              </h3>
+              <p className="text-lifedeck-textSecondary text-sm mb-4">
+                Unlock detailed charts, trends, correlations, and AI-powered insights with LifeDeck Premium
+              </p>
             </div>
+            <button className="bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+              Upgrade to Premium
+            </button>
           </motion.div>
+        )}
 
-          {/* Activity Trends */}
+        {/* Insights */}
+        {isPremium ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
             className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-lifedeck-text">
-                Activity Trends
-              </h3>
-              <div className="flex items-center space-x-2">
-                {analytics.trends.trend === 'up' && (
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                )}
-                {analytics.trends.trend === 'down' && (
-                  <TrendingDown className="w-5 h-5 text-red-400" />
-                )}
-                <span className={`text-sm font-medium ${
-                  analytics.trends.trend === 'up' ? 'text-green-400' :
-                  analytics.trends.trend === 'down' ? 'text-red-400' :
-                  'text-lifedeck-textSecondary'
-                }`}>
-                  {analytics.trends.trend === 'up' ? 'Trending Up' :
-                   analytics.trends.trend === 'down' ? 'Trending Down' :
-                   'Stable'}
-                </span>
-              </div>
-            </div>
-            <div className="h-64">
-              <Line
-                data={trendData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                    },
-                  },
-                }}
-              />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Insights */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-lifedeck-surface rounded-xl p-6 border border-lifedeck-border"
-        >
-          <h3 className="text-xl font-bold text-lifedeck-text mb-4">
-            💡 Insights & Recommendations
-          </h3>
-          <div className="space-y-4">
-            {analytics.insights.map((insight, index) => (
-              <div
-                key={index}
-                className={`p-4 rounded-lg border ${
-                  insight.impact === 'high'
-                    ? 'border-green-500/20 bg-green-500/5'
-                    : insight.impact === 'medium'
-                    ? 'border-yellow-500/20 bg-yellow-500/5'
-                    : 'border-gray-500/20 bg-gray-500/5'
-                }`}
-              >
-                <div className="flex items-start space-x-3">
-                  <div className={`p-2 rounded-full ${
+            <h3 className="text-xl font-bold text-lifedeck-text mb-4">
+              💡 Insights & Recommendations
+            </h3>
+            <div className="space-y-4">
+              {analytics.insights.length > 0 ? analytics.insights.map((insight, index) => (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg border ${
                     insight.impact === 'high'
-                      ? 'bg-green-500/20'
+                      ? 'border-green-500/20 bg-green-500/5'
                       : insight.impact === 'medium'
-                      ? 'bg-yellow-500/20'
-                      : 'bg-gray-500/20'
-                  }`}>
-                    {insight.type === 'streak' && <Award className="w-4 h-4 text-green-400" />}
-                    {insight.type === 'improvement' && <TrendingUp className="w-4 h-4 text-yellow-400" />}
-                    {insight.type === 'achievement' && <Target className="w-4 h-4 text-blue-400" />}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-lifedeck-text mb-1">
-                      {insight.title}
-                    </h4>
-                    <p className="text-lifedeck-textSecondary text-sm">
-                      {insight.description}
-                    </p>
+                      ? 'border-yellow-500/20 bg-yellow-500/5'
+                      : 'border-gray-500/20 bg-gray-500/5'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className={`p-2 rounded-full ${
+                      insight.impact === 'high'
+                        ? 'bg-green-500/20'
+                        : insight.impact === 'medium'
+                        ? 'bg-yellow-500/20'
+                        : 'bg-gray-500/20'
+                    }`}>
+                      {insight.type === 'streak' && <Award className="w-4 h-4 text-green-400" />}
+                      {insight.type === 'improvement' && <TrendingUp className="w-4 h-4 text-yellow-400" />}
+                      {insight.type === 'achievement' && <Target className="w-4 h-4 text-blue-400" />}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lifedeck-text mb-1">
+                        {insight.title}
+                      </h4>
+                      <p className="text-lifedeck-textSecondary text-sm">
+                        {insight.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+              )) : (
+                <div className="text-center py-8 text-lifedeck-textSecondary">
+                  No insights available yet. Complete more cards to generate personalized recommendations!
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-gradient-to-r from-lifedeck-primary/10 to-lifedeck-primary/5 border border-lifedeck-primary/20 rounded-xl p-8 text-center"
+          >
+            <div className="mb-6">
+              <Target className="w-16 h-16 text-lifedeck-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-lifedeck-text mb-2">
+                AI-Powered Insights
+              </h3>
+              <p className="text-lifedeck-textSecondary text-sm mb-4">
+                Get personalized recommendations and deep insights into your habits with LifeDeck Premium
+              </p>
+            </div>
+            <button className="bg-lifedeck-primary hover:bg-lifedeck-primary/80 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+              Upgrade to Premium
+            </button>
+          </motion.div>
+        )}
       </div>
     </Layout>
   );
