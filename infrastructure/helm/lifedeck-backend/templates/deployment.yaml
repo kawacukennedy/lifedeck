@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "lifedeck-backend.fullname" . }}
+  labels:
+    {{- include "lifedeck-backend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "lifedeck-backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "lifedeck-backend.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: lifedeck-backend
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: database-url
+        - name: REDIS_HOST
+          value: "{{ .Values.config.redis.host }}"
+        - name: REDIS_PORT
+          value: "{{ .Values.config.redis.port }}"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: jwt-secret
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: openai-api-key
+        - name: PLAID_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: plaid-client-id
+        - name: PLAID_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: plaid-secret
+        - name: GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: google-client-id
+        - name: GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: google-client-secret
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "lifedeck-backend.fullname" . }}-secrets
+              key: stripe-secret-key
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

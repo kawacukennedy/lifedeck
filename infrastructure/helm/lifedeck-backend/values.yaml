@@ -1,0 +1,63 @@
+# Default values for lifedeck-backend
+replicaCount: 3
+
+image:
+  repository: lifedeck/backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: api.lifedeck.app
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: lifedeck-tls
+      hosts:
+        - api.lifedeck.app
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+config:
+  redis:
+    host: lifedeck-redis
+    port: 6379
+
+secrets:
+  databaseUrl: ""
+  jwtSecret: ""
+  openaiApiKey: ""
+  plaidClientId: ""
+  plaidSecret: ""
+  googleClientId: ""
+  googleClientSecret: ""
+  stripeSecretKey: ""
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: ""
+    username: lifedeck
+    password: ""
+    database: lifedeck
+
+redis:
+  enabled: true
+  auth:
+    password: ""
