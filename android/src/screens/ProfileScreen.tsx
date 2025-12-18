@@ -14,6 +14,11 @@ const ProfileScreen = () => {
     commuteReminders: false,
     locationBasedReminders: false,
   });
+  const [integrationStatus, setIntegrationStatus] = useState({
+    googleCalendar: false,
+    googleFit: false,
+    plaid: false,
+  });
 
   const updateSetting = (key: string, value: boolean | string) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -128,6 +133,116 @@ const ProfileScreen = () => {
         )}
       </View>
 
+      {/* Integrations */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>🔗 Integrations</Text>
+
+        <View style={styles.integrationRow}>
+          <View style={styles.integrationInfo}>
+            <View style={styles.integrationHeader}>
+              <Text style={styles.integrationTitle}>Google Calendar</Text>
+              {integrationStatus.googleCalendar ? (
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusTextConnected}>Connected</Text>
+                </View>
+              ) : (
+                <View style={styles.statusBadgeDisconnected}>
+                  <Text style={styles.statusTextDisconnected}>Not Connected</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.integrationDescription}>Sync habits and schedule reminders</Text>
+          </View>
+          <TouchableOpacity
+            style={[
+              styles.connectButton,
+              integrationStatus.googleCalendar ? styles.disconnectButton : styles.connectButtonPrimary
+            ]}
+            onPress={() => {
+              // Handle OAuth flow
+              console.log('Connect Google Calendar');
+            }}
+          >
+            <Text style={[
+              styles.connectButtonText,
+              integrationStatus.googleCalendar ? styles.disconnectButtonText : styles.connectButtonTextPrimary
+            ]}>
+              {integrationStatus.googleCalendar ? 'Disconnect' : 'Connect'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.integrationRow}>
+          <View style={styles.integrationInfo}>
+            <View style={styles.integrationHeader}>
+              <Text style={styles.integrationTitle}>Google Fit</Text>
+              {integrationStatus.googleFit ? (
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusTextConnected}>Connected</Text>
+                </View>
+              ) : (
+                <View style={styles.statusBadgeDisconnected}>
+                  <Text style={styles.statusTextDisconnected}>Not Connected</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.integrationDescription}>Sync health and fitness data</Text>
+          </View>
+          <TouchableOpacity
+            style={[
+              styles.connectButton,
+              integrationStatus.googleFit ? styles.disconnectButton : styles.connectButtonPrimary
+            ]}
+            onPress={() => {
+              // Handle OAuth flow
+              console.log('Connect Google Fit');
+            }}
+          >
+            <Text style={[
+              styles.connectButtonText,
+              integrationStatus.googleFit ? styles.disconnectButtonText : styles.connectButtonTextPrimary
+            ]}>
+              {integrationStatus.googleFit ? 'Disconnect' : 'Connect'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.integrationRow}>
+          <View style={styles.integrationInfo}>
+            <View style={styles.integrationHeader}>
+              <Text style={styles.integrationTitle}>Plaid (Finance)</Text>
+              {integrationStatus.plaid ? (
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusTextConnected}>Connected</Text>
+                </View>
+              ) : (
+                <View style={styles.statusBadgeDisconnected}>
+                  <Text style={styles.statusTextDisconnected}>Not Connected</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.integrationDescription}>Connect bank accounts for spending insights</Text>
+          </View>
+          <TouchableOpacity
+            style={[
+              styles.connectButton,
+              integrationStatus.plaid ? styles.disconnectButton : styles.connectButtonPrimary
+            ]}
+            onPress={() => {
+              // Handle Plaid Link flow
+              console.log('Connect Plaid');
+            }}
+          >
+            <Text style={[
+              styles.connectButtonText,
+              integrationStatus.plaid ? styles.disconnectButtonText : styles.connectButtonTextPrimary
+            ]}>
+              {integrationStatus.plaid ? 'Disconnect' : 'Connect'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* User Progress */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>📊 Your Progress</Text>
@@ -238,6 +353,78 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 5,
+  },
+  integrationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  integrationInfo: {
+    flex: 1,
+    marginRight: 15,
+  },
+  integrationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  integrationTitle: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500',
+    marginRight: 10,
+  },
+  statusBadge: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  statusBadgeDisconnected: {
+    backgroundColor: '#666',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  statusTextConnected: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  statusTextDisconnected: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  integrationDescription: {
+    fontSize: 12,
+    color: '#888',
+  },
+  connectButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  connectButtonPrimary: {
+    backgroundColor: '#2196F3',
+  },
+  disconnectButton: {
+    backgroundColor: 'rgba(244, 67, 54, 0.2)',
+    borderWidth: 1,
+    borderColor: '#F44336',
+  },
+  connectButtonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  connectButtonTextPrimary: {
+    color: '#fff',
+  },
+  disconnectButtonText: {
+    color: '#F44336',
   },
 });
 
