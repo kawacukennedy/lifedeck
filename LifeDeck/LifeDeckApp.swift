@@ -12,30 +12,7 @@ struct LifeDeckApp: App {
     
     var body: some Scene {
         WindowGroup {
-            #if DEBUG
-            // Use simple inline view for quick testing and debugging
-            TabView {
-                NavigationView {
-                    VStack(spacing: 20) {
-                        Text("🃏 LifeDeck")
-                            .font(.largeTitle)
-                            .bold()
-                        Text("Debug Mode - App Working!")
-                            .font(.title2)
-                        Text("✅ All systems operational")
-                            .foregroundColor(.green)
-                    }
-                    .padding()
-                    .navigationTitle("LifeDeck")
-                }
-                .tabItem {
-                    Image(systemName: "rectangle.stack")
-                    Text("Deck")
-                }
-            }
-            .preferredColorScheme(.dark)
-            #else
-            // Use full ContentView in production
+            // Use full ContentView
             ContentView()
                 .environmentObject(user)
                 .environmentObject(subscriptionManager)
@@ -53,7 +30,6 @@ struct LifeDeckApp: App {
                     // Save user data when onboarding status changes
                     saveUserData()
                 }
-            #endif
         }
     }
     
@@ -140,7 +116,6 @@ extension LifeDeckApp {
 }
 
 // MARK: - Debug Helpers
-#if DEBUG
 extension LifeDeckApp {
     private func setupDebugData() {
         // Debug: Skip onboarding and show main app content
@@ -168,4 +143,3 @@ extension LifeDeckApp {
         user.progress.totalCardsCompleted = 15
     }
 }
-#endif

@@ -41,6 +41,36 @@ enum DesignSystem {
         case extraLarge // iPhone 12/13/14/15 Pro
         case max        // iPhone Pro Max, Plus
     }
+    
+    // MARK: - Size Class Based Layout Detection
+    
+    enum LayoutStyle {
+        case iPhone
+        case iPadPortrait
+        case iPadLandscape
+        case iPadSplitView
+    }
+    
+    static var layoutStyle: LayoutStyle {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return .iPhone
+        }
+        
+        let horizontalSizeClass = window.traitCollection.horizontalSizeClass
+        let verticalSizeClass = window.traitCollection.verticalSizeClass
+        
+        switch (horizontalSizeClass, verticalSizeClass) {
+        case (.regular, .regular):
+            return .iPadLandscape
+        case (.regular, .compact):
+            return .iPadSplitView
+        case (.compact, .regular):
+            return isIPad ? .iPadPortrait : .iPhone
+        default:
+            return .iPhone
+        }
+    }
 }
 
 // MARK: - Spacing System

@@ -14,28 +14,30 @@
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict>
-		<key>UIColorName</key>
-		<string>AccentColor</string>
-		<key>UIImageName</key>
-		<string></string>
-	</dict>
+ 		<key>UIColorName</key>
+ 		<string>AccentColor</string>
+ 		<key>UIImageName</key>
+ 		<string></string>
+ 	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
-	</array>
+ 		<string>armv7</string>
+ 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+ 		<string>UIInterfaceOrientationPortrait</string>
+ 		<string>UIInterfaceOrientationLandscapeLeft</string>
+ 		<string>UIInterfaceOrientationLandscapeRight</string>
+ 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+ 		<string>UIInterfaceOrientationPortrait</string>
+ 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+ 		<string>UIInterfaceOrientationLandscapeLeft</string>
+ 		<string>UIInterfaceOrientationLandscapeRight</string>
+ 	</array>
 	<key>NSHealthShareUsageDescription</key>
 	<string>LifeDeck uses HealthKit data to provide personalized health coaching recommendations and track your wellness progress.</string>
 	<key>NSHealthUpdateUsageDescription</key>
@@ -44,5 +46,7 @@
 	<string>LifeDeck accesses your calendar to provide context-aware coaching recommendations based on your schedule.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>LifeDeck uses your location to provide location-aware coaching tips and recommendations.</string>
-</dict>
-</plist>
+	<key>MinimumOSVersion</key>
+	<string>15.0</string>
+ </dict>
+ </plist>
