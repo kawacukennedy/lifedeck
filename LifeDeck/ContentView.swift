@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var subscriptionManager = SubscriptionManager()
+    
     var body: some View {
         TabView {
             Text("Deck")
@@ -8,23 +10,21 @@ struct ContentView: View {
                     Image(systemName: "rectangle.stack")
                     Text("Deck")
                 }
+                .tag(0)
             
-            Text("Progress")
+            Text("Premium")
                 .tabItem {
-                    Image(systemName: "chart.xyaxis.line")
-                    Text("Progress")
+                    Image(systemName: subscriptionManager.isPremium ? "crown.fill" : "crown")
+                    Text("Premium")
                 }
+                .tag(1)
             
             Text("Profile")
                 .tabItem {
                     Image(systemName: "person.circle")
                     Text("Profile")
                 }
+                .tag(2)
         }
-        .tint(.blue)
     }
-}
-
-#Preview {
-    ContentView()
 }
