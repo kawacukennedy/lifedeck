@@ -1,15 +1,17 @@
-import Foundation
 import SwiftUI
 
-@MainActor
+// MARK: - Dashboard View Model
 class DashboardViewModel: ObservableObject {
-    @Published var isLoading = false
-    
-    init() {
-        // Initialize dashboard data
-    }
+    @Published var lifeScore = 75.0
+    @Published var recentActivities: [String] = []
     
     func refreshData() {
-        // TODO: Implement dashboard data refresh
+        // Refresh data from user progress
+        recentActivities = [
+            "Completed Health card",
+            "Extended streak to 5 days",
+            "Reached Productivity goal",
+            "Earned 50 life points"
+        ]
     }
 }

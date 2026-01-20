@@ -7,11 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1001001001001001001001A /* LifeDeckApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001B /* LifeDeckApp.swift */; };
+		A1001001001001001001001A /* LifeDeckCompleteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001B /* LifeDeckCompleteApp.swift */; };
 		A1001001001001001001001C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001D /* ContentView.swift */; };
-		A1001001001001001001001E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001F /* User.swift */; };
+		A1001001001001001001001E /* UserModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001001F /* UserModels.swift */; };
 		A1001001001001001001002A /* CoachingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001002B /* CoachingCard.swift */; };
-		A1001001001001001001002C /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001002D /* Subscription.swift */; };
 		A1001001001001001001002E /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001002F /* OnboardingView.swift */; };
 		A1001001001001001001003A /* OnboardingSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001003B /* OnboardingSteps.swift */; };
 		A1001001001001001001003C /* DeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001003D /* DeckView.swift */; };
@@ -32,16 +31,17 @@
 		A100100100100100100100BG /* MinimalPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100BH /* MinimalPreview.swift */; };
 		A100100100100100100100CG /* SimplePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100CH /* SimplePreview.swift */; };
 		A100100100100100100100EG /* ShowcasePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100EH /* ShowcasePreview.swift */; };
+		A100100100100100100100FG /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100100100100100100100FH /* MainTabView.swift */; };
+
 		A1001001001001001001007A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1001001001001001001007B /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A1001001001001001001000A /* LifeDeck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifeDeck.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1001001001001001001001B /* LifeDeckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeDeckApp.swift; sourceTree = "<group>"; };
+		A1001001001001001001001B /* LifeDeckCompleteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeDeckCompleteApp.swift; sourceTree = "<group>"; };
 		A1001001001001001001001D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A1001001001001001001001F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A1001001001001001001001F /* UserModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModels.swift; sourceTree = "<group>"; };
 		A1001001001001001001002B /* CoachingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachingCard.swift; sourceTree = "<group>"; };
-		A1001001001001001001002D /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
 		A1001001001001001001002F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		A1001001001001001001003B /* OnboardingSteps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSteps.swift; sourceTree = "<group>"; };
 		A1001001001001001001003D /* DeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckView.swift; sourceTree = "<group>"; };
@@ -62,8 +62,10 @@
 		A100100100100100100100BH /* MinimalPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimalPreview.swift; sourceTree = "<group>"; };
 		A100100100100100100100CH /* SimplePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreview.swift; sourceTree = "<group>"; };
 		A100100100100100100100EH /* ShowcasePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcasePreview.swift; sourceTree = "<group>"; };
+		A100100100100100100100FH /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		A100100100100100100100GI /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1001001001001001001007B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A1001001001001001001007C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,15 +82,16 @@
 		A1001001001001001001000C /* LifeDeck */ = {
 			isa = PBXGroup;
 			children = (
-				A1001001001001001001001B /* LifeDeckApp.swift */,
+				A1001001001001001001001B /* LifeDeckCompleteApp.swift */,
 				A1001001001001001001001D /* ContentView.swift */,
+				A100100100100100100100FH /* MainTabView.swift */,
 				A1001001001001001001008A /* Models */,
 				A1001001001001001001008B /* Views */,
 				A1001001001001001001008C /* ViewModels */,
 				A1001001001001001001008D /* Services */,
 				A1001001001001001001008E /* Common */,
 				A1001001001001001001007B /* Assets.xcassets */,
-				A1001001001001001001007C /* Info.plist */,
+				A100100100100100100100GI /* Info.plist */,
 			);
 			path = LifeDeck;
 			sourceTree = "<group>";
@@ -112,9 +115,8 @@
 		A1001001001001001001008A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				A1001001001001001001001F /* User.swift */,
+				A1001001001001001001001F /* UserModels.swift */,
 				A1001001001001001001002B /* CoachingCard.swift */,
-				A1001001001001001001002D /* Subscription.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -276,7 +278,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1001001001001001001001A /* LifeDeckApp.swift in Sources */,
+				A1001001001001001001001A /* LifeDeckCompleteApp.swift in Sources */,
 				A1001001001001001001001C /* ContentView.swift in Sources */,
 				A1001001001001001001001E /* User.swift in Sources */,
 				A1001001001001001001002A /* CoachingCard.swift in Sources */,
@@ -301,6 +303,7 @@
 				A100100100100100100100BG /* MinimalPreview.swift in Sources */,
 				A100100100100100100100CG /* SimplePreview.swift in Sources */,
 				A100100100100100100100EG /* ShowcasePreview.swift in Sources */,
+				A100100100100100100100FG /* MainTabView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,7 +436,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "YOUR_TEAM_ID_HERE";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LifeDeck/Info.plist;
@@ -447,7 +450,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lifedeck.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developer.lifedeck.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -462,7 +465,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "YOUR_TEAM_ID_HERE";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LifeDeck/Info.plist;
@@ -476,7 +479,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lifedeck.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developer.lifedeck.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

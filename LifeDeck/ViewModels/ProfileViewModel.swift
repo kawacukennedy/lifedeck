@@ -1,15 +1,17 @@
-import Foundation
 import SwiftUI
 
-@MainActor
+// MARK: - Profile View Model
 class ProfileViewModel: ObservableObject {
-    @Published var isLoading = false
+    @Published var notificationsEnabled = true
+    @Published var weeklyReportsEnabled = true
+    @Published var hapticsEnabled = true
+    @Published var soundEnabled = true
     
-    init() {
-        // Initialize profile data
-    }
-    
-    func updateProfile() {
-        // TODO: Implement profile update
+    func updateSettings() {
+        // Save settings implementation
+        UserDefaults.standard.set(notificationsEnabled, forKey: "notificationsEnabled")
+        UserDefaults.standard.set(weeklyReportsEnabled, forKey: "weeklyReportsEnabled")
+        UserDefaults.standard.set(hapticsEnabled, forKey: "hapticsEnabled")
+        UserDefaults.standard.set(soundEnabled, forKey: "soundEnabled")
     }
 }

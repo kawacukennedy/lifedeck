@@ -1,16 +1,20 @@
 import SwiftUI
 
-/// Absolute minimal preview for testing - no dependencies at all
+// MARK: - Minimal Preview
 struct MinimalPreview: View {
     var body: some View {
-        Text("✅ Preview Works")
-            .font(.title)
-            .foregroundColor(.blue)
-            .padding()
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea(.all)
+            Text("LifeDeck Minimal Preview")
+                .font(.largeTitle)
+                .foregroundColor(.primary)
+        }
     }
 }
 
-// Simple preview provider
-#Preview {
-    MinimalPreview()
+struct MinimalPreview_Previews: PreviewProvider {
+    static var previews: some View {
+        MinimalPreview()
+    }
 }

@@ -1,398 +1,266 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Card Priority
-enum CardPriority: String, CaseIterable, Codable {
-    case low = "low"
-    case medium = "medium"
-    case high = "high"
-    case urgent = "urgent"
+// MARK: - Coaching Card Model
+class CoachingCard: ObservableObject, Identifiable, Codable {
+    let id: UUID
+    @Published var title: String
+    @Published var description: String
+    @Published var domain: LifeDomain
+    @Published var actionText: String
+    @Published var difficulty: Double
+    @Published var points: Int
+    @Published var priority: CardPriority
+    @Published var estimatedDuration: Duration
+    @Published var isPremium: Bool
+    @Published var aiGenerated: Bool
+    @Published var createdDate: Date
+    @Published var completedDate: Date?
+    @Published var snoozedUntil: Date?
+    @Published var tags: [String]
+    @Published var impact: Double
+    @Published var userNote: String?
+    @Published var isBookmarked: Bool
     
-    var color: Color {
-        switch self {
-        case .low: return .gray
-        case .medium: return .blue
-        case .high: return .orange
-        case .urgent: return .red
+    enum CardPriority: String, Codable, CaseIterable {
+        case low, medium, high, critical
+        
+        var displayName: String {
+            switch self {
+            case .low: return "Low"
+            case .medium: return "Medium" 
+            case .high: return "High"
+            case .critical: return "Critical"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .low: return .green
+            case .medium: return .yellow
+            case .high: return .orange
+            case .critical: return .red
+            }
         }
     }
     
-    var weight: Int {
-        switch self {
-        case .low: return 1
-        case .medium: return 2
-        case .high: return 3
-        case .urgent: return 4
+    enum Duration: String, Codable, CaseIterable {
+        case quick = "2 min"
+        case short = "5 min"
+        case standard = "10 min"
+        case extended = "15 min"
+        
+        var minutes: Int {
+            switch self {
+            case .quick: return 2
+            case .short: return 5
+            case .standard: return 10
+            case .extended: return 15
+            }
         }
-    }
-}
-
-// MARK: - Card Action Type
-enum CardActionType: String, CaseIterable, Codable {
-    case quick = "quick"           // 1-2 minutes
-    case standard = "standard"     // 5-15 minutes
-    case extended = "extended"     // 30+ minutes
-    case habit = "habit"           // Daily habit building
-    case reflection = "reflection"  // Mindfulness/journaling
-    
-    var displayName: String {
-        switch self {
-        case .quick: return "Quick Action"
-        case .standard: return "Standard Task"
-        case .extended: return "Deep Work"
-        case .habit: return "Daily Habit"
-        case .reflection: return "Reflection"
+        
+        var color: Color {
+            switch self {
+            case .quick: return .green
+            case .short: return .blue
+            case .standard: return .orange
+            case .extended: return .red
+            }
         }
     }
     
-    var estimatedDuration: String {
-        switch self {
-        case .quick: return "1-2 min"
-        case .standard: return "5-15 min"
-        case .extended: return "30+ min"
-        case .habit: return "Ongoing"
-        case .reflection: return "5-10 min"
-        }
+    init(
+        id: UUID = UUID(),
+        title: String,
+        description: String,
+        domain: LifeDomain,
+        actionText: String,
+        difficulty: Double = 1.0,
+        points: Int = 10,
+        priority: CardPriority = .medium,
+        estimatedDuration: Duration = .standard,
+        isPremium: Bool = false,
+        aiGenerated: Bool = true,
+        tags: [String] = [],
+        impact: Double = 5.0
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.domain = domain
+        self.actionText = actionText
+        self.difficulty = difficulty
+        self.points = points
+        self.priority = priority
+        self.estimatedDuration = estimatedDuration
+        self.isPremium = isPremium
+        self.aiGenerated = aiGenerated
+        self.createdDate = Date()
+        self.tags = tags
+        self.impact = impact
+        self.userNote = nil
+        self.isBookmarked = false
     }
     
-    var icon: String {
-        switch self {
-        case .quick: return "bolt.fill"
-        case .standard: return "checkmark.circle.fill"
-        case .extended: return "clock.fill"
-        case .habit: return "repeat.circle.fill"
-        case .reflection: return "brain.head.profile"
-        }
+    // MARK: - Actions
+    func markCompleted() {
+        self.completedDate = Date()
     }
-}
-
-// MARK: - Card Status
-enum CardStatus: String, CaseIterable, Codable {
-    case pending = "pending"
-    case completed = "completed"
-    case dismissed = "dismissed"
-    case snoozed = "snoozed"
-    case expired = "expired"
-}
-
-// MARK: - Card Context
-struct CardContext: Codable {
-    var timeOfDay: String? // "morning", "afternoon", "evening"
-    var location: String? // "home", "work", "gym", etc.
-    var weatherCondition: String? // "sunny", "rainy", etc.
-    var userMood: String? // "energetic", "stressed", "calm"
-    var dayOfWeek: String?
-    var isWorkday: Bool = true
     
-    init() {}
-}
-
-// MARK: - Card Personalization
-struct CardPersonalization: Codable {
-    var userPreferences: [String: Any] = [:]
-    var pastSuccessRate: Double = 0.0
-    var optimalTime: String? // When user typically completes this type of card
-    var difficulty: Double = 1.0 // 0.5 = easy, 1.0 = normal, 1.5 = hard
-    var relevanceScore: Double = 1.0
+    func snooze() {
+        self.snoozedUntil = Calendar.current.date(byAdding: .hour, value: 2, to: Date())
+    }
     
-    init() {}
+    func toggleBookmark() {
+        self.isBookmarked.toggle()
+    }
     
-    // Custom Codable implementation due to [String: Any]
+    func addUserNote(_ note: String) {
+        self.userNote = note
+    }
+    
+    // MARK: - Computed Properties
+    var isCompleted: Bool {
+        completedDate != nil
+    }
+    
+    var isSnoozed: Bool {
+        guard let snoozedUntil = snoozedUntil else { return false }
+        return snoozedUntil > Date()
+    }
+    
+    var isAvailable: Bool {
+        !isCompleted && !isSnoozed
+    }
+    
+    var domainColor: Color {
+        domain.color
+    }
+    
+    var domainIcon: String {
+        domain.icon
+    }
+    
+    var difficultyStars: String {
+        let fullStars = Int(difficulty.rounded())
+        return String(repeating: "⭐", count: min(fullStars, 5))
+    }
+    
+    var timeEstimateDisplay: String {
+        estimatedDuration.rawValue
+    }
+    
+    // MARK: - Codable Implementation
     enum CodingKeys: String, CodingKey {
-        case pastSuccessRate, optimalTime, difficulty, relevanceScore
+        case id, title, description, domain, actionText, difficulty, points
+        case priority, estimatedDuration, isPremium, aiGenerated
+        case createdDate, completedDate, snoozedUntil, tags, impact
+        case userNote, isBookmarked
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        pastSuccessRate = try container.decode(Double.self, forKey: .pastSuccessRate)
-        optimalTime = try container.decodeIfPresent(String.self, forKey: .optimalTime)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        title = try container.decode(String.self, forKey: .title)
+        description = try container.decode(String.self, forKey: .description)
+        domain = try container.decode(LifeDomain.self, forKey: .domain)
+        actionText = try container.decode(String.self, forKey: .actionText)
         difficulty = try container.decode(Double.self, forKey: .difficulty)
-        relevanceScore = try container.decode(Double.self, forKey: .relevanceScore)
+        points = try container.decode(Int.self, forKey: .points)
+        priority = try container.decode(CardPriority.self, forKey: .priority)
+        estimatedDuration = try container.decode(Duration.self, forKey: .estimatedDuration)
+        isPremium = try container.decode(Bool.self, forKey: .isPremium)
+        aiGenerated = try container.decode(Bool.self, forKey: .aiGenerated)
+        createdDate = try container.decode(Date.self, forKey: .createdDate)
+        completedDate = try container.decodeIfPresent(Date.self, forKey: .completedDate)
+        snoozedUntil = try container.decodeIfPresent(Date.self, forKey: .snoozedUntil)
+        tags = try container.decodeIfPresent([String].self, forKey: .tags) ?? []
+        impact = try container.decodeIfPresent(Double.self, forKey: .impact) ?? 5.0
+        userNote = try container.decodeIfPresent(String.self, forKey: .userNote)
+        isBookmarked = try container.decodeIfPresent(Bool.self, forKey: .isBookmarked) ?? false
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(pastSuccessRate, forKey: .pastSuccessRate)
-        try container.encodeIfPresent(optimalTime, forKey: .optimalTime)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(description, forKey: .description)
+        try container.encode(domain, forKey: .domain)
+        try container.encode(actionText, forKey: .actionText)
         try container.encode(difficulty, forKey: .difficulty)
-        try container.encode(relevanceScore, forKey: .relevanceScore)
+        try container.encode(points, forKey: .points)
+        try container.encode(priority, forKey: .priority)
+        try container.encode(estimatedDuration, forKey: .estimatedDuration)
+        try container.encode(isPremium, forKey: .isPremium)
+        try container.encode(aiGenerated, forKey: .aiGenerated)
+        try container.encode(createdDate, forKey: .createdDate)
+        try container.encodeIfPresent(completedDate, forKey: .completedDate)
+        try container.encodeIfPresent(snoozedUntil, forKey: .snoozedUntil)
+        try container.encode(tags, forKey: .tags)
+        try container.encode(impact, forKey: .impact)
+        try container.encodeIfPresent(userNote, forKey: .userNote)
+        try container.encode(isBookmarked, forKey: .isBookmarked)
     }
 }
 
-// MARK: - Coaching Card Model
-struct CoachingCard: Identifiable, Codable, Equatable {
-    let id: UUID
-    let title: String
-    let description: String
-    let actionText: String // The specific action to take
-    let domain: LifeDomain
-    let actionType: CardActionType
-    let priority: CardPriority
-    
-    // Content and presentation
-    let icon: String
-    let backgroundColor: String? // Hex color
-    let tips: [String] // Additional helpful tips
-    let benefits: [String] // Why this action matters
-    
-    // Metadata
-    var status: CardStatus = .pending
-    let createdAt: Date
-    var completedAt: Date?
-    var dismissedAt: Date?
-    var snoozedUntil: Date?
-    
-    // AI and personalization
-    var context: CardContext
-    var personalization: CardPersonalization
-    let aiGenerated: Bool // True if generated by AI vs template
-    let templateId: String? // Reference to base template if applicable
-    
-    // Engagement tracking
-    var viewCount: Int = 0
-    var timeSpentViewing: TimeInterval = 0
-    
-    init(
-        title: String,
-        description: String,
-        actionText: String,
-        domain: LifeDomain,
-        actionType: CardActionType = .standard,
-        priority: CardPriority = .medium,
-        icon: String,
-        backgroundColor: String? = nil,
-        tips: [String] = [],
-        benefits: [String] = [],
-        context: CardContext = CardContext(),
-        personalization: CardPersonalization = CardPersonalization(),
-        aiGenerated: Bool = false,
-        templateId: String? = nil
-    ) {
-        self.id = UUID()
-        self.title = title
-        self.description = description
-        self.actionText = actionText
-        self.domain = domain
-        self.actionType = actionType
-        self.priority = priority
-        self.icon = icon
-        self.backgroundColor = backgroundColor
-        self.tips = tips
-        self.benefits = benefits
-        self.context = context
-        self.personalization = personalization
-        self.aiGenerated = aiGenerated
-        self.templateId = templateId
-        self.createdAt = Date()
-    }
-    
-    // MARK: - Methods
-    mutating func markCompleted() {
-        status = .completed
-        completedAt = Date()
-    }
-    
-    mutating func markDismissed() {
-        status = .dismissed
-        dismissedAt = Date()
-    }
-    
-    mutating func snooze(until date: Date) {
-        status = .snoozed
-        snoozedUntil = date
-    }
-    
-    mutating func incrementViewCount() {
-        viewCount += 1
-    }
-    
-    var isExpired: Bool {
-        let daysSinceCreation = Calendar.current.dateComponents([.day], from: createdAt, to: Date()).day ?? 0
-        return daysSinceCreation > 7 // Cards expire after a week
-    }
-    
-    var isAvailable: Bool {
-        switch status {
-        case .pending:
-            return true
-        case .snoozed:
-            return snoozedUntil != nil && Date() >= snoozedUntil!
-        case .completed, .dismissed, .expired:
-            return false
-        }
-    }
-    
-    var displayColor: Color {
-        if let bgColor = backgroundColor {
-            return Color(hex: bgColor)
-        }
-        return domain.color
-    }
-    
-    var estimatedImpact: String {
-        let impact = personalization.relevanceScore * Double(priority.weight)
-        switch impact {
-        case 0..<2: return "Low Impact"
-        case 2..<4: return "Medium Impact"
-        case 4..<6: return "High Impact"
-        default: return "Maximum Impact"
-        }
-    }
-    
-    // MARK: - Equatable
-    static func == (lhs: CoachingCard, rhs: CoachingCard) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-// MARK: - Sample Cards Factory
-struct SampleCards {
-    static func createHealthCards() -> [CoachingCard] {
-        return [
-            CoachingCard(
-                title: "Take a Mindful Walk",
-                description: "Step outside for a 10-minute walk and focus on your breathing",
-                actionText: "Walk for 10 minutes outside",
-                domain: .health,
-                actionType: .standard,
-                priority: .medium,
-                icon: "figure.walk",
-                tips: ["Leave your phone behind", "Focus on your breathing", "Notice your surroundings"],
-                benefits: ["Improves cardiovascular health", "Reduces stress", "Boosts mood"]
-            ),
-            CoachingCard(
-                title: "Drink a Glass of Water",
-                description: "Hydrate your body with a full glass of water right now",
-                actionText: "Drink 8oz of water",
-                domain: .health,
-                actionType: .quick,
-                priority: .low,
-                icon: "drop.fill",
-                tips: ["Use a water bottle tracker", "Add lemon for flavor"],
-                benefits: ["Improves hydration", "Supports metabolism", "Enhances focus"]
-            ),
-            CoachingCard(
-                title: "Do 20 Push-ups",
-                description: "Quick strength training to energize your day",
-                actionText: "Complete 20 push-ups",
-                domain: .health,
-                actionType: .quick,
-                priority: .medium,
-                icon: "figure.strengthtraining.functional",
-                tips: ["Modify on knees if needed", "Focus on proper form"],
-                benefits: ["Builds upper body strength", "Boosts energy", "Improves posture"]
-            )
-        ]
-    }
-    
-    static func createFinanceCards() -> [CoachingCard] {
-        return [
-            CoachingCard(
-                title: "Review Yesterday's Expenses",
-                description: "Take 5 minutes to review what you spent money on yesterday",
-                actionText: "Review and categorize yesterday's spending",
-                domain: .finance,
-                actionType: .standard,
-                priority: .medium,
-                icon: "chart.line.uptrend.xyaxis",
-                tips: ["Use your banking app", "Look for unnecessary purchases", "Note spending patterns"],
-                benefits: ["Increases spending awareness", "Helps identify waste", "Improves budgeting"]
-            ),
-            CoachingCard(
-                title: "Set Up Automatic Savings",
-                description: "Automate $25 weekly transfer to your savings account",
-                actionText: "Set up $25/week automatic savings",
-                domain: .finance,
-                actionType: .extended,
-                priority: .high,
-                icon: "banknote.fill",
-                tips: ["Start small and increase over time", "Use a separate savings account"],
-                benefits: ["Builds emergency fund", "Creates saving habit", "Reduces financial stress"]
-            )
-        ]
-    }
-    
-    static func createProductivityCards() -> [CoachingCard] {
-        return [
-            CoachingCard(
-                title: "Clear Your Desk",
-                description: "Spend 5 minutes organizing your workspace for better focus",
-                actionText: "Organize and clear your desk",
-                domain: .productivity,
-                actionType: .quick,
-                priority: .medium,
-                icon: "desktopcomputer",
-                tips: ["Keep only essentials visible", "Use organizers for supplies"],
-                benefits: ["Reduces distractions", "Improves focus", "Creates calm environment"]
-            ),
-            CoachingCard(
-                title: "Plan Tomorrow's Top 3",
-                description: "Write down the three most important tasks for tomorrow",
-                actionText: "List tomorrow's top 3 priorities",
-                domain: .productivity,
-                actionType: .standard,
-                priority: .high,
-                icon: "list.bullet.clipboard",
-                tips: ["Be specific with tasks", "Estimate time needed", "Start with hardest first"],
-                benefits: ["Improves planning", "Reduces decision fatigue", "Increases productivity"]
-            )
-        ]
-    }
-    
-    static func createMindfulnessCards() -> [CoachingCard] {
-        return [
-            CoachingCard(
-                title: "Take 5 Deep Breaths",
-                description: "Pause and take five slow, intentional breaths",
-                actionText: "Complete 5 deep breathing cycles",
-                domain: .mindfulness,
-                actionType: .quick,
-                priority: .medium,
-                icon: "lungs.fill",
-                tips: ["Inhale for 4 counts", "Hold for 2 counts", "Exhale for 6 counts"],
-                benefits: ["Reduces stress", "Improves focus", "Calms nervous system"]
-            ),
-            CoachingCard(
-                title: "Write Three Gratitudes",
-                description: "List three things you're grateful for today",
-                actionText: "Write 3 things you're grateful for",
-                domain: .mindfulness,
-                actionType: .standard,
-                priority: .medium,
-                icon: "heart.text.square.fill",
-                tips: ["Be specific", "Include small moments", "Feel the emotion"],
-                benefits: ["Improves mood", "Increases happiness", "Builds positive mindset"]
-            )
-        ]
-    }
-    
-    static func allSampleCards() -> [CoachingCard] {
-        return createHealthCards() + createFinanceCards() + createProductivityCards() + createMindfulnessCards()
-    }
-}
-
-// MARK: - Color Extension for Hex Support
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (r, g, b) = ((int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (r, g, b) = (int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (r, g, b) = (1, 1, 0)
-        }
-
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: 1
+// MARK: - Sample Cards Extension
+extension CoachingCard {
+    static let sampleCards: [CoachingCard] = [
+        CoachingCard(
+            title: "Morning Hydration",
+            description: "Start your day with a full glass of water to kickstart your metabolism and hydrate your body.",
+            domain: .health,
+            actionText: "Drink 8oz of water right now",
+            difficulty: 1.0,
+            points: 5,
+            priority: .low,
+            estimatedDuration: .quick,
+            tags: ["hydration", "morning", "health"]
+        ),
+        CoachingCard(
+            title: "5-Minute Stretch",
+            description: "Quick full-body stretch to improve circulation and flexibility.",
+            domain: .health,
+            actionText: "Complete 5-minute stretch routine",
+            difficulty: 1.2,
+            points: 8,
+            priority: .medium,
+            estimatedDuration: .quick,
+            tags: ["stretch", "exercise", "flexibility"]
+        ),
+        CoachingCard(
+            title: "Email Triage",
+            description: "Process your inbox efficiently with the 2-minute rule.",
+            domain: .productivity,
+            actionText: "Triage 10 emails in 2 minutes",
+            difficulty: 1.5,
+            points: 12,
+            priority: .high,
+            estimatedDuration: .standard,
+            tags: ["email", "productivity", "organization"]
+        ),
+        CoachingCard(
+            title: "Gratitude Journal",
+            description: "Write down three things you're grateful for today.",
+            domain: .mindfulness,
+            actionText: "Write 3 gratitudes in your journal",
+            difficulty: 1.0,
+            points: 7,
+            priority: .medium,
+            estimatedDuration: .short,
+            tags: ["gratitude", "mindfulness", "journal"]
+        ),
+        CoachingCard(
+            title: "Budget Review",
+            description: "Quick review of today's spending and update your budget tracker.",
+            domain: .finance,
+            actionText: "Review and log today's expenses",
+            difficulty: 1.3,
+            points: 10,
+            priority: .medium,
+            estimatedDuration: .standard,
+            isPremium: true,
+            tags: ["budget", "finance", "review"]
         )
-    }
+    ]
 }

@@ -2,51 +2,83 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDisplayName</key>
-	<string>LifeDeck</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>LifeDeck</string>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<array>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+				<key>NSExceptionDomain</key>
+				<string>api.lifedeck.app</string>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UILaunchScreen</key>
+	<key>UIApplicationSceneManifest</key>
 	<dict>
- 		<key>UIColorName</key>
- 		<string>AccentColor</string>
- 		<key>UIImageName</key>
- 		<string></string>
- 	</dict>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
- 		<string>armv7</string>
- 	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>LifeDeck uses app usage tracking to personalize your coaching experience and provide analytics insights.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>LifeDeck uses location to provide context-aware coaching suggestions based on your current location.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>LifeDeck uses location to provide personalized coaching cards based on your location patterns.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>LifeDeck may use the microphone for voice notes and mindfulness exercises.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>LifeDeck may use the camera for tracking progress through photo journaling.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>LifeDeck accesses Apple Health to provide personalized health and wellness coaching cards.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>LifeDeck updates Apple Health data when you complete health-related coaching cards.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>LifeDeck accesses your calendar to schedule coaching reminders and track completed activities.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>LifeDeck adds coaching sessions to your calendar when you complete activities.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
- 		<string>UIInterfaceOrientationPortrait</string>
- 		<string>UIInterfaceOrientationLandscapeLeft</string>
- 		<string>UIInterfaceOrientationLandscapeRight</string>
- 	</array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
- 		<string>UIInterfaceOrientationPortrait</string>
- 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
- 		<string>UIInterfaceOrientationLandscapeLeft</string>
- 		<string>UIInterfaceOrientationLandscapeRight</string>
- 	</array>
-	<key>NSHealthShareUsageDescription</key>
-	<string>LifeDeck uses HealthKit data to provide personalized health coaching recommendations and track your wellness progress.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>LifeDeck can write health data to help track your progress towards wellness goals.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>LifeDeck accesses your calendar to provide context-aware coaching recommendations based on your schedule.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>LifeDeck uses your location to provide location-aware coaching tips and recommendations.</string>
-	<key>MinimumOSVersion</key>
-	<string>15.0</string>
- </dict>
- </plist>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>

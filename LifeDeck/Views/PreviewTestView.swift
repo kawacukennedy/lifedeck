@@ -1,19 +1,23 @@
 import SwiftUI
 
-/// Absolute minimal preview for testing
+// MARK: - Preview Test
 struct PreviewTestView: View {
     var body: some View {
         VStack {
-            Text("🃏 LifeDeck")
-                .font(.title)
             Text("Preview Test")
-                .foregroundColor(.blue)
+                .font(.largeTitle)
+                .foregroundColor(.primary)
+            
+            Text("Test Component")
+                .font(.headline)
+                .foregroundColor(.secondary)
         }
-        .padding()
+        .background(Color(.systemBackground))
     }
-
 }
 
-#Preview {
-    PreviewTestView()
+struct PreviewTestView_Previews: PreviewProvider {
+    static var previews: some View {
+        PreviewTestView()
+    }
 }

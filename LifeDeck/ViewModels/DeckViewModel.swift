@@ -1,71 +1,113 @@
-import Foundation
 import SwiftUI
+import Foundation
 
-@MainActor
+// MARK: - Deck View Model
 class DeckViewModel: ObservableObject {
     @Published var cards: [CoachingCard] = []
+    @Published var currentCardIndex = 0
     @Published var isLoading = false
-    @Published var error: Error?
-
-    private let apiService = APIService.shared
-
+    @Published var dragOffset: CGSize = .zero
+    @Published var dragRotation: Double = 0
+    
     init() {
-        Task {
-            await loadDailyCards()
+        loadCards()
+    }
+    
+    func swipeCard(direction: SwipeDirection) {
+        guard currentCardIndex < cards.count else { return }
+        
+        switch direction {
+        case .right:
+            cards[currentCardIndex].markCompleted()
+            moveToNextCard()
+        case .left:
+            moveToNextCard()
+        case .down:
+            cards[currentCardIndex].snooze()
+            moveToNextCard()
         }
     }
-
-    func loadDailyCards() async {
+    
+    func moveToNextCard() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            currentCardIndex += 1
+            dragOffset = .zero
+            dragRotation = 0
+        }
+    }
+    
+    func updateDrag(offset: CGSize) {
+        dragOffset = offset
+        dragRotation = Double(offset.width / 20)
+    }
+    
+    func resetDrag() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            dragOffset = .zero
+            dragRotation = 0
+        }
+    }
+    
+    func handleDragEnd(offset: CGSize) {
+        let threshold: CGFloat = 100
+        
+        if abs(offset.width) > threshold {
+            // Swipe left or right
+            if offset.width > 0 {
+                swipeCard(direction: .right)
+            } else {
+                swipeCard(direction: .left)
+            }
+        } else if offset.height > threshold {
+            // Swipe down
+            swipeCard(direction: .down)
+        } else {
+            resetDrag()
+        }
+    }
+    
+    func loadCards() {
         isLoading = true
-        error = nil
-
-        do {
-            cards = try await apiService.fetchDailyCards()
-        } catch {
-            self.error = error
-            // Fallback to sample cards
-            cards = SampleCards.allSampleCards()
-        }
-
-        isLoading = false
-    }
-
-    func refreshCards() async {
-        await loadDailyCards()
-    }
-
-    func completeCard(_ card: CoachingCard) async {
-        do {
-            try await apiService.completeCard(card.id.uuidString)
-            // Update local state
-            if let index = cards.firstIndex(where: { $0.id == card.id }) {
-                cards[index].markCompleted()
+        
+        Task {
+            do {
+                // Try to load cards from AI service
+                // For demo purposes, we'll mix AI and sample cards
+                let sampleCards = CoachingCard.sampleCards
+                
+                // You would integrate AIService here when API is ready
+                // let aiCards = try await AIService.shared.generateDailyCards(user: currentUser)
+                
+                await MainActor.run {
+                    self.cards = Array(sampleCards.prefix(5)) // Limit to 5 cards per day
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    // Fallback to sample cards if AI fails
+                    self.cards = CoachingCard.sampleCards
+                }
             }
-        } catch {
-            self.error = error
         }
     }
+    
+    var currentCard: CoachingCard? {
+        guard currentCardIndex < cards.count else { return nil }
+        return cards[currentCardIndex]
+    }
+    
+    var remainingCards: Int {
+        max(0, cards.count - currentCardIndex)
+    }
+    
+    var visibleCards: [CoachingCard] {
+        guard currentCardIndex < cards.count else { return [] }
+        let endIndex = min(currentCardIndex + 3, cards.count)
+        return Array(cards[currentCardIndex..<endIndex])
+    }
+}
 
-    func dismissCard(_ card: CoachingCard) async {
-        do {
-            try await apiService.dismissCard(card.id.uuidString)
-            // Remove from local state
-            cards.removeAll { $0.id == card.id }
-        } catch {
-            self.error = error
-        }
-    }
-
-    func snoozeCard(_ card: CoachingCard) async {
-        let snoozeUntil = Date().addingTimeInterval(24 * 60 * 60) // 24 hours
-        do {
-            try await apiService.snoozeCard(card.id.uuidString, until: snoozeUntil)
-            // Update local state
-            if let index = cards.firstIndex(where: { $0.id == card.id }) {
-                cards[index].snooze(until: snoozeUntil)
-            }
-        } catch {
-            self.error = error
-        }
-    }
+enum SwipeDirection {
+    case left, right, down
 }

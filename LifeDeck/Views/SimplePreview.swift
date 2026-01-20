@@ -1,9 +1,12 @@
 import SwiftUI
 
+// MARK: - Simple Preview Component
 struct SimplePreview: View {
     var body: some View {
-        Text("LifeDeck Preview Works!")
-            .font(.title)
+        Text("Hello, LifeDeck!")
+            .font(.largeTitle)
+            .foregroundColor(.primary)
+            .background(Color(.systemBackground))
             .padding()
     }
 }

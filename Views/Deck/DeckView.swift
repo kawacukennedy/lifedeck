@@ -1,11 +1,10 @@
 import SwiftUI
-import UIKit
 
 struct DeckView: View {
     @StateObject private var viewModel: DeckViewModel
     @State private var showCompletionAnimation = false
 
-    init(user: User) {
+    init(user: AppUser) {
         _viewModel = StateObject(wrappedValue: DeckViewModel(user: user))
     }
 
