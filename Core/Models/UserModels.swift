@@ -27,10 +27,10 @@ enum LifeDomain: String, Codable, CaseIterable, Identifiable {
     
     var color: Color {
         switch self {
-        case .health: return .red
-        case .finance: return .green
-        case .productivity: return .blue
-        case .mindfulness: return .purple
+        case .health: return Color(red: 255/255, green: 107/255, blue: 107/255) // #FF6B6B
+        case .finance: return Color(red: 78/255, green: 205/255, blue: 196/255) // #4ECDC4
+        case .productivity: return Color(red: 69/255, green: 183/255, blue: 209/255) // #45B7D1
+        case .mindfulness: return Color(red: 150/255, green: 206/255, blue: 180/255) // #96CEB4
         }
     }
 }
@@ -116,6 +116,14 @@ class UserProgress: ObservableObject, Codable {
         }
     }
     
+    func completeCard(for domain: LifeDomain, points: Int) {
+        totalCardsCompleted += 1
+        lifePoints += points
+        
+        let currentScore = scoreForDomain(domain)
+        updateScore(for: domain, score: currentScore + 5)
+    }
+
     func updateScore(for domain: LifeDomain, score: Double) {
         switch domain {
         case .health:
@@ -173,6 +181,20 @@ struct UserSettings: Codable {
     var hapticsEnabled: Bool = true
     var soundEnabled: Bool = true
     var autoStartDay: Bool = false
+    
+    // Smart Notifications
+    var morningReminders: Bool = false
+    var workBreakReminders: Bool = false
+    var commuteReminders: Bool = false
+    var locationBasedReminders: Bool = false
+    
+    // Integrations
+    var healthKitEnabled: Bool = false
+    var calendarEnabled: Bool = false
+    var financeEnabled: Bool = false
+    
+    // Quiz/Context
+    var quizAnswers: [String: String] = [:]
 }
 
 // MARK: - Achievement

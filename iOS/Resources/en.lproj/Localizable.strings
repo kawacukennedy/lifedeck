@@ -1,0 +1,15 @@
+"onboarding_welcome_title" = "Welcome to LifeDeck";
+"onboarding_welcome_subtitle" = "Your AI-powered life coach";
+"onboarding_next_button" = "Next";
+"onboarding_back_button" = "Back";
+"onboarding_get_started" = "Get Started";
+"onboarding_name_prompt" = "What should we call you?";
+"onboarding_name_placeholder" = "Enter your name";
+"onboarding_focus_title" = "Choose Your Focus Areas";
+"onboarding_focus_subtitle" = "Select the life domains you want to improve";
+"onboarding_integrations_title" = "Connect Your Life";
+"onboarding_quiz_title" = "Personalization Quiz";
+"onboarding_ready_title" = "Ready to Begin!";
+"profile_title" = "Profile";
+"settings_title" = "Settings";
+"achievements_title" = "Achievements";

@@ -7,6 +7,7 @@ struct ProfileView: View {
     @EnvironmentObject var notificationManager: NotificationManager
     @State private var showingSettings = false
     @State private var showingPaywall = false
+    @State private var showingAchievements = false
     
     var body: some View {
         NavigationView {
@@ -46,6 +47,10 @@ struct ProfileView: View {
                 SettingsView()
                     .environmentObject(user)
                     .environmentObject(notificationManager)
+            }
+            .sheet(isPresented: $showingAchievements) {
+                AchievementsView()
+                    .environmentObject(user)
             }
             .sheet(isPresented: $showingPaywall) {
                 PaywallView()
@@ -113,9 +118,21 @@ struct ProfileView: View {
     
     private var statsOverview: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-            Text("Your Progress")
-                .font(DesignSystem.Typography.title2)
-                .foregroundColor(DesignSystem.Colors.text)
+            HStack {
+                Text("Your Progress")
+                    .font(DesignSystem.Typography.title2)
+                    .foregroundColor(DesignSystem.Colors.text)
+                
+                Spacer()
+                
+                Button(action: {
+                    showingAchievements = true
+                }) {
+                    Text("Achievements")
+                        .font(DesignSystem.Typography.callout)
+                        .foregroundColor(DesignSystem.Colors.primary)
+                }
+            }
             
             HStack(spacing: DesignSystem.Spacing.md) {
                 statItem(icon: "flame.fill", value: "\(user.progress.currentStreak)", label: "Current Streak", color: DesignSystem.Colors.success)
@@ -381,6 +398,30 @@ struct SettingsView: View {
                         toggle: $user.settings.weeklyReportsEnabled
                     )
                 }
+                
+                settingsRow(
+                    title: "Morning Motivation",
+                    subtitle: "Mindful activity suggestions at sunrise",
+                    toggle: $user.settings.morningReminders
+                )
+                
+                settingsRow(
+                    title: "Work Break Reminders",
+                    subtitle: "Brief exercises during your work day",
+                    toggle: $user.settings.workBreakReminders
+                )
+                
+                settingsRow(
+                    title: "Commute Time",
+                    subtitle: "Reflection and breathing on the go",
+                    toggle: $user.settings.commuteReminders
+                )
+                
+                settingsRow(
+                    title: "Location-Based",
+                    subtitle: "Reminders based on where you are",
+                    toggle: $user.settings.locationBasedReminders
+                )
             }
         }
         .padding(DesignSystem.Spacing.md)

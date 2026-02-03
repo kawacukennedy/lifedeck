@@ -15,11 +15,11 @@ struct DesignSystem {
         static let secondaryLight = Color(red: 0.85, green: 0.95, blue: 0.94)
         static let secondaryDark = Color(red: 0.16, green: 0.48, blue: 0.45)
         
-        // Domain Colors
-        static let health = Color.red
-        static let finance = Color.green
-        static let productivity = Color.blue
-        static let mindfulness = Color.purple
+        // Domain Colors - Exact specs
+        static let health = Color(red: 255/255, green: 107/255, blue: 107/255) // #FF6B6B
+        static let finance = Color(red: 78/255, green: 205/255, blue: 196/255) // #4ECDC4
+        static let productivity = Color(red: 69/255, green: 183/255, blue: 209/255) // #45B7D1
+        static let mindfulness = Color(red: 150/255, green: 206/255, blue: 180/255) // #96CEB4
         
         // Semantic Colors
         static let success = Color.green
@@ -172,6 +172,16 @@ extension View {
             .cornerRadius(DesignSystem.Spacing.cornerRadius)
             .shadow(color: DesignSystem.Shadows.medium.color, radius: DesignSystem.Shadows.medium.radius, x: DesignSystem.Shadows.medium.x, y: DesignSystem.Shadows.medium.y)
     }
+
+    func premiumGlow() -> some View {
+        self
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignSystem.Spacing.cornerRadius)
+                    .stroke(LinearGradient(gradient: Gradient(colors: [DesignSystem.Colors.premium, .clear]), startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 2)
+                    .blur(radius: 1)
+            )
+            .shadow(color: DesignSystem.Colors.premium.opacity(0.3), radius: 10, x: 0, y: 0)
+    }
     
     func primaryButtonStyle() -> some View {
         self
@@ -189,6 +199,14 @@ extension View {
             .background(DesignSystem.Colors.primary.opacity(0.1))
             .cornerRadius(DesignSystem.Spacing.cornerRadius)
             .frame(height: DesignSystem.Spacing.buttonHeight)
+    }
+
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }
 

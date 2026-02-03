@@ -9,7 +9,14 @@ struct OnboardingView: View {
     @State private var notificationsEnabled = true
     @State private var dailyReminderTime = Date()
     
-    private let totalSteps = 4
+    @State private var healthKitEnabled = false
+    @State private var calendarEnabled = false
+    @State private var financeEnabled = false
+    @State private var sleepQuality = "Good"
+    @State private var energyLevels = "Medium"
+    @State private var primaryGoal = "Productivity"
+    
+    private let totalSteps = 6
     
     var body: some View {
         VStack(spacing: 0) {
@@ -26,13 +33,21 @@ struct OnboardingView: View {
                 nameStep
                     .tag(1)
                 
-                // Step 2: Focus Areas
-                focusAreasStep
+                // Step 2: Integrations (NEW)
+                integrationsStep
                     .tag(2)
                 
-                // Step 3: Preferences
-                preferencesStep
+                // Step 3: Quiz (NEW)
+                quizStep
                     .tag(3)
+                
+                // Step 4: Preferences
+                preferencesStep
+                    .tag(4)
+
+                // Step 5: Focus Areas (Moved)
+                focusAreasStep
+                    .tag(5)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .animation(DesignSystem.Animation.standard, value: currentStep)
@@ -309,11 +324,110 @@ struct OnboardingView: View {
         case 1:
             return !userName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         case 2:
-            return !selectedFocusAreas.isEmpty
+            return true // Integrations are optional
         case 3:
-            return true
+            return true // Quiz is optional
+        case 4:
+            return true // Notifications are optional
+        case 5:
+            return !selectedFocusAreas.isEmpty
         default:
             return false
+        }
+    }
+    
+    private var integrationsStep: some View {
+        VStack(spacing: DesignSystem.Spacing.lg) {
+            Spacer()
+            
+            VStack(spacing: DesignSystem.Spacing.md) {
+                Text("Connect Your Life")
+                    .font(DesignSystem.Typography.title1)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                
+                Text("Sync with your existing data for better AI insights.")
+                    .font(DesignSystem.Typography.body)
+                    .foregroundColor(.white.opacity(0.9))
+                    .multilineTextAlignment(.center)
+                
+                VStack(spacing: DesignSystem.Spacing.md) {
+                    integrationToggle(title: "Apple Health", icon: "heart.fill", isOn: $healthKitEnabled)
+                    integrationToggle(title: "Calendar", icon: "calendar", isOn: $calendarEnabled)
+                    integrationToggle(title: "Finance (Plaid)", icon: "dollarsign.circle", isOn: $financeEnabled)
+                }
+                .padding(.top, DesignSystem.Spacing.md)
+            }
+            
+            Spacer()
+        }
+        .padding(DesignSystem.Spacing.xl)
+    }
+    
+    private func integrationToggle(title: String, icon: String, isOn: Binding<Bool>) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(.white)
+                .frame(width: 30)
+            
+            Text(title)
+                .font(DesignSystem.Typography.headline)
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+        }
+        .padding()
+        .background(.white.opacity(0.1))
+        .cornerRadius(DesignSystem.Spacing.cornerRadius)
+    }
+    
+    private var quizStep: some View {
+        VStack(spacing: DesignSystem.Spacing.lg) {
+            Spacer()
+            
+            VStack(spacing: DesignSystem.Spacing.md) {
+                Text("Personalization Quiz")
+                    .font(DesignSystem.Typography.title1)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
+                    quizQuestion(title: "How was your sleep lately?", selection: $sleepQuality, options: ["Poor", "Good", "Great"])
+                    quizQuestion(title: "Average energy levels?", selection: $energyLevels, options: ["Low", "Medium", "High"])
+                    quizQuestion(title: "Current primary goal?", selection: $primaryGoal, options: ["Health", "Wealth", "Productivity"])
+                }
+                .padding(.top, DesignSystem.Spacing.md)
+            }
+            
+            Spacer()
+        }
+        .padding(DesignSystem.Spacing.xl)
+    }
+    
+    private func quizQuestion(title: String, selection: Binding<String>, options: [String]) -> some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            Text(title)
+                .font(DesignSystem.Typography.headline)
+                .foregroundColor(.white)
+            
+            HStack(spacing: DesignSystem.Spacing.sm) {
+                ForEach(options, id: \.self) { option in
+                    Button(action: { selection.wrappedValue = option }) {
+                        Text(option)
+                            .font(DesignSystem.Typography.subheadline)
+                            .padding(.horizontal, DesignSystem.Spacing.md)
+                            .padding(.vertical, DesignSystem.Spacing.sm)
+                            .background(selection.wrappedValue == option ? DesignSystem.Colors.primary : .white.opacity(0.1))
+                            .cornerRadius(DesignSystem.Spacing.smallCornerRadius)
+                            .foregroundColor(.white)
+                    }
+                }
+            }
         }
     }
     
@@ -324,6 +438,18 @@ struct OnboardingView: View {
         user.settings.focusAreas = Array(selectedFocusAreas)
         user.settings.notificationsEnabled = notificationsEnabled
         user.settings.dailyReminderTime = dailyReminderTime
+        
+        // Integrations
+        user.settings.healthKitEnabled = healthKitEnabled
+        user.settings.calendarEnabled = calendarEnabled
+        user.settings.financeEnabled = financeEnabled
+        
+        // Quiz Answers
+        user.settings.quizAnswers = [
+            "sleep_quality": sleepQuality,
+            "energy_levels": energyLevels,
+            "primary_goal": primaryGoal
+        ]
         
         // Save to UserDefaults
         if let data = try? JSONEncoder().encode(user.settings) {

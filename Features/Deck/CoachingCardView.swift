@@ -17,6 +17,9 @@ struct CoachingCardView: View {
             cardFooter
         }
         .cardStyle()
+        .if(card.isPremium) { view in
+            view.premiumGlow()
+        }
         .frame(maxWidth: 350)
         .onTapGesture {
             withAnimation(DesignSystem.Animation.standard) {

@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftUI
 
 // MARK: - Deck View
 struct DeckView: View {
@@ -38,10 +37,10 @@ struct DeckView: View {
                 }
             }
             .onAppear {
-                viewModel.loadDailyCards()
+                viewModel.loadDailyCards(for: user)
             }
             .refreshable {
-                viewModel.loadDailyCards()
+                viewModel.loadDailyCards(for: user)
             }
             .sheet(isPresented: $showingPaywall) {
                 PaywallView()
@@ -104,14 +103,14 @@ struct DeckView: View {
     }
     
     private var loadingView: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .scaleEffect(1.2)
+        VStack(spacing: DesignSystem.Spacing.lg) {
+            CardShuffleView()
+                .frame(height: 300)
             
-            Text("Generating your daily cards...")
+            Text("Generating your daily deck...")
                 .font(DesignSystem.Typography.headline)
                 .foregroundColor(.white)
+                .opacity(0.8)
         }
     }
     
@@ -137,7 +136,7 @@ struct DeckView: View {
                     viewModel.dragRotation = Angle(degrees: Double(rotationAmount))
                 }
                 .onEnded { value in
-                    viewModel.handleSwipeGesture(value) { shouldShowPaywall in
+                    viewModel.handleSwipeGesture(value, user: user) { shouldShowPaywall in
                         if shouldShowPaywall {
                             showingPaywall = true
                         }
@@ -222,13 +221,13 @@ class DeckViewModel: ObservableObject {
     @Published var dragOffset: CGSize = .zero
     @Published var dragRotation: Angle = .zero
     
-    func loadDailyCards() {
+    func loadDailyCards(for user: User) {
         isLoading = true
         
         Task {
             do {
-                // Simulate AI card generation
-                let generatedCards = try await generateAICards()
+                // Use the AI service to generate cards
+                let generatedCards = try await AiRecommendationService.shared.generateDailyCards(for: user)
                 
                 await MainActor.run {
                     self.cards = generatedCards
@@ -246,13 +245,13 @@ class DeckViewModel: ObservableObject {
         }
     }
     
-    func handleSwipeGesture(_ value: DragGesture.Value, completion: @escaping (Bool) -> Void) {
+    func handleSwipeGesture(_ value: DragGesture.Value, user: User, completion: @escaping (Bool) -> Void) {
         let threshold: CGFloat = 80
         
         withAnimation(DesignSystem.Animation.cardSwipe) {
             if value.translation.x > threshold {
                 // Swipe right - complete card
-                completeCard(at: currentCardIndex, completion: completion)
+                completeCard(at: currentCardIndex, user: user, completion: completion)
             } else if value.translation.x < -threshold {
                 // Swipe left - dismiss card
                 dismissCard(at: currentCardIndex)
@@ -267,14 +266,16 @@ class DeckViewModel: ObservableObject {
         }
     }
     
-    private func completeCard(at index: Int, completion: @escaping (Bool) -> Void) {
+    private func completeCard(at index: Int, user: User, completion: @escaping (Bool) -> Void) {
         guard index < cards.count else { return }
         
         let card = cards[index]
         card.markCompleted()
         
-        // Update user progress (this would normally be handled by parent view)
-        // For now, just advance to next card
+        // Update user progress
+        user.progress.completeCard(for: card.domain, points: card.points)
+        user.lifePoints += card.points
+        
         withAnimation(DesignSystem.Animation.cardSwipe) {
             currentCardIndex += 1
         }
@@ -298,77 +299,14 @@ class DeckViewModel: ObservableObject {
         card.snooze()
         
         // Move card to end after 2 hours
+        let cardsCopy = cards
         DispatchQueue.main.asyncAfter(deadline: .now() + 7200) {
-            // Reshow snoozed card
-            cards.append(card)
+            // Reshow snoozed card if still in app context
+            self.cards.append(card)
         }
         
         withAnimation(DesignSystem.Animation.cardSwipe) {
             currentCardIndex += 1
-        }
-    }
-    
-    private func generateAICards() async throws -> [CoachingCard] {
-        // Simulate AI card generation with delay
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
-        
-        let domains = LifeDomain.allCases
-        var cards: [CoachingCard] = []
-        
-        for domain in domains {
-            let card = CoachingCard(
-                title: generateAICardTitle(for: domain),
-                description: generateAICardDescription(for: domain),
-                domain: domain,
-                actionText: generateAICardAction(for: domain),
-                difficulty: Double.random(in: 0.5...1.5),
-                points: Int.random(in: 5...15),
-                priority: .medium,
-                estimatedDuration: .standard,
-                aiGenerated: true
-            )
-            cards.append(card)
-        }
-        
-        return cards
-    }
-    
-    private func generateAICardTitle(for domain: LifeDomain) -> String {
-        switch domain {
-        case .health:
-            return ["Mindful Movement", "Hydration Boost", "Healthy Snack Choice", "Posture Check"].randomElement() ?? "Health Focus"
-        case .finance:
-            return ["Daily Budget Review", "Expense Tracking", "Savings Opportunity", "Bill Organization"].randomElement() ?? "Finance Focus"
-        case .productivity:
-            return ["Deep Work Session", "Priority Setting", "Email Zero", "Meeting Preparation"].randomElement() ?? "Productivity Focus"
-        case .mindfulness:
-            return ["Breathing Exercise", "Gratitude Practice", "Mindful Moment", "Stress Check-in"].randomElement() ?? "Mindfulness Focus"
-        }
-    }
-    
-    private func generateAICardDescription(for domain: LifeDomain) -> String {
-        switch domain {
-        case .health:
-            return "AI analysis suggests this action based on your recent activity patterns and goals."
-        case .finance:
-            return "Personalized recommendation based on your spending habits and financial objectives."
-        case .productivity:
-            return "Optimized for your current energy levels and task completion patterns."
-        case .mindfulness:
-            return "Tailored to your stress indicators and recent emotional patterns."
-        }
-    }
-    
-    private func generateAICardAction(for domain: LifeDomain) -> String {
-        switch domain {
-        case .health:
-            return "Complete this health-focused activity"
-        case .finance:
-            return "Review and optimize your finances"
-        case .productivity:
-            return "Execute this productivity task"
-        case .mindfulness:
-            return "Practice this mindfulness exercise"
         }
     }
 }
@@ -376,4 +314,67 @@ class DeckViewModel: ObservableObject {
 // MARK: - Notification Names
 extension Notification.Name {
     static let cardCompleted = Notification.Name("cardCompleted")
+}
+// MARK: - Card Shuffle View
+struct CardShuffleView: View {
+    @State private var phase = 0.0
+    private let cardCount = 3
+    
+    var body: some View {
+        ZStack {
+            ForEach(0..<cardCount, id: \.self) { index in
+                RoundedRectangle(cornerRadius: DesignSystem.Spacing.cornerRadius)
+                    .fill(DesignSystem.Gradients.primary)
+                    .frame(width: 200, height: 280)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignSystem.Spacing.cornerRadius)
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(radius: 10)
+                    .offset(x: offsetForIndex(index), y: yOffsetForIndex(index))
+                    .rotationEffect(.degrees(rotationForIndex(index)))
+                    .scaleEffect(scaleForIndex(index))
+                    .zIndex(zIndexForIndex(index))
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                phase += 1.0
+            }
+        }
+    }
+    
+    private func offsetForIndex(_ index: Int) -> CGFloat {
+        let normalizedPhase = phase - floor(phase)
+        let totalIndex = Double(index) + normalizedPhase * Double(cardCount)
+        let wrappedIndex = totalIndex.truncatingRemainder(dividingBy: Double(cardCount))
+        
+        // When a card is at the front (wrappedIndex close to 2), it "shuffles" to the back
+        if wrappedIndex > 2.5 {
+            return CGFloat((wrappedIndex - 2.5) * 400) // Slide out to the right
+        } else if wrappedIndex < 0.5 {
+            return CGFloat((0.5 - wrappedIndex) * -400) // Slide in from the left
+        }
+        return 0
+    }
+    
+    private func yOffsetForIndex(_ index: Int) -> CGFloat {
+        let wrappedIndex = (Double(index) + (phase - floor(phase)) * Double(cardCount)).truncatingRemainder(dividingBy: Double(cardCount))
+        return CGFloat(wrappedIndex * 8)
+    }
+    
+    private func rotationForIndex(_ index: Int) -> Double {
+        let wrappedIndex = (Double(index) + (phase - floor(phase)) * Double(cardCount)).truncatingRemainder(dividingBy: Double(cardCount))
+        return Double(wrappedIndex * 2 - 2)
+    }
+    
+    private func scaleForIndex(_ index: Int) -> CGFloat {
+        let wrappedIndex = (Double(index) + (phase - floor(phase)) * Double(cardCount)).truncatingRemainder(dividingBy: Double(cardCount))
+        return CGFloat(0.9 + (wrappedIndex / Double(cardCount)) * 0.1)
+    }
+    
+    private func zIndexForIndex(_ index: Int) -> Double {
+        let wrappedIndex = (Double(index) + (phase - floor(phase)) * Double(cardCount)).truncatingRemainder(dividingBy: Double(cardCount))
+        return wrappedIndex
+    }
 }
