@@ -27,3 +27,8 @@ Carthage/
 
 # Logs
 *.log
+
+# Expo and Node
+node_modules/
+.expo/
+.expo-shared/
