@@ -1,337 +1,265 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, Dimensions} from 'react-native';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store';
-import {LineChart, BarChart, PieChart} from 'react-native-chart-kit';
-import {apiService} from '../services/api';
+import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Dimensions } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { theme } from '../utils/theme';
+import { TrendingUp, Award, Zap, Heart, PieChart, Activity, Sparkles } from 'lucide-react-native';
+import Svg, { Path, Circle } from 'react-native-svg';
 
-interface AnalyticsData {
-  progress: {
-    healthScore: number;
-    financeScore: number;
-    productivityScore: number;
-    mindfulnessScore: number;
-    lifeScore: number;
-    currentStreak: number;
-    lifePoints: number;
-    totalCardsCompleted: number;
-  };
-  trends: {
-    dates: string[];
-    values: number[];
-    trend: 'up' | 'down' | 'stable';
-  };
-  insights?: Array<{
-    type: string;
-    title: string;
-    description: string;
-    impact: string;
-  }>;
-}
+const { width } = Dimensions.get('window');
+
+const StatCard = ({ title, value, icon: Icon, color }: any) => (
+    <View style={styles.statCard}>
+        <View style={[styles.statIcon, { backgroundColor: color + '22' }]}>
+            <Icon color={color} size={20} />
+        </View>
+        <View>
+            <Text style={[styles.statValue, theme.typography.body, { fontWeight: '700' }]}>{value}</Text>
+            <Text style={[styles.statTitle, theme.typography.caption]}>{title}</Text>
+        </View>
+    </View>
+);
+
+const LifeScoreChart = ({ score }: { score: number }) => {
+    const radius = 80;
+    const strokeWidth = 12;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (score / 100) * circumference;
+
+    return (
+        <View style={styles.chartContainer}>
+            <Svg height="180" width="180" viewBox="0 0 200 200">
+                <Circle
+                    cx="100"
+                    cy="100"
+                    r={radius}
+                    stroke="rgba(255,255,255,0.05)"
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                />
+                <Circle
+                    cx="100"
+                    cy="100"
+                    r={radius}
+                    stroke={theme.colors.primary}
+                    strokeWidth={strokeWidth}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    fill="none"
+                    transform="rotate(-90 100 100)"
+                />
+            </Svg>
+            <View style={styles.scoreTextContainer}>
+                <Text style={styles.scoreValue}>{score}</Text>
+                <Text style={styles.scoreLabel}>Life Score</Text>
+            </View>
+        </View>
+    );
+};
 
 const DashboardScreen = () => {
-  const user = useSelector((state: RootState) => state.user);
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
+    const { progress, name } = useSelector((state: RootState) => state.user);
 
-  const isPremium = user?.subscriptionTier === 'premium';
-
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
-
-  const loadAnalytics = async () => {
-    try {
-      if (isPremium) {
-        const [analyticsResponse, trendsResponse, insightsResponse] = await Promise.all([
-          apiService.getAnalytics(timeframe),
-          apiService.getTrends(timeframe),
-          apiService.getInsights(timeframe),
-        ]);
-
-        setAnalytics({
-          progress: analyticsResponse.progress,
-          trends: trendsResponse,
-          insights: insightsResponse,
-        });
-      } else {
-        // Free users only get basic progress
-        if (user?.progress) {
-          setAnalytics({
-            progress: user.progress,
-            trends: {
-              dates: [],
-              values: [],
-              trend: 'stable',
-            },
-            insights: [],
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load analytics:', error);
-      // Fallback to user progress
-      if (user?.progress) {
-        setAnalytics({
-          progress: user.progress,
-          trends: {
-            dates: [],
-            values: [],
-            trend: 'stable',
-          },
-          insights: [],
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Loading Analytics...</Text>
-      </View>
+    // Calculate average life score
+    const lifeScore = Math.round(
+        (progress.healthScore + progress.financeScore + progress.productivityScore + progress.mindfulnessScore) / 4
     );
-  }
 
-  if (!analytics) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Failed to load analytics</Text>
-      </View>
+        <SafeAreaView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.content}>
+                <View style={styles.header}>
+                    <View>
+                        <Text style={[styles.greeting, theme.typography.h2]}>Hey {name || 'there'}!</Text>
+                        <Text style={[styles.overview, theme.typography.body]}>Your daily growth summary</Text>
+                    </View>
+                    <View style={styles.premiumBadge}>
+                        <Sparkles color={theme.colors.secondary} size={16} fill={theme.colors.secondary} />
+                        <Text style={styles.premiumText}>LEVEL 4</Text>
+                    </View>
+                </View>
+
+                <View style={styles.mainDashboard}>
+                    <LifeScoreChart score={lifeScore} />
+                    <View style={styles.summaryStats}>
+                        <View style={styles.summaryItem}>
+                            <Zap color={theme.colors.warning} size={20} fill={theme.colors.warning} />
+                            <Text style={styles.summaryValue}>{progress.currentStreak}</Text>
+                            <Text style={styles.summaryLabel}>Streak</Text>
+                        </View>
+                        <View style={styles.dividerVertical} />
+                        <View style={styles.summaryItem}>
+                            <Award color={theme.colors.primary} size={20} />
+                            <Text style={styles.summaryValue}>{progress.lifePoints}</Text>
+                            <Text style={styles.summaryLabel}>Points</Text>
+                        </View>
+                    </View>
+                </View>
+
+                <View style={styles.statsGrid}>
+                    <StatCard title="Health" value={`${progress.healthScore}% `} icon={Heart} color="#E57373" />
+                    <StatCard title="Finance" value={`${progress.financeScore}% `} icon={PieChart} color="#3AA79D" />
+                    <StatCard title="Productivity" value={`${progress.productivityScore}% `} icon={Activity} color="#3B6BA5" />
+                    <StatCard title="Mindfulness" value={`${progress.mindfulnessScore}% `} icon={TrendingUp} color="#9C27B0" />
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={[styles.sectionTitle, theme.typography.h2]}>Daily Insights</Text>
+                    <View style={styles.insightCard}>
+                        <TrendingUp color={theme.colors.secondary} size={24} />
+                        <Text style={styles.insightText}>
+                            You're 15% more productive this week! Keep completing those productivity cards.
+                        </Text>
+                    </View>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     );
-  }
-
-  const screenWidth = Dimensions.get('window').width;
-
-  const domainData = {
-    labels: ['Health', 'Finance', 'Productivity', 'Mindfulness'],
-    datasets: [{
-      data: [
-        analytics.progress.healthScore,
-        analytics.progress.financeScore,
-        analytics.progress.productivityScore,
-        analytics.progress.mindfulnessScore,
-      ],
-    }],
-  };
-
-  const trendData = {
-    labels: analytics.trends.dates.slice(-7), // Last 7 days
-    datasets: [{
-      data: analytics.trends.values.slice(-7),
-    }],
-  };
-
-  const chartConfig = {
-    backgroundGradientFrom: '#121212',
-    backgroundGradientTo: '#121212',
-    color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
-    strokeWidth: 2,
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false,
-  };
-
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Life Analytics Dashboard</Text>
-
-      {/* Key Metrics */}
-      <View style={styles.metricsContainer}>
-        <View style={styles.metric}>
-          <Text style={styles.metricValue}>{analytics.progress.lifeScore.toFixed(1)}</Text>
-          <Text style={styles.metricLabel}>Life Score</Text>
-        </View>
-        <View style={styles.metric}>
-          <Text style={styles.metricValue}>{analytics.progress.currentStreak}</Text>
-          <Text style={styles.metricLabel}>Current Streak</Text>
-        </View>
-        <View style={styles.metric}>
-          <Text style={styles.metricValue}>{analytics.progress.lifePoints}</Text>
-          <Text style={styles.metricLabel}>Life Points</Text>
-        </View>
-        <View style={styles.metric}>
-          <Text style={styles.metricValue}>{analytics.progress.totalCardsCompleted}</Text>
-          <Text style={styles.metricLabel}>Cards Completed</Text>
-        </View>
-      </View>
-
-      {isPremium ? (
-        <>
-          {/* Domain Breakdown */}
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Domain Breakdown</Text>
-            <PieChart
-              data={[
-                {
-                  name: 'Health',
-                  population: analytics.progress.healthScore,
-                  color: '#4CAF50',
-                  legendFontColor: '#fff',
-                  legendFontSize: 12,
-                },
-                {
-                  name: 'Finance',
-                  population: analytics.progress.financeScore,
-                  color: '#2196F3',
-                  legendFontColor: '#fff',
-                  legendFontSize: 12,
-                },
-                {
-                  name: 'Productivity',
-                  population: analytics.progress.productivityScore,
-                  color: '#FF9800',
-                  legendFontColor: '#fff',
-                  legendFontSize: 12,
-                },
-                {
-                  name: 'Mindfulness',
-                  population: analytics.progress.mindfulnessScore,
-                  color: '#9C27B0',
-                  legendFontColor: '#fff',
-                  legendFontSize: 12,
-                },
-              ]}
-              width={screenWidth - 40}
-              height={220}
-              chartConfig={chartConfig}
-              accessor="population"
-              backgroundColor="transparent"
-              paddingLeft="15"
-            />
-          </View>
-
-          {/* Activity Trends */}
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Activity Trends (Last 7 Days)</Text>
-            <LineChart
-              data={trendData}
-              width={screenWidth - 40}
-              height={220}
-              chartConfig={chartConfig}
-              bezier
-              style={styles.chart}
-            />
-          </View>
-
-          {/* Trend Indicator */}
-          <View style={styles.trendContainer}>
-            <Text style={styles.trendText}>
-              Trend: {analytics.trends.trend === 'up' ? '📈 Trending Up' :
-                      analytics.trends.trend === 'down' ? '📉 Trending Down' :
-                      '➡️ Stable'}
-            </Text>
-          </View>
-        </>
-      ) : (
-        <View style={styles.premiumContainer}>
-          <Text style={styles.premiumTitle}>🔓 Advanced Analytics</Text>
-          <Text style={styles.premiumDescription}>
-            Unlock detailed charts, trends, and insights with LifeDeck Premium
-          </Text>
-          <View style={styles.upgradeButton}>
-            <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
-          </View>
-        </View>
-      )}
-    </ScrollView>
-  );
-};
-    <View style={styles.container}>
-      <Text style={styles.title}>Life Score Dashboard</Text>
-      <Text style={styles.score}>
-        {user?.progress.lifeScore.toFixed(1) || '0.0'}
-      </Text>
-      <Text style={styles.subtitle}>Your overall wellness score</Text>
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121212',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    color: '#fff',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  metricsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
-  },
-  metric: {
-    alignItems: 'center',
-  },
-  metricValue: {
-    fontSize: 24,
-    color: '#2196F3',
-    fontWeight: 'bold',
-  },
-  metricLabel: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 5,
-  },
-  chartContainer: {
-    marginBottom: 30,
-    alignItems: 'center',
-  },
-  chartTitle: {
-    fontSize: 18,
-    color: '#fff',
-    marginBottom: 15,
-    fontWeight: 'bold',
-  },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 16,
-  },
-  trendContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  trendText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  premiumContainer: {
-    alignItems: 'center',
-    padding: 30,
-    backgroundColor: 'rgba(33, 150, 243, 0.1)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(33, 150, 243, 0.3)',
-    marginBottom: 20,
-  },
-  premiumTitle: {
-    fontSize: 20,
-    color: '#2196F3',
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  premiumDescription: {
-    fontSize: 14,
-    color: '#888',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  upgradeButton: {
-    backgroundColor: '#2196F3',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  upgradeButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: theme.colors.background,
+    },
+    content: {
+        padding: theme.spacing.lg,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 30,
+    },
+    greeting: {
+        color: theme.colors.text,
+    },
+    overview: {
+        color: theme.colors.textDim,
+        marginTop: 4,
+    },
+    premiumBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(58,167,157,0.1)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        gap: 6,
+    },
+    premiumText: {
+        color: theme.colors.secondary,
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
+    mainDashboard: {
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.borderRadius.xl,
+        padding: 24,
+        alignItems: 'center',
+        marginBottom: 24,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    chartContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+    },
+    scoreTextContainer: {
+        position: 'absolute',
+        alignItems: 'center',
+    },
+    scoreValue: {
+        fontSize: 48,
+        fontWeight: 'bold',
+        color: theme.colors.text,
+    },
+    scoreLabel: {
+        fontSize: 14,
+        color: theme.colors.textDim,
+    },
+    summaryStats: {
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-evenly',
+        marginTop: 24,
+        paddingTop: 24,
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(255,255,255,0.05)',
+    },
+    summaryItem: {
+        alignItems: 'center',
+    },
+    summaryValue: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: theme.colors.text,
+        marginTop: 4,
+    },
+    summaryLabel: {
+        fontSize: 12,
+        color: theme.colors.textDim,
+    },
+    dividerVertical: {
+        width: 1,
+        height: 40,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+    },
+    statsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 16,
+        marginBottom: 24,
+    },
+    statCard: {
+        width: (width - 48 - 16) / 2,
+        backgroundColor: theme.colors.surface,
+        padding: 16,
+        borderRadius: theme.borderRadius.lg,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    statIcon: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    statValue: {
+        color: theme.colors.text,
+    },
+    statTitle: {
+        color: theme.colors.textDim,
+    },
+    section: {
+        marginTop: 10,
+    },
+    sectionTitle: {
+        color: theme.colors.text,
+        marginBottom: 16,
+    },
+    insightCard: {
+        backgroundColor: theme.colors.surface,
+        padding: 20,
+        borderRadius: theme.borderRadius.lg,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    insightText: {
+        flex: 1,
+        color: theme.colors.text,
+        lineHeight: 20,
+        fontSize: 14,
+    },
 });
 
 export default DashboardScreen;

@@ -1,431 +1,277 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, TextInput} from 'react-native';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store';
+import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { updateSettings } from '../store/slices/userSlice';
+import { theme } from '../utils/theme';
+import { User, Bell, Shield, CreditCard, ChevronRight, LogOut } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+
+const SettingItem = ({ icon: Icon, title, subtitle, value, onValueChange, isSwitch, onPress }: any) => (
+    <TouchableOpacity style={styles.settingItem} onPress={onPress} disabled={isSwitch}>
+        <View style={styles.settingIcon}>
+            <Icon color={theme.colors.text} size={22} />
+        </View>
+        <View style={styles.settingInfo}>
+            <Text style={styles.settingTitle}>{title}</Text>
+            {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+        </View>
+        {isSwitch ? (
+            <Switch
+                value={value}
+                onValueChange={onValueChange}
+                trackColor={{ false: theme.colors.surface, true: theme.colors.primary }}
+                thumbColor="#fff"
+            />
+        ) : (
+            <ChevronRight color={theme.colors.textDim} size={20} />
+        )}
+    </TouchableOpacity>
+);
 
 const ProfileScreen = () => {
-  const user = useSelector((state: RootState) => state.user);
-  const [settings, setSettings] = useState({
-    notificationsEnabled: true,
-    dailyReminderTime: '09:00',
-    contextAwareEnabled: false,
-    morningReminders: false,
-    workBreakReminders: false,
-    commuteReminders: false,
-    locationBasedReminders: false,
-  });
-  const [integrationStatus, setIntegrationStatus] = useState({
-    googleCalendar: false,
-    googleFit: false,
-    plaid: false,
-  });
+    const dispatch = useDispatch();
+    const navigation = useNavigation<any>();
+    const { name, email, settings, subscriptionTier } = useSelector((state: RootState) => state.user);
 
-  const updateSetting = (key: string, value: boolean | string) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-  };
+    return (
+        <SafeAreaView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.content}>
+                <View style={styles.profileHeader}>
+                    <View style={styles.avatar}>
+                        <Text style={styles.avatarText}>{name ? name[0].toUpperCase() : 'U'}</Text>
+                    </View>
+                    <Text style={styles.profileName}>{name || 'LifeDeck User'}</Text>
+                    <Text style={styles.profileEmail}>{email || 'No email provided'}</Text>
 
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Profile & Settings</Text>
+                    <View style={styles.premiumCard}>
+                        <Text style={styles.premiumTitle}>LifeDeck Premium</Text>
+                        <Text style={styles.premiumSubtitle}>Unlock AI-personalized cards and deep analytics.</Text>
+                        <TouchableOpacity style={styles.upgradeButton}>
+                            <Text style={styles.upgradeButtonText}>Upgrade Now</Text>
+                        </TouchableOpacity>
+                    </View>
 
-      {/* Basic Notifications */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🔔 Notifications</Text>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Account</Text>
+                        <SettingItem icon={User} title="Edit Profile" />
+                        <SettingItem icon={CreditCard} title="Subscription" subtitle={subscriptionTier === 'free' ? 'Upgrade for AI personalized cards' : 'Manage your premium plan'} />
+                    </View>
 
-        <View style={styles.settingRow}>
-          <View style={styles.settingInfo}>
-            <Text style={styles.settingTitle}>Push Notifications</Text>
-            <Text style={styles.settingDescription}>Receive notifications about your cards and progress</Text>
-          </View>
-          <Switch
-            value={settings.notificationsEnabled}
-            onValueChange={(value) => updateSetting('notificationsEnabled', value)}
-            trackColor={{ false: '#767577', true: '#2196F3' }}
-            thumbColor={settings.notificationsEnabled ? '#fff' : '#f4f3f4'}
-          />
-        </View>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Preferences</Text>
+                        <SettingItem
+                            icon={Bell}
+                            title="Notifications"
+                            isSwitch
+                            value={settings.notificationsEnabled}
+                            onValueChange={(val: boolean) => dispatch(updateSettings({ notificationsEnabled: val }))}
+                        />
+                        <SettingItem icon={Shield} title="Privacy & Security" />
+                    </View>
 
-        <View style={styles.settingRow}>
-          <View style={styles.settingInfo}>
-            <Text style={styles.settingTitle}>Daily Reminders</Text>
-            <Text style={styles.settingDescription}>Get reminded to complete your daily cards</Text>
-          </View>
-          <TextInput
-            style={styles.timeInput}
-            value={settings.dailyReminderTime}
-            onChangeText={(value) => updateSetting('dailyReminderTime', value)}
-            placeholder="09:00"
-          />
-        </View>
-      </View>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Achievements</Text>
+                        <TouchableOpacity style={styles.achievementsCard} onPress={() => navigation.navigate('Achievements')}>
+                            <View style={styles.achievementPreview}>
+                                <Text style={styles.achievementEmoji}>🏆</Text>
+                                <Text style={styles.achievementEmoji}>🔥</Text>
+                                <Text style={styles.achievementEmoji}>🎯</Text>
+                            </View>
+                            <Text style={styles.viewAchievementsLink}>View all achievements</Text>
+                            <ChevronRight color={theme.colors.primary} size={20} />
+                        </TouchableOpacity>
+                    </View>
 
-      {/* Context-Aware Notifications */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🧠 Smart Notifications</Text>
+                    <TouchableOpacity style={styles.logoutButton}>
+                        <LogOut color={theme.colors.error} size={20} />
+                        <Text style={styles.logoutText}>Log Out</Text>
+                    </TouchableOpacity>
 
-        <View style={styles.settingRow}>
-          <View style={styles.settingInfo}>
-            <Text style={styles.settingTitle}>Context-Aware Reminders</Text>
-            <Text style={styles.settingDescription}>Get personalized notifications based on your location, time, and activity</Text>
-          </View>
-          <Switch
-            value={settings.contextAwareEnabled}
-            onValueChange={(value) => updateSetting('contextAwareEnabled', value)}
-            trackColor={{ false: '#767577', true: '#2196F3' }}
-            thumbColor={settings.contextAwareEnabled ? '#fff' : '#f4f3f4'}
-          />
-        </View>
-
-        {settings.contextAwareEnabled && (
-          <View style={styles.subSettings}>
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>Morning Motivation</Text>
-                <Text style={styles.settingDescription}>Remind me to start my day with a mindful activity when it's sunny</Text>
-              </View>
-              <Switch
-                value={settings.morningReminders}
-                onValueChange={(value) => updateSetting('morningReminders', value)}
-                trackColor={{ false: '#767577', true: '#2196F3' }}
-                thumbColor={settings.morningReminders ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>Work Break Reminders</Text>
-                <Text style={styles.settingDescription}>Suggest quick mindfulness exercises during work hours</Text>
-              </View>
-              <Switch
-                value={settings.workBreakReminders}
-                onValueChange={(value) => updateSetting('workBreakReminders', value)}
-                trackColor={{ false: '#767577', true: '#2196F3' }}
-                thumbColor={settings.workBreakReminders ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>Commute Time</Text>
-                <Text style={styles.settingDescription}>Use travel time for breathing exercises or reflection</Text>
-              </View>
-              <Switch
-                value={settings.commuteReminders}
-                onValueChange={(value) => updateSetting('commuteReminders', value)}
-                trackColor={{ false: '#767577', true: '#2196F3' }}
-                thumbColor={settings.commuteReminders ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>Location-Based</Text>
-                <Text style={styles.settingDescription}>Contextual reminders based on your current location</Text>
-              </View>
-              <Switch
-                value={settings.locationBasedReminders}
-                onValueChange={(value) => updateSetting('locationBasedReminders', value)}
-                trackColor={{ false: '#767577', true: '#2196F3' }}
-                thumbColor={settings.locationBasedReminders ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-          </View>
-        )}
-      </View>
-
-      {/* Integrations */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🔗 Integrations</Text>
-
-        <View style={styles.integrationRow}>
-          <View style={styles.integrationInfo}>
-            <View style={styles.integrationHeader}>
-              <Text style={styles.integrationTitle}>Google Calendar</Text>
-              {integrationStatus.googleCalendar ? (
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusTextConnected}>Connected</Text>
-                </View>
-              ) : (
-                <View style={styles.statusBadgeDisconnected}>
-                  <Text style={styles.statusTextDisconnected}>Not Connected</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.integrationDescription}>Sync habits and schedule reminders</Text>
-          </View>
-          <TouchableOpacity
-            style={[
-              styles.connectButton,
-              integrationStatus.googleCalendar ? styles.disconnectButton : styles.connectButtonPrimary
-            ]}
-            onPress={() => {
-              // Handle OAuth flow
-              console.log('Connect Google Calendar');
-            }}
-          >
-            <Text style={[
-              styles.connectButtonText,
-              integrationStatus.googleCalendar ? styles.disconnectButtonText : styles.connectButtonTextPrimary
-            ]}>
-              {integrationStatus.googleCalendar ? 'Disconnect' : 'Connect'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.integrationRow}>
-          <View style={styles.integrationInfo}>
-            <View style={styles.integrationHeader}>
-              <Text style={styles.integrationTitle}>Google Fit</Text>
-              {integrationStatus.googleFit ? (
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusTextConnected}>Connected</Text>
-                </View>
-              ) : (
-                <View style={styles.statusBadgeDisconnected}>
-                  <Text style={styles.statusTextDisconnected}>Not Connected</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.integrationDescription}>Sync health and fitness data</Text>
-          </View>
-          <TouchableOpacity
-            style={[
-              styles.connectButton,
-              integrationStatus.googleFit ? styles.disconnectButton : styles.connectButtonPrimary
-            ]}
-            onPress={() => {
-              // Handle OAuth flow
-              console.log('Connect Google Fit');
-            }}
-          >
-            <Text style={[
-              styles.connectButtonText,
-              integrationStatus.googleFit ? styles.disconnectButtonText : styles.connectButtonTextPrimary
-            ]}>
-              {integrationStatus.googleFit ? 'Disconnect' : 'Connect'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.integrationRow}>
-          <View style={styles.integrationInfo}>
-            <View style={styles.integrationHeader}>
-              <Text style={styles.integrationTitle}>Plaid (Finance)</Text>
-              {integrationStatus.plaid ? (
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusTextConnected}>Connected</Text>
-                </View>
-              ) : (
-                <View style={styles.statusBadgeDisconnected}>
-                  <Text style={styles.statusTextDisconnected}>Not Connected</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.integrationDescription}>Connect bank accounts for spending insights</Text>
-          </View>
-          <TouchableOpacity
-            style={[
-              styles.connectButton,
-              integrationStatus.plaid ? styles.disconnectButton : styles.connectButtonPrimary
-            ]}
-            onPress={() => {
-              // Handle Plaid Link flow
-              console.log('Connect Plaid');
-            }}
-          >
-            <Text style={[
-              styles.connectButtonText,
-              integrationStatus.plaid ? styles.disconnectButtonText : styles.connectButtonTextPrimary
-            ]}>
-              {integrationStatus.plaid ? 'Disconnect' : 'Connect'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* User Progress */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📊 Your Progress</Text>
-        <View style={styles.progressGrid}>
-          <View style={styles.progressItem}>
-            <Text style={styles.progressValue}>{user?.progress.lifeScore.toFixed(1) || '0.0'}</Text>
-            <Text style={styles.progressLabel}>Life Score</Text>
-          </View>
-          <View style={styles.progressItem}>
-            <Text style={styles.progressValue}>{user?.progress.currentStreak || 0}</Text>
-            <Text style={styles.progressLabel}>Current Streak</Text>
-          </View>
-          <View style={styles.progressItem}>
-            <Text style={styles.progressValue}>{user?.progress.lifePoints || 0}</Text>
-            <Text style={styles.progressLabel}>Life Points</Text>
-          </View>
-          <View style={styles.progressItem}>
-            <Text style={styles.progressValue}>{user?.progress.totalCardsCompleted || 0}</Text>
-            <Text style={styles.progressLabel}>Cards Completed</Text>
-          </View>
-        </View>
-      </View>
-    </ScrollView>
-  );
+                    <Text style={styles.versionText}>LifeDeck v1.0.0 (Building with Expo)</Text>
+            </ScrollView>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121212',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    color: '#fff',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  section: {
-    backgroundColor: '#1E1E1E',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    color: '#fff',
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-  },
-  settingInfo: {
-    flex: 1,
-    marginRight: 15,
-  },
-  settingTitle: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '500',
-  },
-  settingDescription: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 2,
-  },
-  timeInput: {
-    backgroundColor: '#333',
-    color: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    width: 80,
-    textAlign: 'center',
-  },
-  subSettings: {
-    marginLeft: 20,
-    marginTop: 10,
-    paddingLeft: 15,
-    borderLeftWidth: 2,
-    borderLeftColor: '#2196F3',
-  },
-  progressGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  progressItem: {
-    width: '48%',
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  progressValue: {
-    fontSize: 24,
-    color: '#2196F3',
-    fontWeight: 'bold',
-  },
-  progressLabel: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 5,
-  },
-  integrationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-  },
-  integrationInfo: {
-    flex: 1,
-    marginRight: 15,
-  },
-  integrationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  integrationTitle: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '500',
-    marginRight: 10,
-  },
-  statusBadge: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  statusBadgeDisconnected: {
-    backgroundColor: '#666',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  statusTextConnected: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  statusTextDisconnected: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  integrationDescription: {
-    fontSize: 12,
-    color: '#888',
-  },
-  connectButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  connectButtonPrimary: {
-    backgroundColor: '#2196F3',
-  },
-  disconnectButton: {
-    backgroundColor: 'rgba(244, 67, 54, 0.2)',
-    borderWidth: 1,
-    borderColor: '#F44336',
-  },
-  connectButtonText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  connectButtonTextPrimary: {
-    color: '#fff',
-  },
-  disconnectButtonText: {
-    color: '#F44336',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: theme.colors.background,
+    },
+    content: {
+        padding: theme.spacing.lg,
+    },
+    profileHeader: {
+        alignItems: 'center',
+        marginBottom: 40,
+        marginTop: 20,
+    },
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: theme.colors.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 16,
+        shadowColor: theme.colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 8,
+    },
+    avatarText: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    profileName: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: theme.colors.text,
+    },
+    profileEmail: {
+        fontSize: 14,
+        color: theme.colors.textDim,
+        marginTop: 4,
+    },
+    tierBadge: {
+        marginTop: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    tierText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: theme.colors.text,
+        letterSpacing: 1,
+    },
+    section: {
+        marginBottom: 32,
+    },
+    sectionTitle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: theme.colors.textDim,
+        textTransform: 'uppercase',
+        letterSpacing: 1.5,
+        marginBottom: 12,
+        marginLeft: 4,
+    },
+    settingItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.surface,
+        padding: 16,
+        borderRadius: theme.borderRadius.md,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    settingIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    settingInfo: {
+        flex: 1,
+    },
+    settingTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: theme.colors.text,
+    },
+    settingSubtitle: {
+        fontSize: 12,
+        color: theme.colors.textDim,
+        marginTop: 2,
+    },
+    achievementsCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.surface,
+        padding: 20,
+        borderRadius: theme.borderRadius.lg,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    achievementPreview: {
+        flexDirection: 'row',
+        marginRight: 16,
+        gap: 4,
+    },
+    achievementEmoji: {
+        fontSize: 24,
+    },
+    viewAchievementsLink: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '600',
+        color: theme.colors.text,
+    },
+    logoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16,
+        gap: 10,
+        marginTop: 20,
+    },
+    logoutText: {
+        color: theme.colors.error,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    versionText: {
+        textAlign: 'center',
+        color: theme.colors.textDim,
+        fontSize: 12,
+        marginTop: 40,
+        marginBottom: 20,
+    },
+    premiumCard: {
+        backgroundColor: theme.colors.surface,
+        padding: 24,
+        borderRadius: theme.borderRadius.xl,
+        marginBottom: 32,
+        borderWidth: 1,
+        borderColor: theme.colors.primary,
+        shadowColor: theme.colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+    },
+    premiumTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: theme.colors.text,
+        marginBottom: 8,
+    },
+    premiumSubtitle: {
+        fontSize: 14,
+        color: theme.colors.textDim,
+        lineHeight: 20,
+        marginBottom: 20,
+    },
+    upgradeButton: {
+        backgroundColor: theme.colors.primary,
+        paddingVertical: 12,
+        borderRadius: theme.borderRadius.md,
+        alignItems: 'center',
+    },
+    upgradeButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 });
 
 export default ProfileScreen;

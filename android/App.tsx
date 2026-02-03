@@ -1,62 +1,83 @@
-import React, {useEffect} from 'react';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'react-redux/persist/integration/react';
-import {NavigationContainer} from '@react-navigation/native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-
-import {store, persistor} from './src/store';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Image } from 'react-native';
+import { Provider } from 'react-redux';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { store, persistor } from './src/store';
 import AppNavigator from './src/navigation/AppNavigator';
-import {ThemeProvider} from './src/utils/theme';
-import {notificationService} from './src/services/notifications';
-import {locationService} from './src/services/LocationService';
+import { NavigationContainer } from '@react-navigation/native';
+import { PersistGate } from 'redux-persist/integration/react';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
+import './src/utils/i18n';
 
-const App = () => {
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
   useEffect(() => {
-    // Initialize push notifications
-    notificationService.initialize();
+    async function prepare() {
+      try {
+        // Preload fonts, images, etc.
+        const imageAssets = [
+          require('./assets/icon.png'),
+          require('./assets/splash.png'),
+          require('./assets/adaptive-icon.png'),
+        ];
 
-    // Schedule daily reminder
-    notificationService.scheduleDailyReminder(9, 0); // 9 AM daily
+        const fontAssets = {
+          // Add custom fonts if needed
+        };
 
-    // Initialize location services
-    initializeLocationServices();
+        // Do not let asset failure block the app from starting
+        await Promise.allSettled([
+          ...cacheImages(imageAssets),
+          Font.loadAsync(fontAssets)
+        ]);
+      } catch (e) {
+        console.warn('Initialization error:', e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
   }, []);
 
-  const initializeLocationServices = async () => {
-    const hasPermission = await locationService.requestPermissions();
-    if (hasPermission) {
-      // Start location tracking for context-aware notifications
-      locationService.startLocationTracking(
-        async (location) => {
-          // Send location update to backend for processing
-          try {
-            const contexts = locationService.getLocationContext(location);
-            // TODO: Send to backend API
-            console.log('Location update:', location, 'Contexts:', contexts);
-          } catch (error) {
-            console.error('Failed to process location update:', error);
-          }
-        },
-        (error) => {
-          console.error('Location tracking error:', error);
-        },
-      );
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      // This tells the splash screen to hide immediately!
+      await SplashScreen.hideAsync();
     }
-  };
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaProvider>
-          <ThemeProvider>
-            <NavigationContainer>
-              <AppNavigator />
-            </NavigationContainer>
-          </ThemeProvider>
+        <SafeAreaProvider onLayout={onLayoutRootView}>
+          <NavigationContainer>
+            <AppNavigator />
+            <StatusBar style="light" />
+          </NavigationContainer>
         </SafeAreaProvider>
       </PersistGate>
     </Provider>
   );
-};
+}
 
-export default App;
+function cacheImages(images: any[]) {
+  return images.map(image => {
+    if (typeof image === 'string') {
+      return Image.prefetch(image);
+    } else {
+      return Asset.fromModule(image).downloadAsync();
+    }
+  });
+}
