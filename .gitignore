@@ -1,34 +1,129 @@
-*.xcuserstate
+# ─────────────────────────────────────────────────────────────
+# Secrets and credentials — NEVER commit these
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.tfvars
+*.tfvars.json
+secrets/
+secrets.yaml
+secrets.yml
 
+# Signing keys, certificates, and private keys
+*.p8
+*.p12
+*.jks
+*.keystore
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+*.pem
+*.key
+# Expo ships this debug key in the repo; keep it tracked.
+!debug.keystore
+
+# ─────────────────────────────────────────────────────────────
+# Terraform — state contains secrets in plaintext
+# ─────────────────────────────────────────────────────────────
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
+# NOTE: .terraform.lock.hcl is intentionally COMMITTED so that
+# provider versions are reproducible. Do not add it here.
+
+# ─────────────────────────────────────────────────────────────
 # Build artifacts
+# ─────────────────────────────────────────────────────────────
 build/
 DerivedData/
+dist/
 *.app
+*.ipa
 
+# ─────────────────────────────────────────────────────────────
 # Swift Package Manager
+# ─────────────────────────────────────────────────────────────
 .build/
 Packages/
+.swiftpm/
 
-# CocoaPods
+# ─────────────────────────────────────────────────────────────
+# CocoaPods / Carthage
+# ─────────────────────────────────────────────────────────────
 Pods/
-
-# Carthage
 Carthage/
 
-# OS generated files
-.DS_Store
-*.swp
-*.lock
-*~
+# ─────────────────────────────────────────────────────────────
+# Xcode — per-user state must never be committed
+# ─────────────────────────────────────────────────────────────
+*.xcuserstate
+xcuserdata/
+**/xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.dSYM
+*.dSYM.zip
 
-# IDE files
-.vscode/
-.idea/
+# ─────────────────────────────────────────────────────────────
+# Android / Gradle
+# ─────────────────────────────────────────────────────────────
+.gradle/
+local.properties
+*.apk
+*.aab
 
-# Logs
-*.log
-
+# ─────────────────────────────────────────────────────────────
 # Expo and Node
+# ─────────────────────────────────────────────────────────────
 node_modules/
 .expo/
 .expo-shared/
+web-build/
+*.orig.*
+
+# ─────────────────────────────────────────────────────────────
+# Test and analysis output
+# ─────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.xctest
+*.xccovreport
+*.coverage
+*.lcov
+TestResults/
+*.xcresult
+
+# ─────────────────────────────────────────────────────────────
+# OS and editor cruft
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+*.swp
+*~
+*.lock
+
+# ─────────────────────────────────────────────────────────────
+# Logs
+# ─────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# ─────────────────────────────────────────────────────────────
+# IDE files
+# ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
