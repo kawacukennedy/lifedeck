@@ -1,0 +1,55 @@
+# Code owners for github.com/kawacukennedy/lifedeck
+#
+# These are review requirements, not merge authority. Branch protection on `main`
+# still requires at least one approving review from a collaborator with write
+# access; this file narrows *who must review*, it does not widen who may merge.
+#
+# Format reference: https://docs.github.com/articles/about-code-owners
+
+# Default owner for anything not matched below. Left as a single owner so that
+# new top-level directories are never unowned by accident.
+*                               @kawacukennedy
+
+# ---------------------------------------------------------------------------
+# Highest blast radius: anything that can deploy, grant access, or exfiltrate.
+# ---------------------------------------------------------------------------
+/.github/workflows/              @kawacukennedy
+/.github/CODEOWNERS             @kawacukennedy
+/infrastructure/                @kawacukennedy
+
+# ---------------------------------------------------------------------------
+# Backend: auth, authorization, and data access.
+# ---------------------------------------------------------------------------
+/backend/src/                   @kawacukennedy
+/backend/prisma/                @kawacukennedy
+/backend/Dockerfile             @kawacukennedy
+/backend/package.json           @kawacukennedy
+/backend/docker-compose.yml      @kawacukennedy
+
+# ---------------------------------------------------------------------------
+# Client apps. `LifeDeck.xcodeproj` is reviewed with `LifeDeck/Info.plist`
+# because capability/entitlement changes live in the plist, not the pbxproj.
+# ---------------------------------------------------------------------------
+/LifeDeck.xcodeproj/            @kawacukennedy
+/LifeDeck/Info.plist            @kawacukennedy
+/ios/                           @kawacukennedy
+/iOS/                           @kawacukennedy
+/App/                           @kawacukennedy
+/android/                       @kawacukennedy
+
+# ---------------------------------------------------------------------------
+# Governance documents.
+# ---------------------------------------------------------------------------
+/LICENSE                        @kawacukennedy
+/SECURITY.md                    @kawacukennedy
+/CONTRIBUTING.md                @kawacukennedy
+/.gitignore                     @kawacukennedy
+
+# ---------------------------------------------------------------------------
+# Explicitly NOT owned by default, listed to document intent.
+#
+# `.env.example` files hold placeholder values only and are safe to change,
+# but the backend one is close enough to the auth/config surface that a
+# reviewer should still be deliberate about it.
+# ---------------------------------------------------------------------------
+/backend/.env.example           @kawacukennedy
